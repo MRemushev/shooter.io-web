@@ -1,0 +1,72 @@
+{
+	"items": [
+		{
+			"key": "Language",
+			"value": "Türk"
+		},
+		{
+			"key": "Sound",
+			"value": "Ses"
+		},
+		{
+			"key": "AutoShooting",
+			"value": "Otomatik Çekim"
+		},
+		{
+			"key": "Settings",
+			"value": "Ayarlar"
+		},
+		{
+			"key": "Battle",
+			"value": "Savaş"
+		},
+		{
+			"key": "Dead",
+			"value": "Sen Öldün."
+		},
+		{
+			"key": "Continue",
+			"value": "Devam etmek"
+		},
+		{
+			"key": "Reward",
+			"value": "Ödül"
+		},
+		{
+			"key": "Nickname",
+			"value": "Takma ad"
+		},
+		{
+			"key": "Health",
+			"value": "Sağlık - "
+		},
+		{
+			"key": "People",
+			"value": "İnsanlar - "
+		},
+		{
+			"key": "Pause",
+			"value": "Duraklat"
+		},
+		{
+			"key": "Exit",
+			"value": "Çıkış"
+		},
+		{
+			"key": "SpendDiamonds",
+			"value": "Kaybettin, eğer yeniden doğmak istiyorsan o zaman elmaslarını harca"
+		},
+		{
+			"key": "Result",
+			"value": "Sonuç"
+		},
+		{
+			"key": "Collect",
+			"value": "Toplamak"
+		},
+		{
+			"key": "xReward",
+			"value": "2x Ödül"
+		}
+	]
+}

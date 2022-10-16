@@ -1,0 +1,73 @@
+{
+	"items": [
+		{
+			"key": "Language",
+			"value": "Русский"
+		},
+		{
+			"key": "Sound",
+			"value": "Звук"
+		},
+		{
+			"key": "AutoShooting",
+			"value": "Авто стрельба"
+		},
+		{
+			"key": "Settings",
+			"value": "Настройки"
+		},
+		{
+			"key": "Battle",
+			"value": "В бой"
+		},
+		{
+			"key": "Dead",
+			"value": "Вы погибли"
+		},
+		{
+			"key": "Continue",
+			"value": "Продолжить"
+		},
+		{
+			"key": "Reward",
+			"value": "Подарок"
+		},
+		{
+			"key": "Nickname",
+			"value": "Имя"
+		},
+		{
+			"key": "Health",
+			"value": "Здоровье - "
+		},
+		{
+			"key": "People",
+			"value": "Человечки - "
+		},
+		{
+			"key": "Pause",
+			"value": "Пауза"
+		},
+
+		{
+			"key": "Exit",
+			"value": "Выход"
+		},
+		{
+			"key": "SpendDiamonds",
+			"value": "Ты проиграл, если хочешь возродиться, тогда трать свои бриллианты"
+		},
+		{
+			"key": "Result",
+			"value": "Результат"
+		},
+		{
+			"key": "Collect",
+			"value": "Забрать"
+		},
+		{
+			"key": "xReward",
+			"value": "2x Награда"
+		}
+	]
+}
