@@ -10,7 +10,6 @@ public class RewardSystem : MonoBehaviour
     public float msToWait = 86400000;
     private Button _rewardButton;
     private ulong _lastOpen;
-    private LocalizedText _localizedText;
 
     private readonly int[] _gemGifts = {5, 10, 15};
     private readonly int[] _coinGifts = {100, 500, 1000};
@@ -19,7 +18,6 @@ public class RewardSystem : MonoBehaviour
     {
         _rewardButton = GetComponent<Button>();
         if (PlayerPrefs.HasKey("lastOpen")) _lastOpen = ulong.Parse(PlayerPrefs.GetString("lastOpen"));
-        _localizedText = buttonText.GetComponent<LocalizedText>();
         _rewardButton.interactable = IsReady();
     }
 
@@ -30,7 +28,6 @@ public class RewardSystem : MonoBehaviour
         if (IsReady()) 
         {
             _rewardButton.interactable = true;
-            _localizedText.UpdateText();
             return;
         }
         var diff = (ulong)DateTime.Now.Ticks - _lastOpen;
@@ -75,8 +72,6 @@ public class RewardSystem : MonoBehaviour
         var diff = (ulong)DateTime.Now.Ticks - _lastOpen;
         var m = diff / TimeSpan.TicksPerMillisecond;
         var secondLeft = (msToWait - m) / 1000.0f;
-        if (secondLeft >= 0) return false;
-        _localizedText.UpdateText();
-        return true;
+        return !(secondLeft >= 0);
     }
 }

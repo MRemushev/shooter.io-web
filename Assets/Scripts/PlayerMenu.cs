@@ -42,8 +42,7 @@ public class PlayerMenu : MonoBehaviour
         // PlayerPrefs.DeleteAll();
         // if (!PlayerPrefs.HasKey("Coins"))PlayerPrefs.SetInt("Coins", 1000000);
         // if (!PlayerPrefs.HasKey("Gems"))PlayerPrefs.SetInt("Gems", 1000);
-        if (!PlayerPrefs.HasKey("PlayerName")) PlayerPrefs.SetString("PlayerName", "Player"); 
-        if (!PlayerPrefs.HasKey("VolumeStatus")) PlayerPrefsX.SetBool("VolumeStatus", true);
+        if (!PlayerPrefs.HasKey("PlayerName")) PlayerPrefs.SetString("PlayerName", "Player");
         if (bestCountText) bestCountText.text = PlayerPrefs.GetInt("HighScore").ToString();
         if (inputName) inputName.text = PlayerPrefs.GetString("PlayerName");
         if (peopleTitleText && peoplePriceText) UpdatePricePeople();
@@ -157,8 +156,7 @@ public class PlayerMenu : MonoBehaviour
     public void UpdatePricePeople()
     {
         var countPeople = PlayerPrefs.GetInt("PlayerPeople") + 1;
-        peopleTitleText.GetComponent<LocalizedText>().UpdateText();
-        peopleTitleText.text += PlayerPrefs.GetInt("PlayerPeople");
+        peopleTitleText.text = "Человечки - " + PlayerPrefs.GetInt("PlayerPeople");
         peoplePriceText.text = (countPeople * 100 * countPeople).ToString();
     }
     
@@ -175,8 +173,7 @@ public class PlayerMenu : MonoBehaviour
     public void UpdatePriceHealth()
     {
         var countHealth = PlayerPrefs.GetInt("PlayerHealth") + 1;
-        healthTitleText.GetComponent<LocalizedText>().UpdateText();
-        healthTitleText.text += 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
+        healthTitleText.text = "Здоровье - " + 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
         healthPriceText.text = (countHealth * 500 * countHealth).ToString();
     }
     

@@ -39,12 +39,7 @@ public class EnemyController : MainCharacter
         rankManager = FindObjectOfType<RankManager>();
         rankManager.charactersData.Add(this);
     }
-
-    protected void OnDestroy()
-    {
-        if (enemySpawner) enemySpawner.SpawnObject();
-    }
-
+    
     protected override void Run()
     {
         if (IsDead) return;
@@ -172,6 +167,7 @@ public class EnemyController : MainCharacter
     {
         yield return new WaitForSeconds(5f);
         rankManager.charactersData.Remove(this);
+        enemySpawner.SpawnObject();
         Destroy(gameObject);
     }
     

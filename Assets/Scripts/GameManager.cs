@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("CountBuyChance", 0);
         if (shootingType) shootingType.isOn = PlayerPrefsX.GetBool("AutoShooting");
         if (!volumeToggle) return;
-        if (PlayerPrefs.HasKey("VolumeStatus")) PlayerPrefsX.SetBool("VolumeStatus", true);
+        if (!PlayerPrefs.HasKey("VolumeStatus")) PlayerPrefsX.SetBool("VolumeStatus", true);
         volumeToggle.isOn = PlayerPrefsX.GetBool("VolumeStatus");
         SetVolume(PlayerPrefsX.GetBool("VolumeStatus"));
     }
