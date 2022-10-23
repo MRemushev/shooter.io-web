@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
+using YG;
 using Random = UnityEngine.Random;
 
 public class RewardSystem : MonoBehaviour
@@ -16,6 +17,7 @@ public class RewardSystem : MonoBehaviour
 
     private void Start()
     {
+        YandexGame.CloseVideoEvent += Rewarded;
         _rewardButton = GetComponent<Button>();
         if (PlayerPrefs.HasKey("lastOpen")) _lastOpen = ulong.Parse(PlayerPrefs.GetString("lastOpen"));
         _rewardButton.interactable = IsReady();
@@ -44,7 +46,8 @@ public class RewardSystem : MonoBehaviour
         buttonText.text = t;
     }
 
-    public void Click() {
+    public void Rewarded(int id) {
+        if (id != 0) return;
         _lastOpen = (ulong)DateTime.Now.Ticks;
         PlayerPrefs.SetString("lastOpen", _lastOpen.ToString());
         _rewardButton.interactable = false;
