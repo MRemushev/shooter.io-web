@@ -21,6 +21,7 @@ public class TeamController : MonoCache, IPoolItem
     [HideInInspector] public MainCharacter targetScript;
 
     private WeaponController _thisWeapon;
+    private int _teamIndex;
     private Transform _targetTransform;
     private Vector3 _relativeVector;
     public bool IsDead { get; private set; }
@@ -41,6 +42,7 @@ public class TeamController : MonoCache, IPoolItem
         weapons.ChangeWeapon(targetScript.weapons.WeaponLevel);
         _thisWeapon.fireRate *= Random.Range(0.1f, 0.9f);
         targetScript.characterList.Add(this);
+        _teamIndex = targetObject.characterList.Count;
         var isPlayer = targetObject.GetCached<PlayerController>();
         if (isPlayer) isPlayer.ChangeStats();
     }
@@ -59,7 +61,11 @@ public class TeamController : MonoCache, IPoolItem
         rigidbody.isKinematic = targetScript.IsStopped;
         animator.SetFloat(Horizontal, targetScript.relativeVector.x);
         animator.SetFloat(Vertical, targetScript.relativeVector.z);
-        if (targetScript.isFire) _thisWeapon.Shoot();
+        if (targetScript.isFire)
+        {
+            if (_teamIndex < 5) _thisWeapon.Shoot();
+            else {if (!_thisWeapon.IsShot)_thisWeapon.shootFX.Play();}
+        }
         if (targetScript.fireTarget)
             cachedTransform.rotation = Quaternion.Slerp(cachedTransform.rotation,
                 Quaternion.LookRotation(targetScript.fireTarget.position - cachedTransform.position), 8 * Time.deltaTime);

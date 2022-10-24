@@ -11,6 +11,7 @@ public class RewardSystem : MonoBehaviour
     public float msToWait = 86400000;
     private Button _rewardButton;
     private ulong _lastOpen;
+    private string previousText;
 
     private readonly int[] _gemGifts = {5, 10, 15};
     private readonly int[] _coinGifts = {100, 500, 1000};
@@ -18,6 +19,7 @@ public class RewardSystem : MonoBehaviour
     private void Start()
     {
         YandexGame.CloseVideoEvent += Rewarded;
+        previousText = buttonText.text;
         _rewardButton = GetComponent<Button>();
         if (PlayerPrefs.HasKey("lastOpen")) _lastOpen = ulong.Parse(PlayerPrefs.GetString("lastOpen"));
         _rewardButton.interactable = IsReady();
@@ -30,6 +32,7 @@ public class RewardSystem : MonoBehaviour
         if (IsReady()) 
         {
             _rewardButton.interactable = true;
+            buttonText.text = previousText;
             return;
         }
         var diff = (ulong)DateTime.Now.Ticks - _lastOpen;
@@ -46,8 +49,8 @@ public class RewardSystem : MonoBehaviour
         buttonText.text = t;
     }
 
-    public void Rewarded(int id) {
-        if (id != 0) return;
+    private void Rewarded(int idAd) {
+        if (idAd != 0) return;
         _lastOpen = (ulong)DateTime.Now.Ticks;
         PlayerPrefs.SetString("lastOpen", _lastOpen.ToString());
         _rewardButton.interactable = false;

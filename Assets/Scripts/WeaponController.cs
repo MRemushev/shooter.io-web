@@ -5,10 +5,10 @@ public class WeaponController : MonoBehaviour
 {
     [SerializeField] private GameObject mainCharacter;
     [SerializeField] private AudioSource audioSource;
-    [SerializeField] private ParticleSystem shootFX;
     [SerializeField] private float damage;
     [SerializeField] private float fireRange;
     [SerializeField] private bool isRifle;
+    public ParticleSystem shootFX;
     
     private float _nextFire;
     private Animator _animator;

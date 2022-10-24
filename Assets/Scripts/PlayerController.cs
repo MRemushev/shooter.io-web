@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using YG;
 using Random = UnityEngine.Random;
 
 public class PlayerController : MainCharacter
@@ -23,6 +24,7 @@ public class PlayerController : MainCharacter
 
     private void Start()
     {
+        YandexGame.CloseVideoEvent += Renaissance;
         skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
         _cameraOffset = Find<CameraController>();
         characterName = PlayerPrefs.GetString("PlayerName");
@@ -214,13 +216,13 @@ public class PlayerController : MainCharacter
         _killPromotion = 2;
     }
 
-    public void Renaissance(bool isChance = false)
+    public void Renaissance(int idAd = 0)
     {
-        if (isChance) scoreKills -= 1;
+        if (idAd != 1) return;
         weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2);
         health = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
         _cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
-        if (PlayerPrefs.HasKey("PlayerUnits")) 
-            AddCharacter(PlayerPrefs.GetInt("PlayerUnits"));
+        if (PlayerPrefs.HasKey("PlayerPeople")) 
+            AddCharacter(PlayerPrefs.GetInt("PlayerPeople"));
     }
 }

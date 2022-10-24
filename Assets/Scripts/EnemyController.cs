@@ -92,12 +92,12 @@ public class EnemyController : MainCharacter
         {
             var teamController = col.GetComponent<TeamController>();
             var enemyController = teamController.targetScript.Get<EnemyController>();
-            if (enemyController) enemyController.TakeDamage(TotalDamage * 1.5f, this);
-            else _playerScript.TakeDamage(TotalDamage * 1.5f);
+            if (enemyController) enemyController.TakeDamage(TotalDamage, this);
+            else _playerScript.TakeDamage(TotalDamage);
         }
         if (col.CompareTag("Enemy"))
-            col.GetComponent<EnemyController>().TakeDamage(TotalDamage * 1.5f,this);
-        else _playerScript.TakeDamage(TotalDamage * 1.5f);
+            col.GetComponent<EnemyController>().TakeDamage(TotalDamage,this);
+        else _playerScript.TakeDamage(TotalDamage);
     }
     
     public void TakeDamage(float damage, EnemyController enemyController = null)

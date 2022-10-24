@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using YG;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        Application.targetFrameRate = 60;
+        YandexGame.CloseVideoEvent += DoubleReward;
         PlayerPrefs.SetInt("CountBuyChance", 0);
         if (shootingType) shootingType.isOn = PlayerPrefsX.GetBool("AutoShooting");
         if (!volumeToggle) return;
@@ -51,7 +52,7 @@ public class GameManager : MonoBehaviour
         var countGems = PlayerPrefs.GetInt("Gems");
         if (price > countGems) return;
         PlayerPrefs.SetInt("Gems", countGems - price);
-        FindObjectOfType<PlayerController>().Renaissance(true);
+        FindObjectOfType<PlayerController>().Renaissance();
         SetPause(false);
         deadScreen.SetActive(false);
     }
@@ -68,5 +69,10 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("Coins", PlayerPrefs.GetInt("Coins") + int.Parse(rewardText.text));
         ChangeScene(menuIndex);
+    }
+
+    private void DoubleReward(int idAd) {
+        if (idAd != 2) return;
+        rewardText.text = (int.Parse(rewardText.text) * 2).ToString(); 
     }
 }
