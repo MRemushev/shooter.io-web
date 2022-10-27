@@ -8,7 +8,7 @@ public class FadeCheck : MonoBehaviour
 
     private Transform _cameraTransform;
 
-    private void Start() => _cameraTransform = FindObjectOfType<Camera>().GetComponent<Transform>();
+    private void Start() => _cameraTransform = FindObjectOfType<Camera>().transform;
     
     private void LateUpdate()
     {

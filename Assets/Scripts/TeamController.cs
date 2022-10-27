@@ -64,7 +64,7 @@ public class TeamController : MonoCache, IPoolItem
         if (targetScript.isFire)
         {
             if (_teamIndex < 5) _thisWeapon.Shoot();
-            else {if (!_thisWeapon.IsShot)_thisWeapon.shootFX.Play();}
+            else if (_thisWeapon.IsShot) _thisWeapon.shootFX.Play();
         }
         if (targetScript.fireTarget)
             cachedTransform.rotation = Quaternion.Slerp(cachedTransform.rotation,

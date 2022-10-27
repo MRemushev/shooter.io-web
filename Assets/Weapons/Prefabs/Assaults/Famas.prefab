@@ -448,12 +448,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef8b2d3769e54e6e9acca5403be8b9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCharacter: {fileID: 0}
   audioSource: {fileID: 2945437956777285047}
-  shootAudio: {fileID: 8300000, guid: e226e04466a96ad43b43ab5c4fa4b830, type: 3}
-  shootFX: {fileID: 2760342655690003780}
   damage: 5
   fireRange: 8
   isRifle: 1
+  shootFX: {fileID: 2760342655690003780}
   fireRate: 5
 --- !u!1 &1729093793028272
 GameObject:

@@ -8,7 +8,7 @@ public class PlayerController : MainCharacter
     [Header("Player components")]
     [SerializeField] private LineRenderer laserBeam;
     [SerializeField] private LayerMask raycastMask;
-    [SerializeField] private Joystick walkJoystick, fireJoystick;
+    [SerializeField] private Joystick walkJoystick;
     [SerializeField] private GameObject deadScreen;
     [SerializeField] private TextMeshProUGUI countTeamText;
     [SerializeField] private TextMeshProUGUI killsCountText;
@@ -18,27 +18,23 @@ public class PlayerController : MainCharacter
     [SerializeField] private float movementSpeed;
     
     private int _killPromotion = 2;
-    private bool _isAutoShooting;
     private CameraController _cameraOffset;
     private Vector3 _movementVector;
 
     private void Start()
     {
-        YandexGame.CloseVideoEvent += Renaissance;
         skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
         _cameraOffset = Find<CameraController>();
         characterName = PlayerPrefs.GetString("PlayerName");
         weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel"));
         weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
-        ChangeShooting();
         ChangeWeaponStatsText();
         shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
         laserBeam.SetPosition(1, new Vector3(0, 2.2f, characterWeapon.FireRange * 3));
         _cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
-        previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
-        health = previousHealth;
         rankManager = FindObjectOfType<RankManager>();
         rankManager.charactersData.Add(this);
+        previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
         ChangeHpText();
         Renaissance();
     }
@@ -56,14 +52,12 @@ public class PlayerController : MainCharacter
     protected override void FixedRun()
     {
         rigidbody.velocity = _movementVector * movementSpeed;
-        ManualShooting(fireJoystick.Direction != Vector2.zero);
         // If the player does not shoot, then we perform a turn according to the player's movement
         if (_movementVector != Vector3.zero && !isFire) cachedTransform.rotation = Quaternion.LookRotation(_movementVector);
     }
 
     private void OnTriggerStay(Collider col) // Shooting area stay
     {
-        if (!_isAutoShooting) return;
         if (Vector3.Distance(cachedTransform.position, col.transform.position) > characterWeapon.FireRange) return;
         if (col.CompareTag("Team") && !col.GetComponent<TeamController>().IsDead) AutoShooting(col);
         else if (col.CompareTag("Enemy") && !col.GetComponent<EnemyController>().IsDead) AutoShooting(col);
@@ -118,42 +112,6 @@ public class PlayerController : MainCharacter
         var isEnemy = col.GetComponent<EnemyController>();
         if (isEnemy) isEnemy.TakeDamage(TotalDamage);
         else col.GetComponent<TeamController>().targetScript.GetComponent<EnemyController>().TakeDamage(TotalDamage);
-    }
-    
-    private void ManualShooting(bool isShooting)
-    {
-        if (!isShooting)
-        {
-            isFire = false;
-            fireTarget = null;
-            laserBeam.enabled = isFire;
-            return;
-        }
-        isFire = true;
-        laserBeam.enabled = isFire;
-        // We turn in the direction of the shot
-        cachedTransform.rotation = Quaternion.LookRotation(new Vector3(fireJoystick.Horizontal, 0, fireJoystick.Vertical));
-        characterWeapon.Shoot(); // Starting the shooting effect
-        var ray = new Ray(cachedTransform.position + new Vector3(0,.5f, 0), cachedTransform.forward);
-        if (!Physics.Raycast(ray, out var hit, characterWeapon.FireRange, raycastMask)) 
-        {
-            fireTarget = null;
-            return;
-        }
-        fireTarget = hit.collider.transform;
-        // If the weapon did not fire, then skip the function
-        if (!characterWeapon.IsShot) return;
-        if (hit.collider.CompareTag("Enemy")) hit.collider.GetComponent<EnemyController>().TakeDamage(TotalDamage);
-        else if (hit.collider.CompareTag("Team")) // If you hit a teammate
-            hit.collider.GetComponent<TeamController>().targetScript.GetComponent<EnemyController>().TakeDamage(TotalDamage);
-    }
-
-    public void ChangeShooting()
-    {
-        var isAutoShooting = PlayerPrefsX.GetBool("AutoShooting");
-        shootingArea.enabled = isAutoShooting;
-        fireJoystick.gameObject.SetActive(!isAutoShooting);
-        _isAutoShooting = isAutoShooting;
     }
 
     // Damage acceptance function
@@ -216,11 +174,10 @@ public class PlayerController : MainCharacter
         _killPromotion = 2;
     }
 
-    public void Renaissance(int idAd = 0)
+    public void Renaissance()
     {
-        if (idAd != 1) return;
         weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2);
-        health = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
+        health = previousHealth;
         _cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
         if (PlayerPrefs.HasKey("PlayerPeople")) 
             AddCharacter(PlayerPrefs.GetInt("PlayerPeople"));

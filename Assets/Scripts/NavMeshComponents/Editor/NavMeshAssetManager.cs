@@ -41,9 +41,9 @@ namespace UnityEditor.AI
             {
                 var prefabStage = PrefabStageUtility.GetPrefabStage(surface.gameObject);
                 var isPartOfPrefab = prefabStage != null && prefabStage.IsPartOfPrefabContents(surface.gameObject);
-                if (isPartOfPrefab && !string.IsNullOrEmpty(prefabStage.prefabAssetPath))
+                if (isPartOfPrefab && !string.IsNullOrEmpty(prefabStage.assetPath))
                 {
-                    var prefabDirectoryName = Path.GetDirectoryName(prefabStage.prefabAssetPath);
+                    var prefabDirectoryName = Path.GetDirectoryName(prefabStage.assetPath);
                     if (!string.IsNullOrEmpty(prefabDirectoryName))
                         targetPath = prefabDirectoryName;
                 }
@@ -298,7 +298,7 @@ namespace UnityEditor.AI
                     }
                     else if (surfaceInPrefab != null && storedPrefabInfo.surface == surfaceInPrefab)
                     {
-                        //Debug.LogFormat("The surface {0} from the prefab was storing the original navmesh data and now will be forgotten", surfaceInPrefab);
+                        //Debug.LogFormat("The surface {0} from the prefab was storing the original NavMesh data and now will be forgotten", surfaceInPrefab);
 
                         var baseSurface = PrefabUtility.GetCorrespondingObjectFromSource(surfaceInPrefab) as NavMeshSurface;
                         if (baseSurface == null || surfaceInPrefab.navMeshData != baseSurface.navMeshData)

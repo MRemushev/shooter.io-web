@@ -52,8 +52,8 @@ Transform:
   - {fileID: 4945582443148473399}
   - {fileID: 4871522656464345336}
   - {fileID: 478034853613826562}
-  - {fileID: 8085632002641781644}
   - {fileID: 4743256643861802191}
+  - {fileID: 8085632002641781644}
   - {fileID: 6562956533921062862}
   - {fileID: 2173412270939766260}
   - {fileID: 6249602562213192518}
@@ -75,6 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74037dfb232c2fe47af31eb99ca53fbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponsName: []
 --- !u!1001 &220864014054713088
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1222,7 +1223,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4675687395742950, guid: e59624a0d94e10842a8cb41fade773a8, type: 3}
       propertyPath: m_RootOrder
-      value: 24
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 4675687395742950, guid: e59624a0d94e10842a8cb41fade773a8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1726,7 +1727,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4748548923983844, guid: 91f7eb06a9ebaac4db15149c9082cd94, type: 3}
       propertyPath: m_RootOrder
-      value: 23
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 4748548923983844, guid: 91f7eb06a9ebaac4db15149c9082cd94, type: 3}
       propertyPath: m_LocalPosition.x

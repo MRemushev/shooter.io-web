@@ -182,7 +182,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 8adf72ab0bfda5f4eb455593032b129c, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -280,13 +280,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef8b2d3769e54e6e9acca5403be8b9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCharacter: {fileID: 0}
   audioSource: {fileID: 404518344136604063}
-  shootAudio: {fileID: 8300000, guid: 623e6c966c283c946aa354b7c2a524c8, type: 3}
-  shootFX: {fileID: 6308015730828426623}
-  damage: 25
+  damage: 45
   fireRange: 12
   isRifle: 1
-  fireRate: 1
+  shootFX: {fileID: 6308015730828426623}
+  fireRate: 1.25
 --- !u!1 &1279098567559754
 GameObject:
   m_ObjectHideFlags: 0

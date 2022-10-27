@@ -65,8 +65,8 @@ public class PointerManager : MonoBehaviour {
             0 => Quaternion.Euler(0f, 0f, -90f),
             1 => Quaternion.Euler(0f, 0f, 90f),
             2 => Quaternion.identity,
-            3 => Quaternion.identity,
-            _ => Quaternion.Euler(0f, 0f, 180)
+            3 => Quaternion.Euler(0f, 0f, 180),
+            _ => Quaternion.identity
         };
     }
 

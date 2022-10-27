@@ -348,7 +348,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: c82ac8ea3110fe6469c9324ea05225a3, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -446,13 +446,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef8b2d3769e54e6e9acca5403be8b9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCharacter: {fileID: 0}
   audioSource: {fileID: 9132121557829940196}
-  shootAudio: {fileID: 8300000, guid: 21face996a7148e48937e87c2e4fd5a0, type: 3}
-  shootFX: {fileID: 5875134425283088723}
-  damage: 40
+  damage: 50
   fireRange: 14
   isRifle: 1
-  fireRate: 0.5
+  shootFX: {fileID: 5875134425283088723}
+  fireRate: 1
 --- !u!1001 &2501152371293028715
 PrefabInstance:
   m_ObjectHideFlags: 0

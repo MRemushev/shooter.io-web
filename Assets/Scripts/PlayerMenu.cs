@@ -173,7 +173,7 @@ public class PlayerMenu : MonoBehaviour
     public void UpdatePriceHealth()
     {
         var countHealth = PlayerPrefs.GetInt("PlayerHealth") + 1;
-        healthTitleText.text = "Здоровье - " + 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
+        healthTitleText.text = "Здоровье - " + (100 + PlayerPrefs.GetInt("PlayerHealth") * 10);
         healthPriceText.text = (countHealth * 500 * countHealth).ToString();
     }
     

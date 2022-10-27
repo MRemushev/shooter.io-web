@@ -823,6 +823,7 @@ PlayerSettings:
     WebGL: 1
   managedStrippingLevel:
     Android: 3
+    WebGL: 4
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
   allowUnsafeCode: 0

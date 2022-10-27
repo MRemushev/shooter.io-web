@@ -16,6 +16,7 @@ public class FoodMovement : MonoBehaviour
     private void FixedUpdate()
     {
         if (_direction == Vector3.zero) return;
+        print("Rotating");
         transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(_direction), 1);
     }
 

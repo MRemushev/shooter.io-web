@@ -2,9 +2,9 @@
 using NTC.Global.Cache;
 using static NTC.Global.Pool.NightPool;
 using UnityEngine;
-
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider), typeof(BoxCollider))]
 public class MainCharacter : MonoCache
 {
     [Header("Character components")]
@@ -18,21 +18,20 @@ public class MainCharacter : MonoCache
     [Space]
     public WeaponSwitch weapons;
     public List<TeamController> characterList;
+    public Transform fireTarget;
     [HideInInspector] public Vector3 relativeVector;
     [HideInInspector] public string characterName;
     [HideInInspector] public bool isFire;
-    public Transform fireTarget;
-    protected WeaponController characterWeapon;
     [Space]
 
     private Spawner _foodSpawner;
     private Spawner _foodBoxSpawner;
+    protected WeaponController characterWeapon;
     protected Transform cachedTransform;
     protected RankManager rankManager;
     protected int scoreKills;
     protected float health;
     protected Spawner enemySpawner;
-    protected FoodMovement[] foods;
     protected int previousHealth;
     protected bool isStop;
     protected static readonly int 
@@ -52,40 +51,18 @@ public class MainCharacter : MonoCache
         _foodSpawner = spawners[0];
         enemySpawner = spawners[1];
         _foodBoxSpawner = spawners[2];
-        foods = Finds<FoodMovement>();
     }
-
     // The function of adding a teammate
     public void AddCharacter(int count = 1, Collision col = null)
     {
         TeamController teamController;
         var mainPosition = transform.position;
-        if (count == 1)
+        for (var i = 0; i < count; i++)
         {
-            teamController = col != null && col.gameObject.activeSelf
-                ? Spawn(characterTeam, col.transform.position).GetComponent<TeamController>()
-                : Spawn(characterTeam, mainPosition).GetComponent<TeamController>();
+            var characterPosition = mainPosition + Random.insideUnitSphere * (count / 4f);
+            characterPosition.y = mainPosition.y;
+            teamController = Spawn(characterTeam, characterPosition).GetComponent<TeamController>();
             teamController.SetTarget(this, MainSkin, transform);
-        }
-        else
-        {
-            
-            for (var i = 0; i < count; i++)
-            {
-                if (col != null)
-                {
-                    var characterPosition = col.transform.position + Random.insideUnitSphere * (count / 4f);
-                    characterPosition.y = mainPosition.y;
-                    teamController = Spawn(characterTeam, characterPosition).GetComponent<TeamController>();
-                }
-                else
-                {
-                    var characterPosition = mainPosition + Random.insideUnitSphere * (count / 4f);
-                    characterPosition.y = mainPosition.y;
-                    teamController = Spawn(characterTeam, characterPosition).GetComponent<TeamController>();
-                }
-                teamController.SetTarget(this, MainSkin, transform);
-            }
         }
         if (col == null) return;
         Despawn(col.gameObject);

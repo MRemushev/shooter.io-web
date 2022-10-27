@@ -1555,8 +1555,8 @@ MonoBehaviour:
   priceSkinIcons:
   - {fileID: 21300000, guid: 190b414e9daa245c3ae30441b3ad71ca, type: 3}
   - {fileID: 21300000, guid: 8d06d663a124647ad9cace55e7d6e935, type: 3}
-  unitsTitleText: {fileID: 0}
-  unitsPriceText: {fileID: 0}
+  peopleTitleText: {fileID: 0}
+  peoplePriceText: {fileID: 0}
   healthTitleText: {fileID: 0}
   healthPriceText: {fileID: 0}
   weaponButton: {fileID: 0}
@@ -2413,7 +2413,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7155605915680111236}
     m_Modifications:
+    - target: {fileID: 297441688395009547, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
     - target: {fileID: 382367846818252802, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 573989727093502424, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: mainCharacter
       value: 
@@ -2483,7 +2493,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Weapons
       objectReference: {fileID: 0}
+    - target: {fileID: 1652867843545544490, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 1887076205294293657, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
     - target: {fileID: 2157860514846568778, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 2174695876330971383, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: mainCharacter
       value: 
@@ -2503,6 +2528,11 @@ PrefabInstance:
       propertyPath: mainCharacter
       value: 
       objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 4549340515825676684, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
     - target: {fileID: 4571163078223251467, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: mainCharacter
@@ -2513,12 +2543,32 @@ PrefabInstance:
       propertyPath: mainCharacter
       value: 
       objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 5476247407413890593, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 5952204314851635520, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
     - target: {fileID: 6411898457367510943, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: mainCharacter
       value: 
       objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 6444995714039992131, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
     - target: {fileID: 6448797994409206729, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 6561336295183926180, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: mainCharacter
       value: 
@@ -2533,7 +2583,17 @@ PrefabInstance:
       propertyPath: mainCharacter
       value: 
       objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 7093220563351080761, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
     - target: {fileID: 7228344666629525616, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 7301116174692583525, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: mainCharacter
       value: 
@@ -2544,6 +2604,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7155605915680138998}
     - target: {fileID: 7821886762553471573, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 7830634208880068093, guid: 68b9337fbb778b84d8ac5f39ff208593,
+        type: 3}
+      propertyPath: mainCharacter
+      value: 
+      objectReference: {fileID: 7155605915680138998}
+    - target: {fileID: 8040443485366761993, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: mainCharacter
       value: 

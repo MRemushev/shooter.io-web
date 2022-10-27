@@ -25,6 +25,9 @@ public class RewardSystem : MonoBehaviour
         _rewardButton.interactable = IsReady();
     }
 
+    private void OnEnable() => YandexGame.CloseVideoEvent += Rewarded;
+    private void OnDestroy() => YandexGame.CloseVideoEvent -= Rewarded;
+
     // Update is called once per frame
     private void Update()
     {

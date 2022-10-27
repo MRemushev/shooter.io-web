@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
 {
     [Header("Menu components")]
     [SerializeField] private Toggle volumeToggle;
-    [SerializeField] private Toggle shootingType;
     [Space]
     [Header("Game components")]
     [Header("Dead screen")]
@@ -20,22 +19,30 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        YandexGame.CloseVideoEvent += DoubleReward;
         PlayerPrefs.SetInt("CountBuyChance", 0);
-        if (shootingType) shootingType.isOn = PlayerPrefsX.GetBool("AutoShooting");
+        if (!PlayerPrefs.HasKey("VolumeStatus")) PlayerPrefsX.SetBool("VolumeStatus", false);
         if (!volumeToggle) return;
-        if (!PlayerPrefs.HasKey("VolumeStatus")) PlayerPrefsX.SetBool("VolumeStatus", true);
         volumeToggle.isOn = PlayerPrefsX.GetBool("VolumeStatus");
         SetVolume(PlayerPrefsX.GetBool("VolumeStatus"));
     }
 
+    private void OnEnable() 
+    {
+        YandexGame.CloseVideoEvent += BuyChance;
+        YandexGame.CloseVideoEvent += DoubleReward;
+    }
+    private void OnDestroy() 
+    {
+        YandexGame.CloseVideoEvent -= BuyChance;
+        YandexGame.CloseVideoEvent -= DoubleReward;
+    }
+
     public void ChangeScene(int index) => SceneManager.LoadScene(index);
-    public void SetAutoShooting(bool status) => PlayerPrefsX.SetBool("AutoShooting", status);
     public void SetPause(bool status) => Time.timeScale = status ? 0 : 1;
 
     public static void SetVolume(bool status)
     {
-        AudioListener.volume = status ? 1 : 0;
+        AudioListener.volume = status ? 0 : 1;
         PlayerPrefsX.SetBool("VolumeStatus", status);
     } 
     
@@ -46,8 +53,9 @@ public class GameManager : MonoBehaviour
         priceChance.text = (PlayerPrefs.GetInt("CountBuyChance") * 5).ToString();
     }
     
-    public void BuyChance()
+    public void BuyChance(int idAd = 0)
     {
+        if (idAd != 1) return;
         var price = int.Parse(priceChance.text);
         var countGems = PlayerPrefs.GetInt("Gems");
         if (price > countGems) return;
@@ -60,7 +68,7 @@ public class GameManager : MonoBehaviour
     public void ShowReward()
     {
         var countKills = FindObjectOfType<PlayerController>().CountKills;
-        var reward = countKills * 5 * countKills;
+        var reward = countKills * 15 * countKills;
         rewardText.text = "+"+reward;
         resultScreen.SetActive(true);
     }
@@ -73,6 +81,6 @@ public class GameManager : MonoBehaviour
 
     private void DoubleReward(int idAd) {
         if (idAd != 2) return;
-        rewardText.text = (int.Parse(rewardText.text) * 2).ToString(); 
+        rewardText.text = "+"+int.Parse(rewardText.text) * 2; 
     }
 }

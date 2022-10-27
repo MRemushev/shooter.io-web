@@ -197,12 +197,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef8b2d3769e54e6e9acca5403be8b9f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCharacter: {fileID: 0}
   audioSource: {fileID: 6939924693006396667}
-  shootAudio: {fileID: 8300000, guid: 986c58b23e00205498dd443ddcae9296, type: 3}
-  shootFX: {fileID: 1516427663924092441}
   damage: 4
   fireRange: 6
   isRifle: 0
+  shootFX: {fileID: 1516427663924092441}
   fireRate: 3
 --- !u!1 &1512137236198794
 GameObject:
@@ -483,7 +483,7 @@ PrefabInstance:
     - target: {fileID: 8303876256903984588, guid: 7c137d3d2cee0dd49be8c903de8a31c4,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.2
+      value: -0.15
       objectReference: {fileID: 0}
     - target: {fileID: 8303876256903984588, guid: 7c137d3d2cee0dd49be8c903de8a31c4,
         type: 3}

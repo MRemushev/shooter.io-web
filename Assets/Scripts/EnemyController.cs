@@ -4,6 +4,7 @@ using UnityEngine;
 using static NTC.Global.Pool.NightPool;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(AIPath))]
 public class EnemyController : MainCharacter
 {
     [Header("Enemy components")]
@@ -11,6 +12,7 @@ public class EnemyController : MainCharacter
     [SerializeField] private Transform point;
     [SerializeField] private CapsuleCollider capsuleCollider;
 
+    private FoodMovement[] _foods;
     private PointerIcon _levelText;
     private GameObject _playerPrefab;
     private PlayerController _playerScript;
@@ -21,13 +23,18 @@ public class EnemyController : MainCharacter
 
     private void Start()
     {
-        foods = Finds<FoodMovement>();
+        _foods = Finds<FoodMovement>();
         _playerPrefab = GameObject.Find("Player");
         _playerScript = _playerPrefab.GetComponent<PlayerController>();
-        
+        rankManager = FindObjectOfType<RankManager>();
+        rankManager.charactersData.Add(this);
+    }
+
+    protected override void OnEnabled()
+    {
+        characterName = NameRandomizer.GetRandomName();
         PointerManager.instance.AddToList(point);
         _levelText = PointerManager.instance.dictionary[point].GetComponent<PointerIcon>();
-        characterName = NameRandomizer.GetRandomName();
         skinObject.material.mainTexture = skinArray.textureList[Random.Range(0, skinArray.textureList.Length)];
         scoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel"));
         AddCharacter(Random.Range(0, _playerScript.CharacterCount));
@@ -36,10 +43,8 @@ public class EnemyController : MainCharacter
         _levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
         previousHealth = 100 + _playerScript.CountKills * 10;
         health = previousHealth;
-        rankManager = FindObjectOfType<RankManager>();
-        rankManager.charactersData.Add(this);
     }
-    
+
     protected override void Run()
     {
         if (IsDead) return;
@@ -47,7 +52,7 @@ public class EnemyController : MainCharacter
         relativeVector = Vector3.ClampMagnitude(transform.InverseTransformDirection(agent.velocity), 1);
         animator.SetFloat(Horizontal, relativeVector.x);
         animator.SetFloat(Vertical, relativeVector.z);
-        isStop = agent.velocity == Vector3.zero;
+        isStop = relativeVector.magnitude < 0.1f;
         // If the agent is stuck, then we try to find a new target
         if (isStop && !agent.isStopped) FindClosestFood();
     }
@@ -175,14 +180,13 @@ public class EnemyController : MainCharacter
     {
         var closestDistance = Mathf.Infinity;
         Transform closestPeople = null;
-        foreach (var person in foods)
+        foreach (var person in _foods)
         {
             var currentDistance = Vector3.Distance(cachedTransform.position, person.transform.position);
             if (currentDistance > closestDistance) continue;
             closestDistance = currentDistance;
             closestPeople = person.transform;
         }
-
         agent.destination = closestPeople!.position;
     }
 }
