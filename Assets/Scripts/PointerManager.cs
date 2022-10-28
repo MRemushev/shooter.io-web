@@ -23,16 +23,17 @@ public class PointerManager : MonoBehaviour {
         dictionary.Add(enemyPointer, newPointer);
     }
 
-    public void RemoveFromList(Transform enemyPointer) {
+    public void RemoveFromList(Transform enemyPointer)
+    {
         Destroy(dictionary[enemyPointer].gameObject);
         dictionary.Remove(enemyPointer);
     }
 
-    private void LateUpdate() 
-    { 
+    private void LateUpdate()
+    {
         var planes = GeometryUtility.CalculateFrustumPlanes(_mainCamera);
 
-        foreach (var (enemyPointer, pointerIcon) in dictionary) 
+        foreach (var (enemyPointer, pointerIcon) in dictionary)
         {
             var playerPosition = targetTransform.position;
             var toEnemy = enemyPointer.position - playerPosition;
@@ -53,7 +54,7 @@ public class PointerManager : MonoBehaviour {
             var worldPosition = ray.GetPoint(rayMinDistance);
             var position = _mainCamera.WorldToScreenPoint(worldPosition);
             var rotation = toEnemy.magnitude > rayMinDistance ? GetIconRotation(index) : Quaternion.identity;
-            
+
             pointerIcon.SetIconPosition(position, rotation);
         }
     }

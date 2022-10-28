@@ -4,8 +4,8 @@ using Random = UnityEngine.Random;
 
 public class FoodMovement : MonoBehaviour
 {
-    private float _updateTime = 2;
-    private Vector3 _direction;
+    private float _updateTime = 5;
+    private Quaternion _direction;
 
     private void Start()
     {
@@ -15,18 +15,17 @@ public class FoodMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_direction == Vector3.zero) return;
-        print("Rotating");
-        transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(_direction), 1);
+        if (_direction == transform.rotation) return;
+        transform.rotation = Quaternion.Lerp(transform.rotation, _direction, 0.1f);
     }
 
-    private void OnCollisionEnter() => _direction = -_direction; // If the object has encountered a collision, then turn around
+    private void OnCollisionEnter() => _direction.y -= _direction.y; // If the object has encountered a collision, then turn around
 
     private IEnumerator Rotate()
     {
         while (true)
         {
-            _direction = new Vector3(Random.Range(-1, 1), 0, Random.Range(-1, 1)); // Randomize the turn
+            _direction.y = Quaternion.Euler(0, Random.Range(-180, 180), 0).y; // Randomize the turn
             yield return new WaitForSeconds(_updateTime);
         }
     }

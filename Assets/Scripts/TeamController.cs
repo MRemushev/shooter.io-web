@@ -1,4 +1,3 @@
-using System;
 using NTC.Global.Cache;
 using NTC.Global.Pool;
 using UnityEngine;
@@ -46,7 +45,7 @@ public class TeamController : MonoCache, IPoolItem
         var isPlayer = targetObject.GetCached<PlayerController>();
         if (isPlayer) isPlayer.ChangeStats();
     }
-    
+
     public void OnDespawn()
     {
         IsDead = false;
@@ -67,8 +66,8 @@ public class TeamController : MonoCache, IPoolItem
             else if (_thisWeapon.IsShot) _thisWeapon.shootFX.Play();
         }
         if (targetScript.fireTarget)
-            cachedTransform.rotation = Quaternion.Slerp(cachedTransform.rotation,
-                Quaternion.LookRotation(targetScript.fireTarget.position - cachedTransform.position), 8 * Time.deltaTime);
+            cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation,
+                Quaternion.LookRotation(targetScript.fireTarget.position - cachedTransform.position), 10 * Time.deltaTime);
         else cachedTransform.rotation = _targetTransform.rotation;
     }
 
@@ -78,11 +77,11 @@ public class TeamController : MonoCache, IPoolItem
         if (!rigidbody.isKinematic)
             rigidbody.position = Vector3.Lerp(cachedTransform.position, _targetTransform.position, speedMove);
     }
-    
+
     private void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag("Food")) targetScript.AddCharacter(1, col);
-        if (col.gameObject.CompareTag("FoodBox")) targetScript.AddCharacter(5, col);
+        if (col.gameObject.CompareTag("Food")) targetScript.AddCharacter(cachedTransform.position, 1, col);
+        if (col.gameObject.CompareTag("FoodBox")) targetScript.AddCharacter(cachedTransform.position, 5, col);
     }
 
     public void LevelUp()
@@ -98,8 +97,8 @@ public class TeamController : MonoCache, IPoolItem
         rigidbody.isKinematic = true;
         capsuleCollider.enabled = false;
         animator.SetBool(DeadAnim, true);
-        Despawn(gameObject, 5);
+        Despawn(gameObject, 5f);
     }
-    
+
     public void ChangeWeapon(WeaponController weapon) => _thisWeapon = weapon;
 }

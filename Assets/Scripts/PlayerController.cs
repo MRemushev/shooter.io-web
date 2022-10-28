@@ -16,7 +16,7 @@ public class PlayerController : MainCharacter
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private TextMeshProUGUI weaponStatsText;
     [SerializeField] private float movementSpeed;
-    
+
     private int _killPromotion = 2;
     private CameraController _cameraOffset;
     private Vector3 _movementVector;
@@ -28,17 +28,16 @@ public class PlayerController : MainCharacter
         characterName = PlayerPrefs.GetString("PlayerName");
         weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel"));
         weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
-        ChangeWeaponStatsText();
         shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
         laserBeam.SetPosition(1, new Vector3(0, 2.2f, characterWeapon.FireRange * 3));
         _cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
-        rankManager = FindObjectOfType<RankManager>();
         rankManager.charactersData.Add(this);
         previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
+        ChangeWeaponStatsText();
         ChangeHpText();
         Renaissance();
     }
-    
+
     protected override void Run()
     {
         // Movement player
@@ -73,24 +72,24 @@ public class PlayerController : MainCharacter
     private void OnCollisionEnter(Collision col)
     {
         // If the player touched an object with the tag "Food", then we call the function of adding a team
-        if (col.gameObject.CompareTag("Food")) 
+        if (col.gameObject.CompareTag("Food"))
         {
-            AddCharacter(1, col);
+            AddCharacter(cachedTransform.position, 1, col);
             ChangeStats();
         }
-        else if (col.gameObject.CompareTag("FoodBox")) 
+        else if (col.gameObject.CompareTag("FoodBox"))
         {
-            AddCharacter(5, col);
+            AddCharacter(cachedTransform.position, 5, col);
             ChangeStats();
         }
     }
 
-    private void ChangeHpText() => 
+    private void ChangeHpText() =>
         hpText.text = "HP " + Mathf.Max(0,Mathf.Round(CharacterCount * previousHealth + health));
-    
-    private void ChangeWeaponStatsText() => 
+
+    private void ChangeWeaponStatsText() =>
         weaponStatsText.text = characterWeapon.gameObject.name + " - " + characterWeapon.DamagePerSecond;
-    
+
     public void ChangeStats()
     {
         countTeamText.text = CharacterCount.ToString();
@@ -106,7 +105,7 @@ public class PlayerController : MainCharacter
         laserBeam.enabled = true;
         // We turn in the direction of the shot
         fireTarget = col.transform;
-        cachedTransform.LookAt(fireTarget);
+        cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, Quaternion.LookRotation(fireTarget.position - cachedTransform.position), 10 * Time.deltaTime);
         characterWeapon.Shoot(); // Starting the shooting effect
         if (!characterWeapon.IsShot) return;
         var isEnemy = col.GetComponent<EnemyController>();
@@ -121,7 +120,7 @@ public class PlayerController : MainCharacter
         health -= damage;
         ChangeHpText();
         // Check if the player has teammates
-        if (CharacterCount == 0) 
+        if (CharacterCount == 0)
         {
             bloodFX.Play();
             if (health > 1) return; // Check how much health the player has
@@ -179,7 +178,7 @@ public class PlayerController : MainCharacter
         weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2);
         health = previousHealth;
         _cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
-        if (PlayerPrefs.HasKey("PlayerPeople")) 
-            AddCharacter(PlayerPrefs.GetInt("PlayerPeople"));
+        if (PlayerPrefs.HasKey("PlayerPeople"))
+            AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
     }
 }

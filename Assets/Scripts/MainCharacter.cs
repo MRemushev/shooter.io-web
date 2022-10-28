@@ -19,9 +19,9 @@ public class MainCharacter : MonoCache
     public WeaponSwitch weapons;
     public List<TeamController> characterList;
     public Transform fireTarget;
+    public string characterName;
+    public bool isFire;
     [HideInInspector] public Vector3 relativeVector;
-    [HideInInspector] public string characterName;
-    [HideInInspector] public bool isFire;
     [Space]
 
     private Spawner _foodSpawner;
@@ -34,7 +34,7 @@ public class MainCharacter : MonoCache
     protected Spawner enemySpawner;
     protected int previousHealth;
     protected bool isStop;
-    protected static readonly int 
+    protected static readonly int
         Horizontal = Animator.StringToHash("Horizontal"), Vertical = Animator.StringToHash("Vertical");
 
     private Material MainSkin => skinObject.material;
@@ -51,16 +51,17 @@ public class MainCharacter : MonoCache
         _foodSpawner = spawners[0];
         enemySpawner = spawners[1];
         _foodBoxSpawner = spawners[2];
+        rankManager = FindObjectOfType<RankManager>();
     }
+
     // The function of adding a teammate
-    public void AddCharacter(int count = 1, Collision col = null)
+    public void AddCharacter(Vector3 position, int count = 1, Collision col = null)
     {
         TeamController teamController;
-        var mainPosition = transform.position;
         for (var i = 0; i < count; i++)
         {
-            var characterPosition = mainPosition + Random.insideUnitSphere * (count / 4f);
-            characterPosition.y = mainPosition.y;
+            var characterPosition = position + Random.insideUnitSphere * (count / 2f);
+            characterPosition.y = position.y;
             teamController = Spawn(characterTeam, characterPosition).GetComponent<TeamController>();
             teamController.SetTarget(this, MainSkin, transform);
         }
