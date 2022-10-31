@@ -602,7 +602,7 @@ Transform:
   m_Children:
   - {fileID: 7155605915680111234}
   - {fileID: 7155605915680111242}
-  - {fileID: 3299701479927338182}
+  - {fileID: 6734238834834355327}
   m_Father: {fileID: 7155605915680111238}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1541,7 +1541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80af9d082b7dcb74c8203ac1f3fcfd9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weapons: {fileID: 6973715994163411761}
+  weapons: {fileID: 1187167128202419080}
   skinObject: {fileID: 7155605915668638710}
   skinArray: {fileID: 11400000, guid: 728df200ca9c04c49af906087c9f07a5, type: 2}
   inputName: {fileID: 0}
@@ -1566,18 +1566,9 @@ MonoBehaviour:
   - price: 0
     gemPrice: 0
     inStock: 1
-  - price: 100
+  - price: 0
     gemPrice: 0
-    inStock: 0
-  - price: 200
-    gemPrice: 0
-    inStock: 0
-  - price: 300
-    gemPrice: 0
-    inStock: 0
-  - price: 400
-    gemPrice: 0
-    inStock: 0
+    inStock: 1
   - price: 500
     gemPrice: 0
     inStock: 0
@@ -1770,16 +1761,25 @@ MonoBehaviour:
   - price: 10000
     gemPrice: 0
     inStock: 0
-  - price: 10
-    gemPrice: 1
-    inStock: 0
   - price: 25
     gemPrice: 1
     inStock: 0
   - price: 50
     gemPrice: 1
     inStock: 0
+  - price: 75
+    gemPrice: 1
+    inStock: 0
   - price: 100
+    gemPrice: 1
+    inStock: 0
+  - price: 150
+    gemPrice: 1
+    inStock: 0
+  - price: 200
+    gemPrice: 1
+    inStock: 0
+  - price: 250
     gemPrice: 1
     inStock: 0
   - price: 500
@@ -2406,7 +2406,7 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 467452660730174209}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &4295133831942592053
+--- !u!1001 &5414829783062427276
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -2441,7 +2441,7 @@ PrefabInstance:
     - target: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0035
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
@@ -2630,17 +2630,11 @@ PrefabInstance:
       objectReference: {fileID: 7155605915680138998}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68b9337fbb778b84d8ac5f39ff208593, type: 3}
---- !u!4 &3299701479927338182 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
-    type: 3}
-  m_PrefabInstance: {fileID: 4295133831942592053}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6973715994163411761 stripped
+--- !u!114 &1187167128202419080 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6583414696586685700, guid: 68b9337fbb778b84d8ac5f39ff208593,
     type: 3}
-  m_PrefabInstance: {fileID: 4295133831942592053}
+  m_PrefabInstance: {fileID: 5414829783062427276}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -2648,3 +2642,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74037dfb232c2fe47af31eb99ca53fbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &6734238834834355327 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
+    type: 3}
+  m_PrefabInstance: {fileID: 5414829783062427276}
+  m_PrefabAsset: {fileID: 0}

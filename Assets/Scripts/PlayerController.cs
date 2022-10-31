@@ -1,13 +1,11 @@
 using UnityEngine;
 using TMPro;
-using YG;
 using Random = UnityEngine.Random;
 
 public class PlayerController : MainCharacter
 {
     [Header("Player components")]
     [SerializeField] private LineRenderer laserBeam;
-    [SerializeField] private LayerMask raycastMask;
     [SerializeField] private Joystick walkJoystick;
     [SerializeField] private GameObject deadScreen;
     [SerializeField] private TextMeshProUGUI countTeamText;
@@ -21,6 +19,9 @@ public class PlayerController : MainCharacter
     private CameraController _cameraOffset;
     private Vector3 _movementVector;
 
+    protected override void OnEnabled() => rankManager.charactersData.Add(this);
+    protected override void OnDisabled() => rankManager.charactersData.Remove(this);
+    
     private void Start()
     {
         skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
@@ -31,7 +32,6 @@ public class PlayerController : MainCharacter
         shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
         laserBeam.SetPosition(1, new Vector3(0, 2.2f, characterWeapon.FireRange * 3));
         _cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
-        rankManager.charactersData.Add(this);
         previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
         ChangeWeaponStatsText();
         ChangeHpText();

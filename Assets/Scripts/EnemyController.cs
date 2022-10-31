@@ -1,4 +1,5 @@
-﻿using Pathfinding;
+﻿using System.Collections.Generic;
+using Pathfinding;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using NTC.Global.Pool;
@@ -22,29 +23,34 @@ public class EnemyController : MainCharacter, IPoolItem
 
     public void OnSpawn()
     {
+        skinObject.material.mainTexture = skinArray.textureList[Random.Range(0, skinArray.textureList.Length)];
+        characterName = NameRandomizer.GetRandomName();
+        scoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel"));
+        weapons.ChangeWeapon(scoreKills);
         PointerManager.instance.AddToList(point);
         _levelText = PointerManager.instance.dictionary[point].GetComponent<PointerIcon>();
         _levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
-        characterName = NameRandomizer.GetRandomName();
-        skinObject.material.mainTexture = skinArray.textureList[Random.Range(0, skinArray.textureList.Length)];
-        scoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel"));
         _playerPrefab = GameObject.Find("Player");
         _playerScript = _playerPrefab.GetComponent<PlayerController>();
-        AddCharacter(cachedTransform.position, Random.Range(0, _playerScript.CharacterCount));
-        weapons.ChangeWeapon(scoreKills);
+        AddCharacter(cachedTransform.position, Random.Range(0, PlayerPrefs.GetInt("PlayerPeople")));
         shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
-        health = previousHealth = 100 + _playerScript.CountKills * 10;
-    }
-
-    public void OnDespawn() => enemySpawner.SpawnObject();
-
-
-    private void Start()
-    {
-        _foods = Finds<FoodMovement>();
+        health = previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.CountKills * 10;
         rankManager.charactersData.Add(this);
     }
 
+    public void OnDespawn()
+    {
+        IsDead = false;
+        agent.isStopped = false;
+        characterList = new List<TeamController>();
+        capsuleCollider.enabled = true;
+        shootingArea.enabled = true;
+        rigidbody.isKinematic = false;
+        enemySpawner.SpawnObject();
+    }
+
+    private void Start() => _foods = Finds<FoodMovement>();
+    
     protected override void Run()
     {
         if (IsDead) return;
@@ -73,7 +79,6 @@ public class EnemyController : MainCharacter, IPoolItem
         if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
         else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
         else if (col.CompareTag("Player")) EnemyShooting(col);
-
     }
 
     private void OnTriggerExit(Collider other)
@@ -87,8 +92,8 @@ public class EnemyController : MainCharacter, IPoolItem
     private void EnemyShooting(Component col)
     {
         isFire = true;
+        agent.isStopped = true;
         fireTarget = col.transform;
-        agent.isStopped = fireTarget;
         cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation,
             Quaternion.LookRotation(fireTarget.position - cachedTransform.position), 10 * Time.deltaTime);
         characterWeapon.Shoot(); // Starting the shooting effect
@@ -144,9 +149,8 @@ public class EnemyController : MainCharacter, IPoolItem
     private void AddKill()
     {
         scoreKills += 1;
-        var weaponLevel = PlayerPrefs.GetInt("WeaponLevel") + CountKills;
         // Updating weapons to the main man
-        weapons.ChangeWeapon(weaponLevel);
+        weapons.ChangeWeapon(scoreKills);
         shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
         // Updating weapons to all the player's teammates
         _levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
@@ -158,15 +162,14 @@ public class EnemyController : MainCharacter, IPoolItem
     {
         IsDead = true;
         agent.isStopped = true;
-        rigidbody.isKinematic = true;
         capsuleCollider.enabled = false;
+        rigidbody.isKinematic = true;
         animator.SetBool(DeadAnim, true);
         PointerManager.instance.RemoveFromList(point);
         rankManager.charactersData.Remove(this);
         NightPool.Despawn(gameObject, 5f);
         if (enemyController) enemyController.AddKill();
         else _playerScript.AddKill();
-
     }
 
     private void FindClosestFood()

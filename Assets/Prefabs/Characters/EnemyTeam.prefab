@@ -350,7 +350,7 @@ Transform:
   m_Children:
   - {fileID: 2970207585106210994}
   - {fileID: 2970207585106211002}
-  - {fileID: 7475826567935991542}
+  - {fileID: 897303479652432338}
   m_Father: {fileID: 2970207585106210998}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1323,7 +1323,7 @@ MonoBehaviour:
   capsuleCollider: {fileID: 700015270686470173}
   speedMove: 0.04
   takeFX: {fileID: 6981901299119238491}
-  weapons: {fileID: 3076521612807713025}
+  weapons: {fileID: 4719390321728820773}
   bloodFX: {fileID: 3361010836533000171}
   cachedTransform: {fileID: 0}
   targetScript: {fileID: 0}
@@ -7024,7 +7024,7 @@ ParticleSystem:
     type: 3}
   m_PrefabInstance: {fileID: 901371226742052870}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &8209777151429680133
+--- !u!1001 &1883165139280247585
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -7059,7 +7059,7 @@ PrefabInstance:
     - target: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0035
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
@@ -7248,11 +7248,17 @@ PrefabInstance:
       objectReference: {fileID: 2970207585106046150}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68b9337fbb778b84d8ac5f39ff208593, type: 3}
---- !u!114 &3076521612807713025 stripped
+--- !u!4 &897303479652432338 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
+    type: 3}
+  m_PrefabInstance: {fileID: 1883165139280247585}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4719390321728820773 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6583414696586685700, guid: 68b9337fbb778b84d8ac5f39ff208593,
     type: 3}
-  m_PrefabInstance: {fileID: 8209777151429680133}
+  m_PrefabInstance: {fileID: 1883165139280247585}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -7260,9 +7266,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74037dfb232c2fe47af31eb99ca53fbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &7475826567935991542 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
-    type: 3}
-  m_PrefabInstance: {fileID: 8209777151429680133}
-  m_PrefabAsset: {fileID: 0}

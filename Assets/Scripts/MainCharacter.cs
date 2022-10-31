@@ -41,7 +41,7 @@ public class MainCharacter : MonoCache
     protected float TotalDamage => (characterList.Count + 1) * characterWeapon.Damage;
     public bool IsStopped => isStop;
     public int CountKills => scoreKills;
-    public int CharacterCount => characterList.Count;
+    protected int CharacterCount => characterList.Count;
     public int CharacterScore => (int)(characterWeapon.DamagePerSecond * (CharacterCount + 1));
 
     private void Awake()
@@ -57,12 +57,13 @@ public class MainCharacter : MonoCache
     // The function of adding a teammate
     public void AddCharacter(Vector3 position, int count = 1, Collision col = null)
     {
-        TeamController teamController;
         for (var i = 0; i < count; i++)
         {
-            var characterPosition = position + Random.insideUnitSphere * (count / 2f);
+            Vector3 characterPosition;
+            if (count > 1) characterPosition = position + Random.insideUnitSphere * (count * (4f / count));
+            else characterPosition = position + Random.insideUnitSphere * (count / 2f);
             characterPosition.y = position.y;
-            teamController = Spawn(characterTeam, characterPosition).GetComponent<TeamController>();
+            var teamController = Spawn(characterTeam, characterPosition).GetComponent<TeamController>();
             teamController.SetTarget(this, MainSkin, transform);
         }
         if (col == null) return;

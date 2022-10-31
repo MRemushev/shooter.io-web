@@ -26,14 +26,12 @@ public class WeaponController : MonoBehaviour
     {
         switch (mainCharacter.tag)
         {
-            case "Player":
-                mainCharacter.GetComponent<PlayerController>().ChangeWeapon(this);
-                break;
             case "Team":
                 mainCharacter.GetComponent<TeamController>().ChangeWeapon(this);
                 break;
             case "Enemy":
-                mainCharacter.GetComponent<EnemyController>().ChangeWeapon(this);
+            case "Player":
+                mainCharacter.GetComponent<MainCharacter>().ChangeWeapon(this);
                 break;
         }
         mainCharacter.GetComponent<Animator>().SetBool(IsRifle, isRifle);

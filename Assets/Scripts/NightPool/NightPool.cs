@@ -10,7 +10,6 @@ using NTC.Global.System;
 using UnityEngine;
 using static NTC.Global.System.Tasks.TaskSugar;
 using Object = UnityEngine.Object;
-// ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
 namespace NTC.Global.Pool
 {
@@ -253,13 +252,13 @@ namespace NTC.Global.Pool
                     if (IsEditor)
                         return;
                     
-                    if (!toDespawn)
+                    if (toDespawn == null)
                         return;
                 }
                 
                 var pool = poolable.Pool;
 
-                if (pool)
+                if (pool != null)
                 {
                     toDespawn.SetActive(false);
                     toDespawn.transform.SetParent(pool.PoolablesParent);
@@ -298,8 +297,13 @@ namespace NTC.Global.Pool
         private static void CheckForSpawnEvents(GameObject toCheck)
         {
             OnObjectSpawned?.Invoke(toCheck);
+
             toCheck.GetComponentsInChildren(ItemEventComponents);
-            foreach (var t in ItemEventComponents) t.OnSpawn();
+
+            for (var i = 0; i < ItemEventComponents.Count; i++)
+            {
+                ItemEventComponents[i].OnSpawn();
+            }
         }
         
         /// <summary>

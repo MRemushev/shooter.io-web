@@ -544,12 +544,12 @@ MonoBehaviour:
   bloodFX: {fileID: 2345504121383949842}
   characterTeam: {fileID: 2970207585106046150, guid: 372dc7f152f978f4c8f4f453fb1c5be7,
     type: 3}
-  weapons: {fileID: 6074602261130289641}
+  weapons: {fileID: 8644675695504864931}
   characterList: []
-  relativeVector: {x: 0, y: 0, z: 0}
+  fireTarget: {fileID: 0}
   characterName: 
   isFire: 0
-  fireTarget: {fileID: 0}
+  relativeVector: {x: 0, y: 0, z: 0}
   agent: {fileID: 2756056603527285510}
   point: {fileID: 1805535686173028506}
   capsuleCollider: {fileID: -5066909527430264166}
@@ -1795,7 +1795,7 @@ Transform:
   m_Children:
   - {fileID: 6325057766401417306}
   - {fileID: 6325057766401417298}
-  - {fileID: 1819500629148765726}
+  - {fileID: 4248431577248471380}
   m_Father: {fileID: 6325057766401417310}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2329,7 +2329,7 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 191968428539542015}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1085840692537068781
+--- !u!1001 &3216962628411169703
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -2364,7 +2364,7 @@ PrefabInstance:
     - target: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0035
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
@@ -2415,11 +2415,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Weapons
-      objectReference: {fileID: 0}
-    - target: {fileID: 1608475008139336283, guid: 68b9337fbb778b84d8ac5f39ff208593,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1652867843545544490, guid: 68b9337fbb778b84d8ac5f39ff208593,
         type: 3}
@@ -2558,17 +2553,17 @@ PrefabInstance:
       objectReference: {fileID: 6325057766401063982}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68b9337fbb778b84d8ac5f39ff208593, type: 3}
---- !u!4 &1819500629148765726 stripped
+--- !u!4 &4248431577248471380 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1608212183287923443, guid: 68b9337fbb778b84d8ac5f39ff208593,
     type: 3}
-  m_PrefabInstance: {fileID: 1085840692537068781}
+  m_PrefabInstance: {fileID: 3216962628411169703}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6074602261130289641 stripped
+--- !u!114 &8644675695504864931 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6583414696586685700, guid: 68b9337fbb778b84d8ac5f39ff208593,
     type: 3}
-  m_PrefabInstance: {fileID: 1085840692537068781}
+  m_PrefabInstance: {fileID: 3216962628411169703}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1

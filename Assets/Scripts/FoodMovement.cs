@@ -19,13 +19,13 @@ public class FoodMovement : MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, _direction, 0.1f);
     }
 
-    private void OnCollisionEnter() => _direction.y -= _direction.y; // If the object has encountered a collision, then turn around
+    private void OnCollisionEnter() => _direction.y -= 180; // If the object has encountered a collision, then turn around
 
     private IEnumerator Rotate()
     {
         while (true)
         {
-            _direction.y = Quaternion.Euler(0, Random.Range(-180, 180), 0).y; // Randomize the turn
+            _direction = Quaternion.Euler(0, Random.Range(-180, 180), 0); // Randomize the turn
             yield return new WaitForSeconds(_updateTime);
         }
     }
