@@ -1,6 +1,7 @@
 using UnityEngine;
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	[AddComponentMenu("Pathfinding/GraphUpdateScene")]
 	/// <summary>
 	/// Helper class for easily updating graphs.
@@ -33,7 +34,8 @@ namespace Pathfinding {
 	/// So if you for example have a grid in the XY plane then the transform should have the rotation (-90,0,0).
 	/// </summary>
 	[HelpURL("http://arongranberg.com/astar/docs/class_pathfinding_1_1_graph_update_scene.php")]
-	public class GraphUpdateScene : GraphModifier {
+	public class GraphUpdateScene : GraphModifier
+	{
 		/// <summary>Points which define the region to update</summary>
 		public Vector3[] points;
 
@@ -132,17 +134,20 @@ namespace Pathfinding {
 		private bool legacyUseWorldSpace;
 
 		/// <summary>Do some stuff at start</summary>
-		public void Start () {
+		public void Start()
+		{
 			if (!Application.isPlaying) return;
 
 			// If firstApplied is true, that means the graph was scanned during Awake.
 			// So we shouldn't apply it again because then we would end up applying it two times
-			if (!firstApplied && applyOnStart) {
+			if (!firstApplied && applyOnStart)
+			{
 				Apply();
 			}
 		}
 
-		public override void OnPostScan () {
+		public override void OnPostScan()
+		{
 			if (applyOnScan) Apply();
 		}
 
@@ -157,13 +162,17 @@ namespace Pathfinding {
 		///
 		/// Calling this function an even number of times without changing any settings in between will be identical to no change in settings.
 		/// </summary>
-		public virtual void InvertSettings () {
+		public virtual void InvertSettings()
+		{
 			setWalkability = !setWalkability;
 			penaltyDelta = -penaltyDelta;
-			if (setTagInvert == 0) {
+			if (setTagInvert == 0)
+			{
 				setTagInvert = setTag;
 				setTag = 0;
-			} else {
+			}
+			else
+			{
 				setTag = setTagInvert;
 				setTagInvert = 0;
 			}
@@ -173,7 +182,8 @@ namespace Pathfinding {
 		/// Recalculate convex hull.
 		/// Will not do anything if <see cref="convex"/> is disabled.
 		/// </summary>
-		public void RecalcConvex () {
+		public void RecalcConvex()
+		{
 			convexPoints = convex ? Polygon.ConvexHullXZ(points) : null;
 		}
 
@@ -182,7 +192,8 @@ namespace Pathfinding {
 		/// Deprecated: World space can no longer be used as it does not work well with rotated graphs. Use transform.InverseTransformPoint to transform points to local space.
 		/// </summary>
 		[System.ObsoleteAttribute("World space can no longer be used as it does not work well with rotated graphs. Use transform.InverseTransformPoint to transform points to local space.", true)]
-		void ToggleUseWorldSpace () {
+		void ToggleUseWorldSpace()
+		{
 		}
 
 		/// <summary>
@@ -190,7 +201,8 @@ namespace Pathfinding {
 		/// Deprecated: The Y coordinate is no longer important. Use the position of the object instead.
 		/// </summary>
 		[System.ObsoleteAttribute("The Y coordinate is no longer important. Use the position of the object instead", true)]
-		public void LockToY () {
+		public void LockToY()
+		{
 		}
 
 		/// <summary>
@@ -198,26 +210,35 @@ namespace Pathfinding {
 		/// This is a relatively expensive operation, it needs to go through all points and
 		/// run matrix multiplications.
 		/// </summary>
-		public Bounds GetBounds () {
-			if (points == null || points.Length == 0) {
+		public Bounds GetBounds()
+		{
+			if (points == null || points.Length == 0)
+			{
 				Bounds bounds;
 				var coll = GetComponent<Collider>();
 				var coll2D = GetComponent<Collider2D>();
 				var rend = GetComponent<Renderer>();
 
 				if (coll != null) bounds = coll.bounds;
-				else if (coll2D != null) {
+				else if (coll2D != null)
+				{
 					bounds = coll2D.bounds;
 					bounds.size = new Vector3(bounds.size.x, bounds.size.y, Mathf.Max(bounds.size.z, 1f));
-				} else if (rend != null) {
+				}
+				else if (rend != null)
+				{
 					bounds = rend.bounds;
-				} else {
+				}
+				else
+				{
 					return new Bounds(Vector3.zero, Vector3.zero);
 				}
 
 				if (legacyMode && bounds.size.y < minBoundsHeight) bounds.size = new Vector3(bounds.size.x, minBoundsHeight, bounds.size.z);
 				return bounds;
-			} else {
+			}
+			else
+			{
 				return GraphUpdateShape.GetBounds(convex ? convexPoints : points, legacyMode && legacyUseWorldSpace ? Matrix4x4.identity : transform.localToWorldMatrix, minBoundsHeight);
 			}
 		}
@@ -228,20 +249,25 @@ namespace Pathfinding {
 		/// representing the polygon of this object and update all graphs using AstarPath.UpdateGraphs.
 		/// This will not update graphs immediately. See AstarPath.UpdateGraph for more info.
 		/// </summary>
-		public void Apply () {
-			if (AstarPath.active == null) {
+		public void Apply()
+		{
+			if (AstarPath.active == null)
+			{
 				Debug.LogError("There is no AstarPath object in the scene", this);
 				return;
 			}
 
 			GraphUpdateObject guo;
 
-			if (points == null || points.Length == 0) {
+			if (points == null || points.Length == 0)
+			{
 				var polygonCollider = GetComponent<PolygonCollider2D>();
-				if (polygonCollider != null) {
+				if (polygonCollider != null)
+				{
 					var points2D = polygonCollider.points;
 					Vector3[] pts = new Vector3[points2D.Length];
-					for (int i = 0; i < pts.Length; i++) {
+					for (int i = 0; i < pts.Length; i++)
+					{
 						var p = points2D[i] + polygonCollider.offset;
 						pts[i] = new Vector3(p.x, 0, p.y);
 					}
@@ -250,23 +276,31 @@ namespace Pathfinding {
 					var shape = new GraphUpdateShape(points, convex, mat, minBoundsHeight);
 					guo = new GraphUpdateObject(GetBounds());
 					guo.shape = shape;
-				} else {
+				}
+				else
+				{
 					var bounds = GetBounds();
-					if (bounds.center == Vector3.zero && bounds.size == Vector3.zero) {
+					if (bounds.center == Vector3.zero && bounds.size == Vector3.zero)
+					{
 						Debug.LogError("Cannot apply GraphUpdateScene, no points defined and no renderer or collider attached", this);
 						return;
 					}
 
 					guo = new GraphUpdateObject(bounds);
 				}
-			} else {
+			}
+			else
+			{
 				GraphUpdateShape shape;
-				if (legacyMode && !legacyUseWorldSpace) {
+				if (legacyMode && !legacyUseWorldSpace)
+				{
 					// Used for compatibility with older versions
 					var worldPoints = new Vector3[points.Length];
 					for (int i = 0; i < points.Length; i++) worldPoints[i] = transform.TransformPoint(points[i]);
 					shape = new GraphUpdateShape(worldPoints, convex, Matrix4x4.identity, minBoundsHeight);
-				} else {
+				}
+				else
+				{
 					shape = new GraphUpdateShape(points, convex, legacyMode && legacyUseWorldSpace ? Matrix4x4.identity : transform.localToWorldMatrix, minBoundsHeight);
 				}
 				var bounds = shape.GetBounds();
@@ -290,20 +324,24 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Draws some gizmos</summary>
-		void OnDrawGizmos () {
+		void OnDrawGizmos()
+		{
 			OnDrawGizmos(false);
 		}
 
 		/// <summary>Draws some gizmos</summary>
-		void OnDrawGizmosSelected () {
+		void OnDrawGizmosSelected()
+		{
 			OnDrawGizmos(true);
 		}
 
 		/// <summary>Draws some gizmos</summary>
-		void OnDrawGizmos (bool selected) {
-			Color c = selected ? new Color(227/255f, 61/255f, 22/255f, 1.0f) : new Color(227/255f, 61/255f, 22/255f, 0.9f);
+		void OnDrawGizmos(bool selected)
+		{
+			Color c = selected ? new Color(227 / 255f, 61 / 255f, 22 / 255f, 1.0f) : new Color(227 / 255f, 61 / 255f, 22 / 255f, 0.9f);
 
-			if (selected) {
+			if (selected)
+			{
 				Gizmos.color = Color.Lerp(c, new Color(1, 1, 1, 0.2f), 0.9f);
 
 				Bounds b = GetBounds();
@@ -319,7 +357,8 @@ namespace Pathfinding {
 
 			Matrix4x4 matrix = legacyMode && legacyUseWorldSpace ? Matrix4x4.identity : transform.localToWorldMatrix;
 
-			if (convex) {
+			if (convex)
+			{
 				c.r -= 0.1f;
 				c.g -= 0.2f;
 				c.b -= 0.1f;
@@ -327,28 +366,34 @@ namespace Pathfinding {
 				Gizmos.color = c;
 			}
 
-			if (selected || !convex) {
-				for (int i = 0; i < points.Length; i++) {
-					Gizmos.DrawLine(matrix.MultiplyPoint3x4(points[i]), matrix.MultiplyPoint3x4(points[(i+1)%points.Length]));
+			if (selected || !convex)
+			{
+				for (int i = 0; i < points.Length; i++)
+				{
+					Gizmos.DrawLine(matrix.MultiplyPoint3x4(points[i]), matrix.MultiplyPoint3x4(points[(i + 1) % points.Length]));
 				}
 			}
 
-			if (convex) {
+			if (convex)
+			{
 				if (convexPoints == null) RecalcConvex();
 
-				Gizmos.color = selected ? new Color(227/255f, 61/255f, 22/255f, 1.0f) : new Color(227/255f, 61/255f, 22/255f, 0.9f);
+				Gizmos.color = selected ? new Color(227 / 255f, 61 / 255f, 22 / 255f, 1.0f) : new Color(227 / 255f, 61 / 255f, 22 / 255f, 0.9f);
 
-				for (int i = 0; i < convexPoints.Length; i++) {
-					Gizmos.DrawLine(matrix.MultiplyPoint3x4(convexPoints[i]), matrix.MultiplyPoint3x4(convexPoints[(i+1)%convexPoints.Length]));
+				for (int i = 0; i < convexPoints.Length; i++)
+				{
+					Gizmos.DrawLine(matrix.MultiplyPoint3x4(convexPoints[i]), matrix.MultiplyPoint3x4(convexPoints[(i + 1) % convexPoints.Length]));
 				}
 			}
 
 			// Draw the full 3D shape
 			var pts = convex ? convexPoints : points;
-			if (selected && pts != null && pts.Length > 0) {
+			if (selected && pts != null && pts.Length > 0)
+			{
 				Gizmos.color = new Color(1, 1, 1, 0.2f);
 				float miny = pts[0].y, maxy = pts[0].y;
-				for (int i = 0; i < pts.Length; i++) {
+				for (int i = 0; i < pts.Length; i++)
+				{
 					miny = Mathf.Min(miny, pts[i].y);
 					maxy = Mathf.Max(maxy, pts[i].y);
 				}
@@ -356,12 +401,13 @@ namespace Pathfinding {
 				miny -= extraHeight;
 				maxy += extraHeight;
 
-				for (int i = 0; i < pts.Length; i++) {
-					var next = (i+1) % pts.Length;
-					var p1 = matrix.MultiplyPoint3x4(pts[i] + Vector3.up*(miny - pts[i].y));
-					var p2 = matrix.MultiplyPoint3x4(pts[i] + Vector3.up*(maxy - pts[i].y));
-					var p1n = matrix.MultiplyPoint3x4(pts[next] + Vector3.up*(miny - pts[next].y));
-					var p2n = matrix.MultiplyPoint3x4(pts[next] + Vector3.up*(maxy - pts[next].y));
+				for (int i = 0; i < pts.Length; i++)
+				{
+					var next = (i + 1) % pts.Length;
+					var p1 = matrix.MultiplyPoint3x4(pts[i] + Vector3.up * (miny - pts[i].y));
+					var p2 = matrix.MultiplyPoint3x4(pts[i] + Vector3.up * (maxy - pts[i].y));
+					var p1n = matrix.MultiplyPoint3x4(pts[next] + Vector3.up * (miny - pts[next].y));
+					var p2n = matrix.MultiplyPoint3x4(pts[next] + Vector3.up * (maxy - pts[next].y));
 					Gizmos.DrawLine(p1, p2);
 					Gizmos.DrawLine(p1, p1n);
 					Gizmos.DrawLine(p2, p2n);
@@ -373,12 +419,16 @@ namespace Pathfinding {
 		/// Disables legacy mode if it is enabled.
 		/// Legacy mode is automatically enabled for components when upgrading from an earlier version than 3.8.6.
 		/// </summary>
-		public void DisableLegacyMode () {
-			if (legacyMode) {
+		public void DisableLegacyMode()
+		{
+			if (legacyMode)
+			{
 				legacyMode = false;
-				if (legacyUseWorldSpace) {
+				if (legacyUseWorldSpace)
+				{
 					legacyUseWorldSpace = false;
-					for (int i = 0; i < points.Length; i++) {
+					for (int i = 0; i < points.Length; i++)
+					{
 						points[i] = transform.InverseTransformPoint(points[i]);
 					}
 					RecalcConvex();
@@ -386,8 +436,10 @@ namespace Pathfinding {
 			}
 		}
 
-		protected override void Awake () {
-			if (serializedVersion == 0) {
+		protected override void Awake()
+		{
+			if (serializedVersion == 0)
+			{
 				// Use the old behavior if some points are already set
 				if (points != null && points.Length > 0) legacyMode = true;
 				serializedVersion = 1;

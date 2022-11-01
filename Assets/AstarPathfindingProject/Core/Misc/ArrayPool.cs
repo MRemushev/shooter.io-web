@@ -6,7 +6,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace Pathfinding.Util {
+namespace Pathfinding.Util
+{
 	/// <summary>
 	/// Lightweight Array Pool.
 	/// Handy class for pooling arrays of type T.
@@ -26,7 +27,8 @@ namespace Pathfinding.Util {
 	/// \since Version 3.8.6
 	/// See: Pathfinding.Util.ListPool
 	/// </summary>
-	public static class ArrayPool<T> {
+	public static class ArrayPool<T>
+	{
 #if !ASTAR_NO_POOLING
 		/// <summary>
 		/// Maximum length of an array pooled using ClaimWithExactLength.
@@ -39,7 +41,7 @@ namespace Pathfinding.Util {
 		/// The arrays in each bucket have lengths of 2^i
 		/// </summary>
 		static readonly Stack<T[]>[] pool = new Stack<T[]>[31];
-		static readonly Stack<T[]>[] exactPool = new Stack<T[]>[MaximumExactArrayLength+1];
+		static readonly Stack<T[]>[] exactPool = new Stack<T[]>[MaximumExactArrayLength + 1];
 #if !ASTAR_OPTIMIZE_POOLING
 		static readonly HashSet<T[]> inPool = new HashSet<T[]>();
 #endif
@@ -50,13 +52,16 @@ namespace Pathfinding.Util {
 		/// Warning: Returned arrays may contain arbitrary data.
 		/// You cannot rely on it being zeroed out.
 		/// </summary>
-		public static T[] Claim (int minimumLength) {
-			if (minimumLength <= 0) {
+		public static T[] Claim(int minimumLength)
+		{
+			if (minimumLength <= 0)
+			{
 				return ClaimWithExactLength(0);
 			}
 
 			int bucketIndex = 0;
-			while ((1 << bucketIndex) < minimumLength && bucketIndex < 30) {
+			while ((1 << bucketIndex) < minimumLength && bucketIndex < 30)
+			{
 				bucketIndex++;
 			}
 
@@ -64,12 +69,15 @@ namespace Pathfinding.Util {
 				throw new System.ArgumentException("Too high minimum length");
 
 #if !ASTAR_NO_POOLING
-			lock (pool) {
-				if (pool[bucketIndex] == null) {
+			lock (pool)
+			{
+				if (pool[bucketIndex] == null)
+				{
 					pool[bucketIndex] = new Stack<T[]>();
 				}
 
-				if (pool[bucketIndex].Count > 0) {
+				if (pool[bucketIndex].Count > 0)
+				{
 					var array = pool[bucketIndex].Pop();
 #if !ASTAR_OPTIMIZE_POOLING
 					inPool.Remove(array);
@@ -91,18 +99,23 @@ namespace Pathfinding.Util {
 		/// Warning: Returned arrays may contain arbitrary data.
 		/// You cannot rely on it being zeroed out.
 		/// </summary>
-		public static T[] ClaimWithExactLength (int length) {
+		public static T[] ClaimWithExactLength(int length)
+		{
 #if !ASTAR_NO_POOLING
 			bool isPowerOfTwo = length != 0 && (length & (length - 1)) == 0;
-			if (isPowerOfTwo) {
+			if (isPowerOfTwo)
+			{
 				// Will return the correct array length
 				return Claim(length);
 			}
 
-			if (length <= MaximumExactArrayLength) {
-				lock (pool) {
+			if (length <= MaximumExactArrayLength)
+			{
+				lock (pool)
+				{
 					Stack<T[]> stack = exactPool[length];
-					if (stack != null && stack.Count > 0) {
+					if (stack != null && stack.Count > 0)
+					{
 						var array = stack.Pop();
 #if !ASTAR_OPTIMIZE_POOLING
 						inPool.Remove(array);
@@ -120,9 +133,11 @@ namespace Pathfinding.Util {
 		/// If the array was got using the <see cref="ClaimWithExactLength"/> method then the allowNonPowerOfTwo parameter must be set to true.
 		/// The parameter exists to make sure that non power of two arrays are not pooled unintentionally which could lead to memory leaks.
 		/// </summary>
-		public static void Release (ref T[] array, bool allowNonPowerOfTwo = false) {
+		public static void Release(ref T[] array, bool allowNonPowerOfTwo = false)
+		{
 			if (array == null) return;
-			if (array.GetType() != typeof(T[])) {
+			if (array.GetType() != typeof(T[]))
+			{
 				throw new System.ArgumentException("Expected array type " + typeof(T[]).Name + " but found " + array.GetType().Name + "\nAre you using the correct generic class?\n");
 			}
 
@@ -130,24 +145,31 @@ namespace Pathfinding.Util {
 			bool isPowerOfTwo = array.Length != 0 && (array.Length & (array.Length - 1)) == 0;
 			if (!isPowerOfTwo && !allowNonPowerOfTwo && array.Length != 0) throw new System.ArgumentException("Length is not a power of 2");
 
-			lock (pool) {
+			lock (pool)
+			{
 #if !ASTAR_OPTIMIZE_POOLING
-				if (!inPool.Add(array)) {
+				if (!inPool.Add(array))
+				{
 					throw new InvalidOperationException("You are trying to pool an array twice. Please make sure that you only pool it once.");
 				}
 #endif
-				if (isPowerOfTwo) {
+				if (isPowerOfTwo)
+				{
 					int bucketIndex = 0;
-					while ((1 << bucketIndex) < array.Length && bucketIndex < 30) {
+					while ((1 << bucketIndex) < array.Length && bucketIndex < 30)
+					{
 						bucketIndex++;
 					}
 
-					if (pool[bucketIndex] == null) {
+					if (pool[bucketIndex] == null)
+					{
 						pool[bucketIndex] = new Stack<T[]>();
 					}
 
 					pool[bucketIndex].Push(array);
-				} else if (array.Length <= MaximumExactArrayLength) {
+				}
+				else if (array.Length <= MaximumExactArrayLength)
+				{
 					Stack<T[]> stack = exactPool[array.Length];
 					if (stack == null) stack = exactPool[array.Length] = new Stack<T[]>();
 					stack.Push(array);
@@ -159,17 +181,20 @@ namespace Pathfinding.Util {
 	}
 
 	/// <summary>Extension methods for List<T></summary>
-	public static class ListExtensions {
+	public static class ListExtensions
+	{
 		/// <summary>
 		/// Identical to ToArray but it uses ArrayPool<T> to avoid allocations if possible.
 		///
 		/// Use with caution as pooling too many arrays with different lengths that
 		/// are rarely being reused will lead to an effective memory leak.
 		/// </summary>
-		public static T[] ToArrayFromPool<T>(this List<T> list) {
-			var arr = ArrayPool<T>.ClaimWithExactLength (list.Count);
+		public static T[] ToArrayFromPool<T>(this List<T> list)
+		{
+			var arr = ArrayPool<T>.ClaimWithExactLength(list.Count);
 
-			for (int i = 0; i < arr.Length; i++) {
+			for (int i = 0; i < arr.Length; i++)
+			{
 				arr[i] = list[i];
 			}
 			return arr;
@@ -187,10 +212,14 @@ namespace Pathfinding.Util {
 		///
 		/// Hopefully this method can be removed when Unity upgrades to a newer version of Mono.
 		/// </summary>
-		public static void ClearFast<T>(this List<T> list) {
-			if (list.Count*2 < list.Capacity) {
+		public static void ClearFast<T>(this List<T> list)
+		{
+			if (list.Count * 2 < list.Capacity)
+			{
 				list.RemoveRange(0, list.Count);
-			} else {
+			}
+			else
+			{
 				list.Clear();
 			}
 		}

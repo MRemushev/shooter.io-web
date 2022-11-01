@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 // Empty namespace declaration to avoid errors in the free version
 // Which does not have any classes in the RVO namespace
-namespace Pathfinding.RVO {}
+namespace Pathfinding.RVO { }
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	using Pathfinding.Util;
 
 #if UNITY_5_0
@@ -16,7 +17,8 @@ namespace Pathfinding {
 
 	[System.Serializable]
 	/// <summary>Stores editor colors</summary>
-	public class AstarColor {
+	public class AstarColor
+	{
 		public Color _SolidColor;
 		public Color _UnwalkableNode;
 		public Color _BoundsHandles;
@@ -32,7 +34,7 @@ namespace Pathfinding {
 		/// </summary>
 		public Color[] _AreaColors;
 
-		public static Color SolidColor = new Color(30/255f, 102/255f, 201/255f, 0.9F);
+		public static Color SolidColor = new Color(30 / 255f, 102 / 255f, 201 / 255f, 0.9F);
 		public static Color UnwalkableNode = new Color(1, 0, 0, 0.5F);
 		public static Color BoundsHandles = new Color(0.29F, 0.454F, 0.741F, 0.9F);
 
@@ -43,10 +45,11 @@ namespace Pathfinding {
 
 		private static Color[] AreaColors = new Color[1];
 
-		public static int ColorHash () {
+		public static int ColorHash()
+		{
 			var hash = SolidColor.GetHashCode() ^ UnwalkableNode.GetHashCode() ^ BoundsHandles.GetHashCode() ^ ConnectionLowLerp.GetHashCode() ^ ConnectionHighLerp.GetHashCode() ^ MeshEdgeColor.GetHashCode();
 
-			for (int i = 0; i < AreaColors.Length; i++) hash = 7*hash ^ AreaColors[i].GetHashCode();
+			for (int i = 0; i < AreaColors.Length; i++) hash = 7 * hash ^ AreaColors[i].GetHashCode();
 			return hash;
 		}
 
@@ -55,7 +58,8 @@ namespace Pathfinding {
 		/// If the user has set a color for the area, it is used, but otherwise the color is calculated using AstarMath.IntToColor
 		/// See: <see cref="RemappedAreaColors"/>
 		/// </summary>
-		public static Color GetAreaColor (uint area) {
+		public static Color GetAreaColor(uint area)
+		{
 			if (area >= AreaColors.Length) return AstarMath.IntToColor((int)area, 1F);
 			return AreaColors[(int)area];
 		}
@@ -65,7 +69,8 @@ namespace Pathfinding {
 		/// If the user has set a color for the tag, it is used, but otherwise the color is calculated using AstarMath.IntToColor
 		/// See: <see cref="AreaColors"/>
 		/// </summary>
-		public static Color GetTagColor (uint tag) {
+		public static Color GetTagColor(uint tag)
+		{
 			if (tag >= AreaColors.Length) return AstarMath.IntToColor((int)tag, 1F);
 			return AreaColors[(int)tag];
 		}
@@ -76,8 +81,9 @@ namespace Pathfinding {
 		/// and it has a positive performance impact as well (gizmo rendering is hot code).
 		/// It is a bit ugly though, but oh well.
 		/// </summary>
-		public void PushToStatic (AstarPath astar) {
-			_AreaColors  = _AreaColors ?? new Color[1];
+		public void PushToStatic(AstarPath astar)
+		{
+			_AreaColors = _AreaColors ?? new Color[1];
 
 			SolidColor = _SolidColor;
 			UnwalkableNode = _UnwalkableNode;
@@ -88,9 +94,10 @@ namespace Pathfinding {
 			AreaColors = _AreaColors;
 		}
 
-		public AstarColor () {
+		public AstarColor()
+		{
 			// Set default colors
-			_SolidColor = new Color(30/255f, 102/255f, 201/255f, 0.9F);
+			_SolidColor = new Color(30 / 255f, 102 / 255f, 201 / 255f, 0.9F);
 			_UnwalkableNode = new Color(1, 0, 0, 0.5F);
 			_BoundsHandles = new Color(0.29F, 0.454F, 0.741F, 0.9F);
 			_ConnectionLowLerp = new Color(0, 1, 0, 0.5F);
@@ -107,7 +114,8 @@ namespace Pathfinding {
 	///
 	/// [Open online documentation to see images]
 	/// </summary>
-	public struct GraphHitInfo {
+	public struct GraphHitInfo
+	{
 		/// <summary>
 		/// Start of the line/ray.
 		/// Note that the point passed to the Linecast method will be clamped to the closest point on the navmesh.
@@ -138,14 +146,17 @@ namespace Pathfinding {
 		public Vector3 tangent;
 
 		/// <summary>Distance from <see cref="origin"/> to <see cref="point"/></summary>
-		public float distance {
-			get {
-				return (point-origin).magnitude;
+		public float distance
+		{
+			get
+			{
+				return (point - origin).magnitude;
 			}
 		}
 
-		public GraphHitInfo (Vector3 point) {
-			tangentOrigin  = Vector3.zero;
+		public GraphHitInfo(Vector3 point)
+		{
+			tangentOrigin = Vector3.zero;
 			origin = Vector3.zero;
 			this.point = point;
 			node = null;
@@ -154,7 +165,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>Nearest node constraint. Constrains which nodes will be returned by the <see cref="AstarPath.GetNearest"/> function</summary>
-	public class NNConstraint {
+	public class NNConstraint
+	{
 		/// <summary>
 		/// Graphs treated as valid to search on.
 		/// This is a bitmask meaning that bit 0 specifies whether or not the first graph in the graphs list should be able to be included in the search,
@@ -241,12 +253,14 @@ namespace Pathfinding {
 		/// If the <see cref="graphMask"/> has bit 31 set (i.e the last graph possible to fit in the mask), all graphs
 		/// above index 31 will also be considered suitable.
 		/// </summary>
-		public virtual bool SuitableGraph (int graphIndex, NavGraph graph) {
+		public virtual bool SuitableGraph(int graphIndex, NavGraph graph)
+		{
 			return graphMask.Contains(graphIndex);
 		}
 
 		/// <summary>Returns whether or not the node conforms to this NNConstraint's rules</summary>
-		public virtual bool Suitable (GraphNode node) {
+		public virtual bool Suitable(GraphNode node)
+		{
 			if (constrainWalkability && node.Walkable != walkable) return false;
 
 			if (constrainArea && area >= 0 && node.Area != area) return false;
@@ -262,27 +276,33 @@ namespace Pathfinding {
 		/// This NNConstraint has settings which works for most, it only finds walkable nodes
 		/// and it constrains distance set by A* Inspector -> Settings -> Max Nearest Node Distance
 		/// </summary>
-		public static NNConstraint Default {
-			get {
+		public static NNConstraint Default
+		{
+			get
+			{
 				return new NNConstraint();
 			}
 		}
 
 		/// <summary>Returns a constraint which does not filter the results</summary>
-		public static NNConstraint None {
-			get {
-				return new NNConstraint {
-						   constrainWalkability = false,
-						   constrainArea = false,
-						   constrainTags = false,
-						   constrainDistance = false,
-						   graphMask = -1,
+		public static NNConstraint None
+		{
+			get
+			{
+				return new NNConstraint
+				{
+					constrainWalkability = false,
+					constrainArea = false,
+					constrainTags = false,
+					constrainDistance = false,
+					graphMask = -1,
 				};
 			}
 		}
 
 		/// <summary>Default constructor. Equals to the property <see cref="Default"/></summary>
-		public NNConstraint () {
+		public NNConstraint()
+		{
 		}
 	}
 
@@ -291,20 +311,28 @@ namespace Pathfinding {
 	/// A PathNNConstraint can be assigned to the Path.nnConstraint field, the path will first search for the start node, then it will call <see cref="SetStart"/> and proceed with searching for the end node (nodes in the case of a MultiTargetPath).\n
 	/// The default PathNNConstraint will constrain the end point to lie inside the same area as the start point.
 	/// </summary>
-	public class PathNNConstraint : NNConstraint {
-		public static new PathNNConstraint Default {
-			get {
-				return new PathNNConstraint {
-						   constrainArea = true
+	public class PathNNConstraint : NNConstraint
+	{
+		public static new PathNNConstraint Default
+		{
+			get
+			{
+				return new PathNNConstraint
+				{
+					constrainArea = true
 				};
 			}
 		}
 
 		/// <summary>Called after the start node has been found. This is used to get different search logic for the start and end nodes in a path</summary>
-		public virtual void SetStart (GraphNode node) {
-			if (node != null) {
+		public virtual void SetStart(GraphNode node)
+		{
+			if (node != null)
+			{
 				area = (int)node.Area;
-			} else {
+			}
+			else
+			{
 				constrainArea = false;
 			}
 		}
@@ -314,7 +342,8 @@ namespace Pathfinding {
 	/// Internal result of a nearest node query.
 	/// See: NNInfo
 	/// </summary>
-	public struct NNInfoInternal {
+	public struct NNInfoInternal
+	{
 		/// <summary>
 		/// Closest node found.
 		/// This node is not necessarily accepted by any NNConstraint passed.
@@ -334,7 +363,8 @@ namespace Pathfinding {
 		/// <summary>Clamped position for the optional constrainedNode</summary>
 		public Vector3 constClampedPosition;
 
-		public NNInfoInternal (GraphNode node) {
+		public NNInfoInternal(GraphNode node)
+		{
 			this.node = node;
 			constrainedNode = null;
 			clampedPosition = Vector3.zero;
@@ -344,14 +374,16 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Updates <see cref="clampedPosition"/> and <see cref="constClampedPosition"/> from node positions</summary>
-		public void UpdateInfo () {
+		public void UpdateInfo()
+		{
 			clampedPosition = node != null ? (Vector3)node.position : Vector3.zero;
 			constClampedPosition = constrainedNode != null ? (Vector3)constrainedNode.position : Vector3.zero;
 		}
 	}
 
 	/// <summary>Result of a nearest node query</summary>
-	public struct NNInfo {
+	public struct NNInfo
+	{
 		/// <summary>Closest node</summary>
 		public readonly GraphNode node;
 
@@ -366,22 +398,27 @@ namespace Pathfinding {
 		/// Deprecated: This field has been renamed to <see cref="position"/>
 		/// </summary>
 		[System.Obsolete("This field has been renamed to 'position'")]
-		public Vector3 clampedPosition {
-			get {
+		public Vector3 clampedPosition
+		{
+			get
+			{
 				return position;
 			}
 		}
 
-		public NNInfo (NNInfoInternal internalInfo) {
+		public NNInfo(NNInfoInternal internalInfo)
+		{
 			node = internalInfo.node;
 			position = internalInfo.clampedPosition;
 		}
 
-		public static explicit operator Vector3(NNInfo ob) {
+		public static explicit operator Vector3(NNInfo ob)
+		{
 			return ob.position;
 		}
 
-		public static explicit operator GraphNode(NNInfo ob) {
+		public static explicit operator GraphNode(NNInfo ob)
+		{
 			return ob.node;
 		}
 	}
@@ -391,28 +428,33 @@ namespace Pathfinding {
 	/// Used by the scan functions in the project
 	/// See: <see cref="AstarPath.ScanAsync"/>
 	/// </summary>
-	public struct Progress {
+	public struct Progress
+	{
 		/// <summary>Current progress as a value between 0 and 1</summary>
 		public readonly float progress;
 		/// <summary>Description of what is currently being done</summary>
 		public readonly string description;
 
-		public Progress (float progress, string description) {
+		public Progress(float progress, string description)
+		{
 			this.progress = progress;
 			this.description = description;
 		}
 
-		public Progress MapTo (float min, float max, string prefix = null) {
+		public Progress MapTo(float min, float max, string prefix = null)
+		{
 			return new Progress(Mathf.Lerp(min, max, progress), prefix + description);
 		}
 
-		public override string ToString () {
+		public override string ToString()
+		{
 			return progress.ToString("0.0") + " " + description;
 		}
 	}
 
 	/// <summary>Graphs which can be updated during runtime</summary>
-	public interface IUpdatableGraph {
+	public interface IUpdatableGraph
+	{
 		/// <summary>
 		/// Updates an area using the specified <see cref="GraphUpdateObject"/>.
 		///
@@ -423,21 +465,21 @@ namespace Pathfinding {
 		/// -# Call Apply on the GUO for every node which should be updated with the GUO.
 		/// -# Update connectivity info if appropriate (GridGraphs updates connectivity, but most other graphs don't since then the connectivity cannot be recovered later).
 		/// </summary>
-		void UpdateArea (GraphUpdateObject o);
+		void UpdateArea(GraphUpdateObject o);
 
 		/// <summary>
 		/// May be called on the Unity thread before starting the update.
 		/// See: CanUpdateAsync
 		/// </summary>
-		void UpdateAreaInit (GraphUpdateObject o);
+		void UpdateAreaInit(GraphUpdateObject o);
 
 		/// <summary>
 		/// May be called on the Unity thread after executing the update.
 		/// See: CanUpdateAsync
 		/// </summary>
-		void UpdateAreaPost (GraphUpdateObject o);
+		void UpdateAreaPost(GraphUpdateObject o);
 
-		GraphUpdateThreading CanUpdateAsync (GraphUpdateObject o);
+		GraphUpdateThreading CanUpdateAsync(GraphUpdateObject o);
 	}
 
 	/// <summary>
@@ -445,7 +487,8 @@ namespace Pathfinding {
 	/// See: AstarPath.UpdateGraphs
 	/// See: graph-updates (view in online documentation for working links)
 	/// </summary>
-	public class GraphUpdateObject {
+	public class GraphUpdateObject
+	{
 		/// <summary>
 		/// The bounds to update nodes within.
 		/// Defined in world space.
@@ -465,7 +508,7 @@ namespace Pathfinding {
 		/// Deprecated: Not necessary anymore
 		/// </summary>
 		[System.Obsolete("Not necessary anymore")]
-		public bool requiresFloodFill { set {} }
+		public bool requiresFloodFill { set { } }
 
 		/// <summary>
 		/// Use physics checks to update nodes.
@@ -576,9 +619,11 @@ namespace Pathfinding {
 		/// See: <see cref="trackChangedNodes"/>
 		/// </summary>
 		/// <param name="node">The node to save fields for. If null, nothing will be done</param>
-		public virtual void WillUpdateNode (GraphNode node) {
-			if (trackChangedNodes && node != null) {
-				if (changedNodes == null) { changedNodes = ListPool<GraphNode>.Claim (); backupData = ListPool<uint>.Claim (); backupPositionData = ListPool<Int3>.Claim (); }
+		public virtual void WillUpdateNode(GraphNode node)
+		{
+			if (trackChangedNodes && node != null)
+			{
+				if (changedNodes == null) { changedNodes = ListPool<GraphNode>.Claim(); backupData = ListPool<uint>.Claim(); backupPositionData = ListPool<Int3>.Claim(); }
 				changedNodes.Add(node);
 				backupPositionData.Add(node.position);
 				backupData.Add(node.Penalty);
@@ -603,12 +648,15 @@ namespace Pathfinding {
 		/// See: blocking (view in online documentation for working links)
 		/// See: <see cref="Pathfinding.PathUtilities.UpdateGraphsNoBlock"/>
 		/// </summary>
-		public virtual void RevertFromBackup () {
-			if (trackChangedNodes) {
+		public virtual void RevertFromBackup()
+		{
+			if (trackChangedNodes)
+			{
 				if (changedNodes == null) return;
 
 				int counter = 0;
-				for (int i = 0; i < changedNodes.Count; i++) {
+				for (int i = 0; i < changedNodes.Count; i++)
+				{
 					changedNodes[i].Penalty = backupData[counter];
 					counter++;
 					// Restore the flags, but not the HierarchicalNodeIndex as that could screw up some internal datastructures
@@ -618,7 +666,8 @@ namespace Pathfinding {
 					counter++;
 #if !ASTAR_NO_GRID_GRAPH
 					var gridNode = changedNodes[i] as GridNode;
-					if (gridNode != null) {
+					if (gridNode != null)
+					{
 						gridNode.InternalGridFlags = (ushort)backupData[counter];
 						counter++;
 					}
@@ -627,20 +676,25 @@ namespace Pathfinding {
 					changedNodes[i].SetConnectivityDirty();
 				}
 
-				ListPool<GraphNode>.Release (ref changedNodes);
-				ListPool<uint>.Release (ref backupData);
-				ListPool<Int3>.Release (ref backupPositionData);
-			} else {
+				ListPool<GraphNode>.Release(ref changedNodes);
+				ListPool<uint>.Release(ref backupData);
+				ListPool<Int3>.Release(ref backupPositionData);
+			}
+			else
+			{
 				throw new System.InvalidOperationException("Changed nodes have not been tracked, cannot revert from backup. Please set trackChangedNodes to true before applying the update.");
 			}
 		}
 
 		/// <summary>Updates the specified node using this GUO's settings</summary>
-		public virtual void Apply (GraphNode node) {
-			if (shape == null || shape.Contains(node)) {
+		public virtual void Apply(GraphNode node)
+		{
+			if (shape == null || shape.Contains(node))
+			{
 				//Update penalty and walkability
-				node.Penalty = (uint)(node.Penalty+addPenalty);
-				if (modifyWalkability) {
+				node.Penalty = (uint)(node.Penalty + addPenalty);
+				if (modifyWalkability)
+				{
 					node.Walkable = setWalkability;
 				}
 
@@ -649,26 +703,30 @@ namespace Pathfinding {
 			}
 		}
 
-		public GraphUpdateObject () {
+		public GraphUpdateObject()
+		{
 		}
 
 		/// <summary>Creates a new GUO with the specified bounds</summary>
-		public GraphUpdateObject (Bounds b) {
+		public GraphUpdateObject(Bounds b)
+		{
 			bounds = b;
 		}
 	}
 
 	/// <summary>Graph which has a well defined transformation from graph space to world space</summary>
-	public interface ITransformedGraph {
+	public interface ITransformedGraph
+	{
 		GraphTransform transform { get; }
 	}
 
 	/// <summary>Graph which supports the Linecast method</summary>
-	public interface IRaycastableGraph {
-		bool Linecast (Vector3 start, Vector3 end);
-		bool Linecast (Vector3 start, Vector3 end, GraphNode hint);
-		bool Linecast (Vector3 start, Vector3 end, GraphNode hint, out GraphHitInfo hit);
-		bool Linecast (Vector3 start, Vector3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace);
+	public interface IRaycastableGraph
+	{
+		bool Linecast(Vector3 start, Vector3 end);
+		bool Linecast(Vector3 start, Vector3 end, GraphNode hint);
+		bool Linecast(Vector3 start, Vector3 end, GraphNode hint, out GraphHitInfo hit);
+		bool Linecast(Vector3 start, Vector3 end, GraphNode hint, out GraphHitInfo hit, List<GraphNode> trace);
 	}
 
 	/// <summary>
@@ -676,29 +734,36 @@ namespace Pathfinding {
 	/// Works almost like UnityEngine.Rect but with integer coordinates
 	/// </summary>
 	[System.Serializable]
-	public struct IntRect {
+	public struct IntRect
+	{
 		public int xmin, ymin, xmax, ymax;
 
-		public IntRect (int xmin, int ymin, int xmax, int ymax) {
+		public IntRect(int xmin, int ymin, int xmax, int ymax)
+		{
 			this.xmin = xmin;
 			this.xmax = xmax;
 			this.ymin = ymin;
 			this.ymax = ymax;
 		}
 
-		public bool Contains (int x, int y) {
+		public bool Contains(int x, int y)
+		{
 			return !(x < xmin || y < ymin || x > xmax || y > ymax);
 		}
 
-		public int Width {
-			get {
-				return xmax-xmin+1;
+		public int Width
+		{
+			get
+			{
+				return xmax - xmin + 1;
 			}
 		}
 
-		public int Height {
-			get {
-				return ymax-ymin+1;
+		public int Height
+		{
+			get
+			{
+				return ymax - ymin + 1;
 			}
 		}
 
@@ -707,26 +772,31 @@ namespace Pathfinding {
 		/// An invalid rect could have e.g xmin > xmax.
 		/// Rectamgles with a zero area area invalid.
 		/// </summary>
-		public bool IsValid () {
+		public bool IsValid()
+		{
 			return xmin <= xmax && ymin <= ymax;
 		}
 
-		public static bool operator == (IntRect a, IntRect b) {
+		public static bool operator ==(IntRect a, IntRect b)
+		{
 			return a.xmin == b.xmin && a.xmax == b.xmax && a.ymin == b.ymin && a.ymax == b.ymax;
 		}
 
-		public static bool operator != (IntRect a, IntRect b) {
+		public static bool operator !=(IntRect a, IntRect b)
+		{
 			return a.xmin != b.xmin || a.xmax != b.xmax || a.ymin != b.ymin || a.ymax != b.ymax;
 		}
 
-		public override bool Equals (System.Object obj) {
+		public override bool Equals(System.Object obj)
+		{
 			var rect = (IntRect)obj;
 
 			return xmin == rect.xmin && xmax == rect.xmax && ymin == rect.ymin && ymax == rect.ymax;
 		}
 
-		public override int GetHashCode () {
-			return xmin*131071 ^ xmax*3571 ^ ymin*3109 ^ ymax*7;
+		public override int GetHashCode()
+		{
+			return xmin * 131071 ^ xmax * 3571 ^ ymin * 3109 ^ ymax * 7;
 		}
 
 		/// <summary>
@@ -735,7 +805,8 @@ namespace Pathfinding {
 		/// If the rects do not have an intersection, an invalid rect is returned.
 		/// See: IsValid
 		/// </summary>
-		public static IntRect Intersection (IntRect a, IntRect b) {
+		public static IntRect Intersection(IntRect a, IntRect b)
+		{
 			return new IntRect(
 				System.Math.Max(a.xmin, b.xmin),
 				System.Math.Max(a.ymin, b.ymin),
@@ -745,7 +816,8 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Returns if the two rectangles intersect each other</summary>
-		public static bool Intersects (IntRect a, IntRect b) {
+		public static bool Intersects(IntRect a, IntRect b)
+		{
 			return !(a.xmin > b.xmax || a.ymin > b.ymax || a.xmax < b.xmin || a.ymax < b.ymin);
 		}
 
@@ -753,7 +825,8 @@ namespace Pathfinding {
 		/// Returns a new rect which contains both input rects.
 		/// This rectangle may contain areas outside both input rects as well in some cases.
 		/// </summary>
-		public static IntRect Union (IntRect a, IntRect b) {
+		public static IntRect Union(IntRect a, IntRect b)
+		{
 			return new IntRect(
 				System.Math.Min(a.xmin, b.xmin),
 				System.Math.Min(a.ymin, b.ymin),
@@ -763,7 +836,8 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Returns a new IntRect which is expanded to contain the point</summary>
-		public IntRect ExpandToContain (int x, int y) {
+		public IntRect ExpandToContain(int x, int y)
+		{
 			return new IntRect(
 				System.Math.Min(xmin, x),
 				System.Math.Min(ymin, y),
@@ -774,20 +848,23 @@ namespace Pathfinding {
 
 		/// <summary>Returns a new rect which is expanded by range in all directions.</summary>
 		/// <param name="range">How far to expand. Negative values are permitted.</param>
-		public IntRect Expand (int range) {
-			return new IntRect(xmin-range,
-				ymin-range,
-				xmax+range,
-				ymax+range
+		public IntRect Expand(int range)
+		{
+			return new IntRect(xmin - range,
+				ymin - range,
+				xmax + range,
+				ymax + range
 				);
 		}
 
-		public override string ToString () {
-			return "[x: "+xmin+"..."+xmax+", y: " + ymin +"..."+ymax+"]";
+		public override string ToString()
+		{
+			return "[x: " + xmin + "..." + xmax + ", y: " + ymin + "..." + ymax + "]";
 		}
 
 		/// <summary>Draws some debug lines representing the rect</summary>
-		public void DebugDraw (GraphTransform transform, Color color) {
+		public void DebugDraw(GraphTransform transform, Color color)
+		{
 			Vector3 p1 = transform.Transform(new Vector3(xmin, 0, ymin));
 			Vector3 p2 = transform.Transform(new Vector3(xmin, 0, ymax));
 			Vector3 p3 = transform.Transform(new Vector3(xmax, 0, ymax));
@@ -821,51 +898,61 @@ namespace Pathfinding {
 	/// See: bitmasks (view in online documentation for working links)
 	/// </summary>
 	[System.Serializable]
-	public struct GraphMask {
+	public struct GraphMask
+	{
 		/// <summary>Bitmask representing the mask</summary>
 		public int value;
 
 		/// <summary>A mask containing every graph</summary>
 		public static GraphMask everything { get { return new GraphMask(-1); } }
 
-		public GraphMask (int value) {
+		public GraphMask(int value)
+		{
 			this.value = value;
 		}
 
-		public static implicit operator int(GraphMask mask) {
+		public static implicit operator int(GraphMask mask)
+		{
 			return mask.value;
 		}
 
-		public static implicit operator GraphMask (int mask) {
+		public static implicit operator GraphMask(int mask)
+		{
 			return new GraphMask(mask);
 		}
 
 		/// <summary>Combines two masks to form the intersection between them</summary>
-		public static GraphMask operator & (GraphMask lhs, GraphMask rhs) {
+		public static GraphMask operator &(GraphMask lhs, GraphMask rhs)
+		{
 			return new GraphMask(lhs.value & rhs.value);
 		}
 
 		/// <summary>Combines two masks to form the union of them</summary>
-		public static GraphMask operator | (GraphMask lhs, GraphMask rhs) {
+		public static GraphMask operator |(GraphMask lhs, GraphMask rhs)
+		{
 			return new GraphMask(lhs.value | rhs.value);
 		}
 
 		/// <summary>Inverts the mask</summary>
-		public static GraphMask operator ~ (GraphMask lhs) {
+		public static GraphMask operator ~(GraphMask lhs)
+		{
 			return new GraphMask(~lhs.value);
 		}
 
 		/// <summary>True if this mask contains the graph with the given graph index</summary>
-		public bool Contains (int graphIndex) {
+		public bool Contains(int graphIndex)
+		{
 			return ((value >> graphIndex) & 1) != 0;
 		}
 
 		/// <summary>A bitmask containing the given graph</summary>
-		public static GraphMask FromGraph (NavGraph graph) {
+		public static GraphMask FromGraph(NavGraph graph)
+		{
 			return 1 << (int)graph.graphIndex;
 		}
 
-		public override string ToString () {
+		public override string ToString()
+		{
 			return value.ToString();
 		}
 
@@ -883,7 +970,8 @@ namespace Pathfinding {
 		/// var info = AstarPath.active.GetNearest(somePoint, nn);
 		/// </code>
 		/// </summary>
-		public static GraphMask FromGraphName (string graphName) {
+		public static GraphMask FromGraphName(string graphName)
+		{
 			var graph = AstarData.active.data.FindGraph(g => g.name == graphName);
 
 			if (graph == null) throw new System.ArgumentException("Could not find any graph with the name '" + graphName + "'");
@@ -898,20 +986,21 @@ namespace Pathfinding {
 	 * Example function:
 	 * \snippet MiscSnippets.cs OnPathDelegate
 	 */
-	public delegate void OnPathDelegate (Path p);
+	public delegate void OnPathDelegate(Path p);
 
-	public delegate void OnGraphDelegate (NavGraph graph);
+	public delegate void OnGraphDelegate(NavGraph graph);
 
-	public delegate void OnScanDelegate (AstarPath script);
+	public delegate void OnScanDelegate(AstarPath script);
 
 	/// <summary>Deprecated:</summary>
-	public delegate void OnScanStatus (Progress progress);
+	public delegate void OnScanStatus(Progress progress);
 
 	#endregion
 
 	#region Enums
 
-	public enum GraphUpdateThreading {
+	public enum GraphUpdateThreading
+	{
 		/// <summary>
 		/// Call UpdateArea in the unity thread.
 		/// This is the default value.
@@ -934,7 +1023,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>How path results are logged by the system</summary>
-	public enum PathLog {
+	public enum PathLog
+	{
 		/// <summary>Does not log anything. This is recommended for release since logging path results has a performance overhead.</summary>
 		None,
 		/// <summary>Logs basic info about the paths</summary>
@@ -971,7 +1061,8 @@ namespace Pathfinding {
 	///
 	/// See: <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia: A* search_algorithm</a>
 	/// </summary>
-	public enum Heuristic {
+	public enum Heuristic
+	{
 		/// <summary>Manhattan distance. See: https://en.wikipedia.org/wiki/Taxicab_geometry</summary>
 		Manhattan,
 		/// <summary>
@@ -993,7 +1084,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>How to visualize the graphs in the editor</summary>
-	public enum GraphDebugMode {
+	public enum GraphDebugMode
+	{
 		/// <summary>Draw the graphs with a single solid color</summary>
 		SolidColor,
 		/// <summary>
@@ -1044,7 +1136,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>Number of threads to use</summary>
-	public enum ThreadCount {
+	public enum ThreadCount
+	{
 		AutomaticLowLoad = -1,
 		AutomaticHighLoad = -2,
 		None = 0,
@@ -1059,7 +1152,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>Internal state of a path in the pipeline</summary>
-	public enum PathState {
+	public enum PathState
+	{
 		Created = 0,
 		PathQueue = 1,
 		Processing = 2,
@@ -1068,7 +1162,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>State of a path request</summary>
-	public enum PathCompleteState {
+	public enum PathCompleteState
+	{
 		/// <summary>
 		/// The path has not been calculated yet.
 		/// See: <see cref="Pathfinding.Path.IsDone()"/>
@@ -1089,7 +1184,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>What to do when the character is close to the destination</summary>
-	public enum CloseToDestinationMode {
+	public enum CloseToDestinationMode
+	{
 		/// <summary>The character will stop as quickly as possible when within endReachedDistance (field that exist on most movement scripts) units from the destination</summary>
 		Stop,
 		/// <summary>The character will continue to the exact position of the destination</summary>
@@ -1097,7 +1193,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>Indicates the side of a line that a point lies on</summary>
-	public enum Side : byte {
+	public enum Side : byte
+	{
 		/// <summary>The point lies exactly on the line</summary>
 		Colinear = 0,
 		/// <summary>The point lies on the left side of the line</summary>
@@ -1106,7 +1203,8 @@ namespace Pathfinding {
 		Right = 2
 	}
 
-	public enum InspectorGridHexagonNodeSize {
+	public enum InspectorGridHexagonNodeSize
+	{
 		/// <summary>Value is the distance between two opposing sides in the hexagon</summary>
 		Width,
 		/// <summary>Value is the distance between two opposing vertices in the hexagon</summary>
@@ -1115,7 +1213,8 @@ namespace Pathfinding {
 		NodeSize
 	}
 
-	public enum InspectorGridMode {
+	public enum InspectorGridMode
+	{
 		Grid,
 		IsometricGrid,
 		Hexagonal,
@@ -1127,7 +1226,8 @@ namespace Pathfinding {
 	/// For 3D games you most likely want the ZAxisIsForward option as that is the convention for 3D games.
 	/// For 2D games you most likely want the YAxisIsForward option as that is the convention for 2D games.
 	/// </summary>
-	public enum OrientationMode {
+	public enum OrientationMode
+	{
 		ZAxisForward,
 		YAxisForward,
 	}
@@ -1135,8 +1235,10 @@ namespace Pathfinding {
 	#endregion
 }
 
-namespace Pathfinding.Util {
+namespace Pathfinding.Util
+{
 	/// <summary>Prevents code stripping. See: https://docs.unity3d.com/Manual/ManagedCodeStripping.html</summary>
-	public class PreserveAttribute : System.Attribute {
+	public class PreserveAttribute : System.Attribute
+	{
 	}
 }

@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.Profiling;
 #endif
 
-namespace Pathfinding {
-	class PathReturnQueue {
+namespace Pathfinding
+{
+	class PathReturnQueue
+	{
 		/// <summary>
 		/// Holds all paths which are waiting to be flagged as completed.
 		/// See: <see cref="ReturnPaths"/>
@@ -18,12 +20,15 @@ namespace Pathfinding {
 		/// </summary>
 		System.Object pathsClaimedSilentlyBy;
 
-		public PathReturnQueue (System.Object pathsClaimedSilentlyBy) {
+		public PathReturnQueue(System.Object pathsClaimedSilentlyBy)
+		{
 			this.pathsClaimedSilentlyBy = pathsClaimedSilentlyBy;
 		}
 
-		public void Enqueue (Path path) {
-			lock (pathReturnQueue) {
+		public void Enqueue(Path path)
+		{
+			lock (pathReturnQueue)
+			{
 				pathReturnQueue.Enqueue(path);
 			}
 		}
@@ -34,7 +39,8 @@ namespace Pathfinding {
 		/// This function will pop all items from the stack and return them to e.g the Seeker requesting them.
 		/// </summary>
 		/// <param name="timeSlice">Do not return all paths at once if it takes a long time, instead return some and wait until the next call.</param>
-		public void ReturnPaths (bool timeSlice) {
+		public void ReturnPaths(bool timeSlice)
+		{
 			Profiler.BeginSample("Calling Path Callbacks");
 
 			// Hard coded limit on 1.0 ms
@@ -42,10 +48,12 @@ namespace Pathfinding {
 
 			int counter = 0;
 			// Loop through the linked list and return all paths
-			while (true) {
+			while (true)
+			{
 				// Move to the next path
 				Path path;
-				lock (pathReturnQueue) {
+				lock (pathReturnQueue)
+				{
 					if (pathReturnQueue.Count == 0) break;
 					path = pathReturnQueue.Dequeue();
 				}
@@ -60,9 +68,11 @@ namespace Pathfinding {
 
 				counter++;
 				// At least 5 paths will be returned, even if timeSlice is enabled
-				if (counter > 5 && timeSlice) {
+				if (counter > 5 && timeSlice)
+				{
 					counter = 0;
-					if (System.DateTime.UtcNow.Ticks >= targetTick) {
+					if (System.DateTime.UtcNow.Ticks >= targetTick)
+					{
 						break;
 					}
 				}

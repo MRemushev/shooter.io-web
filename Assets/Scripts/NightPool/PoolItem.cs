@@ -9,13 +9,13 @@ using UnityEngine;
 
 namespace NTC.Global.Pool
 {
-    [Serializable]
-    public sealed class PoolItem
-    {
-        [SerializeField] private GameObject prefab;
-        [SerializeField] private int size;
-        
-        public GameObject Prefab => prefab;
-        public int Size => size;
-    }
+	[Serializable]
+	public sealed class PoolItem
+	{
+		[SerializeField] private GameObject prefab;
+		[SerializeField] private int size;
+
+		public GameObject Prefab => prefab;
+		public int Size => size;
+	}
 }

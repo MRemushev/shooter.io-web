@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.Profiling;
 #endif
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	using UnityEngine.Assertions;
 
 #if NETFX_CORE
@@ -14,7 +15,8 @@ namespace Pathfinding {
 	using Thread = System.Threading.Thread;
 #endif
 
-	class GraphUpdateProcessor {
+	class GraphUpdateProcessor
+	{
 		public event System.Action OnGraphsUpdated;
 
 		/// <summary>Holds graphs that can be updated</summary>
@@ -64,28 +66,33 @@ namespace Pathfinding {
 		public bool IsAnyGraphUpdateInProgress { get { return anyGraphUpdateInProgress; } }
 
 		/// <summary>Order type for updating graphs</summary>
-		enum GraphUpdateOrder {
+		enum GraphUpdateOrder
+		{
 			GraphUpdate,
 			// FloodFill
 		}
 
 		/// <summary>Holds a single update that needs to be performed on a graph</summary>
-		struct GUOSingle {
+		struct GUOSingle
+		{
 			public GraphUpdateOrder order;
 			public IUpdatableGraph graph;
 			public GraphUpdateObject obj;
 		}
 
-		public GraphUpdateProcessor (AstarPath astar) {
+		public GraphUpdateProcessor(AstarPath astar)
+		{
 			this.astar = astar;
 		}
 
 		/// <summary>Work item which can be used to apply all queued updates</summary>
-		public AstarWorkItem GetWorkItem () {
+		public AstarWorkItem GetWorkItem()
+		{
 			return new AstarWorkItem(QueueGraphUpdatesInternal, ProcessGraphUpdates);
 		}
 
-		public void EnableMultithreading () {
+		public void EnableMultithreading()
+		{
 #if !UNITY_WEBGL
 			if (graphUpdateThread == null || !graphUpdateThread.IsAlive) {
 #if UNITY_2017_3_OR_NEWER && !UNITY_WEBGL
@@ -105,7 +112,8 @@ namespace Pathfinding {
 #endif
 		}
 
-		public void DisableMultithreading () {
+		public void DisableMultithreading()
+		{
 #if !UNITY_WEBGL
 			if (graphUpdateThread != null && graphUpdateThread.IsAlive) {
 				// Resume graph update thread, will cause it to terminate
@@ -127,19 +135,24 @@ namespace Pathfinding {
 		///
 		/// See: FlushGraphUpdates
 		/// </summary>
-		public void AddToQueue (GraphUpdateObject ob) {
+		public void AddToQueue(GraphUpdateObject ob)
+		{
 			// Put the GUO in the queue
 			graphUpdateQueue.Enqueue(ob);
 		}
 
 		/// <summary>Schedules graph updates internally</summary>
-		void QueueGraphUpdatesInternal () {
-			while (graphUpdateQueue.Count > 0) {
+		void QueueGraphUpdatesInternal()
+		{
+			while (graphUpdateQueue.Count > 0)
+			{
 				GraphUpdateObject ob = graphUpdateQueue.Dequeue();
 
-				foreach (IUpdatableGraph g in astar.data.GetUpdateableGraphs()) {
+				foreach (IUpdatableGraph g in astar.data.GetUpdateableGraphs())
+				{
 					NavGraph gr = g as NavGraph;
-					if (ob.nnConstraint == null || ob.nnConstraint.SuitableGraph(astar.data.GetGraphIndex(gr), gr)) {
+					if (ob.nnConstraint == null || ob.nnConstraint.SuitableGraph(astar.data.GetGraphIndex(gr), gr))
+					{
 						var guo = new GUOSingle();
 						guo.order = GraphUpdateOrder.GraphUpdate;
 						guo.obj = ob;
@@ -163,12 +176,16 @@ namespace Pathfinding {
 		/// </summary>
 		/// <param name="force">If true, all graph updates will be processed before this function returns. The return value
 		/// will be True.</param>
-		bool ProcessGraphUpdates (bool force) {
+		bool ProcessGraphUpdates(bool force)
+		{
 			Assert.IsTrue(anyGraphUpdateInProgress);
 
-			if (force) {
+			if (force)
+			{
 				asyncGraphUpdatesComplete.WaitOne();
-			} else {
+			}
+			else
+			{
 #if !UNITY_WEBGL
 				if (!asyncGraphUpdatesComplete.WaitOne(0)) {
 					return false;
@@ -179,7 +196,8 @@ namespace Pathfinding {
 			Assert.AreEqual(graphUpdateQueueAsync.Count, 0, "Queue should be empty at this stage");
 
 			ProcessPostUpdates();
-			if (!ProcessRegularUpdates(force)) {
+			if (!ProcessRegularUpdates(force))
+			{
 				return false;
 			}
 
@@ -194,8 +212,10 @@ namespace Pathfinding {
 			return true;
 		}
 
-		bool ProcessRegularUpdates (bool force) {
-			while (graphUpdateQueueRegular.Count > 0) {
+		bool ProcessRegularUpdates(bool force)
+		{
+			while (graphUpdateQueueRegular.Count > 0)
+			{
 				GUOSingle s = graphUpdateQueueRegular.Peek();
 
 				GraphUpdateThreading threading = s.graph.CanUpdateAsync(s.obj);
@@ -211,17 +231,20 @@ namespace Pathfinding {
 				}
 #endif
 
-				if ((threading & GraphUpdateThreading.UnityInit) != 0) {
+				if ((threading & GraphUpdateThreading.UnityInit) != 0)
+				{
 					// Process async graph updates first.
 					// Next call to this function will process this object so it is not dequeued now
-					if (StartAsyncUpdatesIfQueued()) {
+					if (StartAsyncUpdatesIfQueued())
+					{
 						return false;
 					}
 
 					s.graph.UpdateAreaInit(s.obj);
 				}
 
-				if ((threading & GraphUpdateThreading.SeparateThread) != 0) {
+				if ((threading & GraphUpdateThreading.SeparateThread) != 0)
+				{
 					// Move GUO to async queue to be updated by another thread
 					graphUpdateQueueRegular.Dequeue();
 					graphUpdateQueueAsync.Enqueue(s);
@@ -229,33 +252,43 @@ namespace Pathfinding {
 					// Don't start any more async graph updates because this update
 					// requires a Unity thread function to run after it has been completed
 					// but before the next update is started
-					if ((threading & GraphUpdateThreading.UnityPost) != 0) {
-						if (StartAsyncUpdatesIfQueued()) {
+					if ((threading & GraphUpdateThreading.UnityPost) != 0)
+					{
+						if (StartAsyncUpdatesIfQueued())
+						{
 							return false;
 						}
 					}
-				} else {
+				}
+				else
+				{
 					// Unity Thread
 
-					if (StartAsyncUpdatesIfQueued()) {
+					if (StartAsyncUpdatesIfQueued())
+					{
 						return false;
 					}
 
 					graphUpdateQueueRegular.Dequeue();
 
-					try {
+					try
+					{
 						s.graph.UpdateArea(s.obj);
-					} catch (System.Exception e) {
-						Debug.LogError("Error while updating graphs\n"+e);
+					}
+					catch (System.Exception e)
+					{
+						Debug.LogError("Error while updating graphs\n" + e);
 					}
 
-					if ((threading & GraphUpdateThreading.UnityPost) != 0) {
+					if ((threading & GraphUpdateThreading.UnityPost) != 0)
+					{
 						s.graph.UpdateAreaPost(s.obj);
 					}
 				}
 			}
 
-			if (StartAsyncUpdatesIfQueued()) {
+			if (StartAsyncUpdatesIfQueued())
+			{
 				return false;
 			}
 
@@ -266,8 +299,10 @@ namespace Pathfinding {
 		/// Signal the graph update thread to start processing graph updates if there are any in the <see cref="graphUpdateQueueAsync"/> queue.
 		/// Returns: True if the other thread was signaled.
 		/// </summary>
-		bool StartAsyncUpdatesIfQueued () {
-			if (graphUpdateQueueAsync.Count > 0) {
+		bool StartAsyncUpdatesIfQueued()
+		{
+			if (graphUpdateQueueAsync.Count > 0)
+			{
 #if UNITY_WEBGL
 				throw new System.Exception("This should not happen in WebGL");
 #else
@@ -279,17 +314,23 @@ namespace Pathfinding {
 			return false;
 		}
 
-		void ProcessPostUpdates () {
-			while (graphUpdateQueuePost.Count > 0) {
+		void ProcessPostUpdates()
+		{
+			while (graphUpdateQueuePost.Count > 0)
+			{
 				GUOSingle s = graphUpdateQueuePost.Dequeue();
 
 				GraphUpdateThreading threading = s.graph.CanUpdateAsync(s.obj);
 
-				if ((threading & GraphUpdateThreading.UnityPost) != 0) {
-					try {
+				if ((threading & GraphUpdateThreading.UnityPost) != 0)
+				{
+					try
+					{
 						s.graph.UpdateAreaPost(s.obj);
-					} catch (System.Exception e) {
-						Debug.LogError("Error while updating graphs (post step)\n"+e);
+					}
+					catch (System.Exception e)
+					{
+						Debug.LogError("Error while updating graphs (post step)\n" + e);
 					}
 				}
 			}

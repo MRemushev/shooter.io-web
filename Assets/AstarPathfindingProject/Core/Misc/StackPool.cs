@@ -2,7 +2,8 @@
 
 using System.Collections.Generic;
 
-namespace Pathfinding.Util {
+namespace Pathfinding.Util
+{
 	/// <summary>
 	/// Lightweight Stack Pool.
 	/// Handy class for pooling stacks of type T.
@@ -20,13 +21,15 @@ namespace Pathfinding.Util {
 	/// \since Version 3.2
 	/// See: Pathfinding.Util.ListPool
 	/// </summary>
-	public static class StackPool<T> {
+	public static class StackPool<T>
+	{
 		/// <summary>Internal pool</summary>
-		static readonly List<Stack<T> > pool;
+		static readonly List<Stack<T>> pool;
 
 		/// <summary>Static constructor</summary>
-		static StackPool () {
-			pool = new List<Stack<T> >();
+		static StackPool()
+		{
+			pool = new List<Stack<T>>();
 		}
 
 		/// <summary>
@@ -35,14 +38,17 @@ namespace Pathfinding.Util {
 		/// Otherwise it creates a new one.
 		/// After usage, this stack should be released using the Release function (though not strictly necessary).
 		/// </summary>
-		public static Stack<T> Claim () {
+		public static Stack<T> Claim()
+		{
 #if ASTAR_NO_POOLING
 			return new Stack<T>();
 #else
-			lock (pool) {
-				if (pool.Count > 0) {
-					Stack<T> ls = pool[pool.Count-1];
-					pool.RemoveAt(pool.Count-1);
+			lock (pool)
+			{
+				if (pool.Count > 0)
+				{
+					Stack<T> ls = pool[pool.Count - 1];
+					pool.RemoveAt(pool.Count - 1);
 					return ls;
 				}
 			}
@@ -55,7 +61,8 @@ namespace Pathfinding.Util {
 		/// Makes sure the pool contains at least count pooled items.
 		/// This is good if you want to do all allocations at start.
 		/// </summary>
-		public static void Warmup (int count) {
+		public static void Warmup(int count)
+		{
 			var tmp = new Stack<T>[count];
 
 			for (int i = 0; i < count; i++) tmp[i] = Claim();
@@ -67,11 +74,13 @@ namespace Pathfinding.Util {
 		/// After the stack has been released it should not be used anymore.
 		/// Releasing a stack twice will cause an error.
 		/// </summary>
-		public static void Release (Stack<T> stack) {
+		public static void Release(Stack<T> stack)
+		{
 #if !ASTAR_NO_POOLING
 			stack.Clear();
 
-			lock (pool) {
+			lock (pool)
+			{
 				for (int i = 0; i < pool.Count; i++)
 					if (pool[i] == stack) UnityEngine.Debug.LogError("The Stack is released even though it is inside the pool");
 
@@ -84,14 +93,17 @@ namespace Pathfinding.Util {
 		/// Clears all pooled stacks of this type.
 		/// This is an O(n) operation, where n is the number of pooled stacks
 		/// </summary>
-		public static void Clear () {
-			lock (pool) {
+		public static void Clear()
+		{
+			lock (pool)
+			{
 				pool.Clear();
 			}
 		}
 
 		/// <summary>Number of stacks of this type in the pool</summary>
-		public static int GetSize () {
+		public static int GetSize()
+		{
 			return pool.Count;
 		}
 	}

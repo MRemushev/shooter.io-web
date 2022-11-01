@@ -6,9 +6,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Pathfinding.Util {
-	public interface IAstarPooledObject {
-		void OnEnterPool ();
+namespace Pathfinding.Util
+{
+	public interface IAstarPooledObject
+	{
+		void OnEnterPool();
 	}
 
 	/// <summary>
@@ -27,14 +29,17 @@ namespace Pathfinding.Util {
 	/// See: Pathfinding.Util.ListPool
 	/// See: ObjectPoolSimple
 	/// </summary>
-	public static class ObjectPool<T> where T : class, IAstarPooledObject, new(){
-		public static T Claim () {
-			return ObjectPoolSimple<T>.Claim ();
+	public static class ObjectPool<T> where T : class, IAstarPooledObject, new()
+	{
+		public static T Claim()
+		{
+			return ObjectPoolSimple<T>.Claim();
 		}
 
-		public static void Release (ref T obj) {
+		public static void Release(ref T obj)
+		{
 			obj.OnEnterPool();
-			ObjectPoolSimple<T>.Release (ref obj);
+			ObjectPoolSimple<T>.Release(ref obj);
 		}
 	}
 
@@ -54,7 +59,8 @@ namespace Pathfinding.Util {
 	/// See: Pathfinding.Util.ListPool
 	/// See: ObjectPool
 	/// </summary>
-	public static class ObjectPoolSimple<T> where T : class, new(){
+	public static class ObjectPoolSimple<T> where T : class, new()
+	{
 		/// <summary>Internal pool</summary>
 		static List<T> pool = new List<T>();
 
@@ -68,17 +74,22 @@ namespace Pathfinding.Util {
 		/// Otherwise it creates a new one.
 		/// After usage, this object should be released using the Release function (though not strictly necessary).
 		/// </summary>
-		public static T Claim () {
+		public static T Claim()
+		{
 #if ASTAR_NO_POOLING
 			return new T();
 #else
-			lock (pool) {
-				if (pool.Count > 0) {
-					T ls = pool[pool.Count-1];
-					pool.RemoveAt(pool.Count-1);
+			lock (pool)
+			{
+				if (pool.Count > 0)
+				{
+					T ls = pool[pool.Count - 1];
+					pool.RemoveAt(pool.Count - 1);
 					inPool.Remove(ls);
 					return ls;
-				} else {
+				}
+				else
+				{
 					return new T();
 				}
 			}
@@ -96,11 +107,14 @@ namespace Pathfinding.Util {
 		///
 		/// See: Claim
 		/// </summary>
-		public static void Release (ref T obj) {
+		public static void Release(ref T obj)
+		{
 #if !ASTAR_NO_POOLING
-			lock (pool) {
+			lock (pool)
+			{
 #if !ASTAR_OPTIMIZE_POOLING
-				if (!inPool.Add(obj)) {
+				if (!inPool.Add(obj))
+				{
 					throw new InvalidOperationException("You are trying to pool an object twice. Please make sure that you only pool it once.");
 				}
 #endif
@@ -114,8 +128,10 @@ namespace Pathfinding.Util {
 		/// Clears the pool for objects of this type.
 		/// This is an O(n) operation, where n is the number of pooled objects.
 		/// </summary>
-		public static void Clear () {
-			lock (pool) {
+		public static void Clear()
+		{
+			lock (pool)
+			{
 #if !ASTAR_OPTIMIZE_POOLING && !ASTAR_NO_POOLING
 				inPool.Clear();
 #endif
@@ -124,7 +140,8 @@ namespace Pathfinding.Util {
 		}
 
 		/// <summary>Number of objects of this type in the pool</summary>
-		public static int GetSize () {
+		public static int GetSize()
+		{
 			return pool.Count;
 		}
 	}

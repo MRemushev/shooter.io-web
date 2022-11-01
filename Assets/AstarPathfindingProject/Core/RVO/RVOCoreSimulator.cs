@@ -12,14 +12,16 @@ using ThreadStart = System.Threading.ThreadStart;
 #endif
 
 /// <summary>Local avoidance related classes</summary>
-namespace Pathfinding.RVO {
+namespace Pathfinding.RVO
+{
 	/// <summary>
 	/// Exposes properties of an Agent class.
 	///
 	/// See: RVOController
 	/// See: RVOSimulator
 	/// </summary>
-	public interface IAgent {
+	public interface IAgent
+	{
 		/// <summary>
 		/// Position of the agent.
 		/// The agent does not move by itself, a movement script has to be responsible for
@@ -97,7 +99,7 @@ namespace Pathfinding.RVO {
 		///      is on a collision trajectory towards this agent) the agent can move at this speed.
 		///      Should be at least as high as desiredSpeed, but it is recommended to use a slightly
 		///      higher value than desiredSpeed (for example desiredSpeed*1.2).</param>
-		void SetTarget (Vector2 targetPoint, float desiredSpeed, float maxSpeed);
+		void SetTarget(Vector2 targetPoint, float desiredSpeed, float maxSpeed);
 
 		/// <summary>Locked agents will be assumed not to move</summary>
 		bool Locked { get; set; }
@@ -200,7 +202,7 @@ namespace Pathfinding.RVO {
 		/// This value will be cleared after the next simulation step, normally it should be set every frame
 		/// when the collision is still happening.
 		/// </summary>
-		void SetCollisionNormal (Vector2 normal);
+		void SetCollisionNormal(Vector2 normal);
 
 		/// <summary>
 		/// Set the current velocity of the agent.
@@ -211,11 +213,12 @@ namespace Pathfinding.RVO {
 		/// Local avoidance calculations will be skipped for the next simulation step but will be resumed
 		/// after that unless this method is called again.
 		/// </summary>
-		void ForceSetVelocity (Vector2 velocity);
+		void ForceSetVelocity(Vector2 velocity);
 	}
 
 	/// <summary>Plane which movement is primarily happening in</summary>
-	public enum MovementPlane {
+	public enum MovementPlane
+	{
 		/// <summary>Movement happens primarily in the XZ plane (3D)</summary>
 		XZ,
 		/// <summary>Movement happens primarily in the XY plane (2D)</summary>
@@ -223,7 +226,8 @@ namespace Pathfinding.RVO {
 	}
 
 	[System.Flags]
-	public enum RVOLayer {
+	public enum RVOLayer
+	{
 		DefaultAgent = 1 << 0,
 		DefaultObstacle = 1 << 1,
 		Layer2 = 1 << 2,
@@ -274,7 +278,8 @@ namespace Pathfinding.RVO {
 	///
 	/// You will most likely mostly use the wrapper class RVOSimulator.
 	/// </summary>
-	public class Simulator {
+	public class Simulator
+	{
 		/// <summary>
 		/// Use Double Buffering.
 		/// See: DoubleBuffering
@@ -349,7 +354,8 @@ namespace Pathfinding.RVO {
 		///
 		/// Warning: Do not modify this list!
 		/// </summary>
-		public List<Agent> GetAgents () {
+		public List<Agent> GetAgents()
+		{
 			return agents;
 		}
 
@@ -364,7 +370,8 @@ namespace Pathfinding.RVO {
 		/// See: AddObstacle
 		/// See: RemoveObstacle
 		/// </summary>
-		public List<ObstacleVertex> GetObstacles () {
+		public List<ObstacleVertex> GetObstacles()
+		{
 			return obstacles;
 		}
 
@@ -385,7 +392,8 @@ namespace Pathfinding.RVO {
 		/// This will let threads calculate while the game progresses instead of waiting for the calculations
 		/// to finish.</param>
 		/// <param name="movementPlane">The plane that the movement happens in. XZ for 3D games, XY for 2D games.</param>
-		public Simulator (int workers, bool doubleBuffering, MovementPlane movementPlane) {
+		public Simulator(int workers, bool doubleBuffering, MovementPlane movementPlane)
+		{
 			this.workers = new Simulator.Worker[workers];
 			this.doubleBuffering = doubleBuffering;
 			this.DesiredDeltaTime = 1;
@@ -399,12 +407,14 @@ namespace Pathfinding.RVO {
 		}
 
 		/// <summary>Removes all agents from the simulation</summary>
-		public void ClearAgents () {
+		public void ClearAgents()
+		{
 			//Bad to update agents while processing of current agents might be done
 			//Don't interfere with ongoing calculations
 			BlockUntilSimulationStepIsDone();
 
-			for (int i = 0; i < agents.Count; i++) {
+			for (int i = 0; i < agents.Count; i++)
+			{
 				agents[i].simulator = null;
 			}
 			agents.Clear();
@@ -414,8 +424,10 @@ namespace Pathfinding.RVO {
 		/// Terminates all worker threads.
 		/// Warning: You must call this when you are done with the simulator, otherwise some threads can linger and lead to memory leaks.
 		/// </summary>
-		public void OnDestroy () {
-			if (workers != null) {
+		public void OnDestroy()
+		{
+			if (workers != null)
+			{
 				for (int i = 0; i < workers.Length; i++) workers[i].Terminate();
 			}
 		}
@@ -427,11 +439,12 @@ namespace Pathfinding.RVO {
 		///
 		/// See: RemoveAgent
 		/// </summary>
-		public IAgent AddAgent (IAgent agent) {
+		public IAgent AddAgent(IAgent agent)
+		{
 			if (agent == null) throw new System.ArgumentNullException("Agent must not be null");
 
 			Agent agentReal = agent as Agent;
-			if (agentReal == null) throw new System.ArgumentException("The agent must be of type Agent. Agent was of type "+agent.GetType());
+			if (agentReal == null) throw new System.ArgumentException("The agent must be of type Agent. Agent was of type " + agent.GetType());
 
 			if (agentReal.simulator != null && agentReal.simulator == this) throw new System.ArgumentException("The agent is already in the simulation");
 			else if (agentReal.simulator != null) throw new System.ArgumentException("The agent is already added to another simulation");
@@ -452,7 +465,8 @@ namespace Pathfinding.RVO {
 		/// Deprecated: Use AddAgent(Vector2,float) instead
 		/// </summary>
 		[System.Obsolete("Use AddAgent(Vector2,float) instead")]
-		public IAgent AddAgent (Vector3 position) {
+		public IAgent AddAgent(Vector3 position)
+		{
 			return AddAgent(new Vector2(position.x, position.z), position.y);
 		}
 
@@ -465,7 +479,8 @@ namespace Pathfinding.RVO {
 		/// </summary>
 		/// <param name="position">See IAgent.Position</param>
 		/// <param name="elevationCoordinate">See IAgent.ElevationCoordinate</param>
-		public IAgent AddAgent (Vector2 position, float elevationCoordinate) {
+		public IAgent AddAgent(Vector2 position, float elevationCoordinate)
+		{
 			return AddAgent(new Agent(position, elevationCoordinate));
 		}
 
@@ -476,11 +491,12 @@ namespace Pathfinding.RVO {
 		/// See: AddAgent(IAgent)
 		/// See: ClearAgents
 		/// </summary>
-		public void RemoveAgent (IAgent agent) {
+		public void RemoveAgent(IAgent agent)
+		{
 			if (agent == null) throw new System.ArgumentNullException("Agent must not be null");
 
 			Agent agentReal = agent as Agent;
-			if (agentReal == null) throw new System.ArgumentException("The agent must be of type Agent. Agent was of type "+agent.GetType());
+			if (agentReal == null) throw new System.ArgumentException("The agent must be of type Agent. Agent was of type " + agent.GetType());
 
 			if (agentReal.simulator != this) throw new System.ArgumentException("The agent is not added to this simulation");
 
@@ -489,7 +505,8 @@ namespace Pathfinding.RVO {
 
 			agentReal.simulator = null;
 
-			if (!agents.Remove(agentReal)) {
+			if (!agents.Remove(agentReal))
+			{
 				throw new System.ArgumentException("Critical Bug! This should not happen. Please report this.");
 			}
 		}
@@ -500,7 +517,8 @@ namespace Pathfinding.RVO {
 		///
 		/// It is assumed that this is a valid obstacle.
 		/// </summary>
-		public ObstacleVertex AddObstacle (ObstacleVertex v) {
+		public ObstacleVertex AddObstacle(ObstacleVertex v)
+		{
 			if (v == null) throw new System.ArgumentNullException("Obstacle must not be null");
 
 			//Don't interfere with ongoing calculations
@@ -516,7 +534,8 @@ namespace Pathfinding.RVO {
 		///
 		/// See: RemoveObstacle
 		/// </summary>
-		public ObstacleVertex AddObstacle (Vector3[] vertices, float height, bool cycle = true) {
+		public ObstacleVertex AddObstacle(Vector3[] vertices, float height, bool cycle = true)
+		{
 			return AddObstacle(vertices, height, Matrix4x4.identity, RVOLayer.DefaultObstacle, cycle);
 		}
 
@@ -525,7 +544,8 @@ namespace Pathfinding.RVO {
 		///
 		/// See: RemoveObstacle
 		/// </summary>
-		public ObstacleVertex AddObstacle (Vector3[] vertices, float height, Matrix4x4 matrix, RVOLayer layer = RVOLayer.DefaultObstacle, bool cycle = true) {
+		public ObstacleVertex AddObstacle(Vector3[] vertices, float height, Matrix4x4 matrix, RVOLayer layer = RVOLayer.DefaultObstacle, bool cycle = true)
+		{
 			if (vertices == null) throw new System.ArgumentNullException("Vertices must not be null");
 			if (vertices.Length < 2) throw new System.ArgumentException("Less than 2 vertices in an obstacle");
 
@@ -535,8 +555,10 @@ namespace Pathfinding.RVO {
 			// Don't interfere with ongoing calculations
 			BlockUntilSimulationStepIsDone();
 
-			for (int i = 0; i < vertices.Length; i++) {
-				var v = new ObstacleVertex {
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				var v = new ObstacleVertex
+				{
 					prev = prev,
 					layer = layer,
 					height = height
@@ -548,7 +570,8 @@ namespace Pathfinding.RVO {
 				prev = v;
 			}
 
-			if (cycle) {
+			if (cycle)
+			{
 				prev.next = first;
 				first.prev = prev;
 			}
@@ -563,7 +586,8 @@ namespace Pathfinding.RVO {
 		///
 		/// See: RemoveObstacle
 		/// </summary>
-		public ObstacleVertex AddObstacle (Vector3 a, Vector3 b, float height) {
+		public ObstacleVertex AddObstacle(Vector3 a, Vector3 b, float height)
+		{
 			ObstacleVertex first = new ObstacleVertex();
 			ObstacleVertex second = new ObstacleVertex();
 
@@ -581,7 +605,7 @@ namespace Pathfinding.RVO {
 			second.height = height;
 			second.ignore = true;
 
-			first.dir = new Vector2(b.x-a.x, b.z-a.z).normalized;
+			first.dir = new Vector2(b.x - a.x, b.z - a.z).normalized;
 			second.dir = -first.dir;
 
 			//Don't interfere with ongoing calculations
@@ -601,7 +625,8 @@ namespace Pathfinding.RVO {
 		/// <param name="obstacle">%Obstacle to update</param>
 		/// <param name="vertices">New vertices for the obstacle, must have at least the number of vertices in the original obstacle</param>
 		/// <param name="matrix">%Matrix to multiply vertices with before updating obstacle</param>
-		public void UpdateObstacle (ObstacleVertex obstacle, Vector3[] vertices, Matrix4x4 matrix) {
+		public void UpdateObstacle(ObstacleVertex obstacle, Vector3[] vertices, Matrix4x4 matrix)
+		{
 			if (vertices == null) throw new System.ArgumentNullException("Vertices must not be null");
 			if (obstacle == null) throw new System.ArgumentNullException("Obstacle must not be null");
 
@@ -616,10 +641,12 @@ namespace Pathfinding.RVO {
 
 			// Obstacles are represented using linked lists
 			var vertex = obstacle;
-			do {
-				if (count >= vertices.Length) {
+			do
+			{
+				if (count >= vertices.Length)
+				{
 					Debug.DrawLine(vertex.prev.position, vertex.position, Color.red);
-					throw new System.ArgumentException("Obstacle has more vertices than supplied for updating (" + vertices.Length+ " supplied)");
+					throw new System.ArgumentException("Obstacle has more vertices than supplied for updating (" + vertices.Length + " supplied)");
 				}
 
 				// Premature optimization ftw!
@@ -629,10 +656,14 @@ namespace Pathfinding.RVO {
 			} while (vertex != obstacle && vertex != null);
 
 			vertex = obstacle;
-			do {
-				if (vertex.next == null) {
+			do
+			{
+				if (vertex.next == null)
+				{
 					vertex.dir = Vector2.zero;
-				} else {
+				}
+				else
+				{
 					Vector3 dir = vertex.next.position - vertex.position;
 					vertex.dir = new Vector2(dir.x, dir.z).normalized;
 				}
@@ -644,11 +675,13 @@ namespace Pathfinding.RVO {
 			UpdateObstacles();
 		}
 
-		private void ScheduleCleanObstacles () {
+		private void ScheduleCleanObstacles()
+		{
 			doCleanObstacles = true;
 		}
 
-		private void CleanObstacles () {
+		private void CleanObstacles()
+		{
 		}
 
 		/// <summary>
@@ -657,7 +690,8 @@ namespace Pathfinding.RVO {
 		///
 		/// See: AddObstacle
 		/// </summary>
-		public void RemoveObstacle (ObstacleVertex v) {
+		public void RemoveObstacle(ObstacleVertex v)
+		{
 			if (v == null) throw new System.ArgumentNullException("Vertex must not be null");
 
 			// Don't interfere with ongoing calculations
@@ -671,22 +705,27 @@ namespace Pathfinding.RVO {
 		/// Rebuilds the obstacle tree at next simulation frame.
 		/// Add and remove obstacle functions call this automatically.
 		/// </summary>
-		public void UpdateObstacles () {
+		public void UpdateObstacles()
+		{
 			// Update obstacles at next frame
 			doUpdateObstacles = true;
 		}
 
-		void BuildQuadtree () {
+		void BuildQuadtree()
+		{
 			Quadtree.Clear();
-			if (agents.Count > 0) {
+			if (agents.Count > 0)
+			{
 				Rect bounds = Rect.MinMaxRect(agents[0].position.x, agents[0].position.y, agents[0].position.x, agents[0].position.y);
-				for (int i = 1; i < agents.Count; i++) {
+				for (int i = 1; i < agents.Count; i++)
+				{
 					Vector2 p = agents[i].position;
 					bounds = Rect.MinMaxRect(Mathf.Min(bounds.xMin, p.x), Mathf.Min(bounds.yMin, p.y), Mathf.Max(bounds.xMax, p.x), Mathf.Max(bounds.yMax, p.y));
 				}
 				Quadtree.SetBounds(bounds);
 
-				for (int i = 0; i < agents.Count; i++) {
+				for (int i = 0; i < agents.Count; i++)
+				{
 					Quadtree.Insert(agents[i]);
 				}
 
@@ -700,47 +739,57 @@ namespace Pathfinding.RVO {
 		/// Blocks until separate threads have finished with the current simulation step.
 		/// When double buffering is done, the simulation is performed in between frames.
 		/// </summary>
-		void BlockUntilSimulationStepIsDone () {
+		void BlockUntilSimulationStepIsDone()
+		{
 			if (Multithreading && doubleBuffering) for (int j = 0; j < workers.Length; j++) workers[j].WaitOne();
 		}
 
 		private WorkerContext coroutineWorkerContext = new WorkerContext();
 
-		void PreCalculation () {
+		void PreCalculation()
+		{
 			for (int i = 0; i < agents.Count; i++) agents[i].PreCalculation();
 		}
 
-		void CleanAndUpdateObstaclesIfNecessary () {
-			if (doCleanObstacles) {
+		void CleanAndUpdateObstaclesIfNecessary()
+		{
+			if (doCleanObstacles)
+			{
 				CleanObstacles();
 				doCleanObstacles = false;
 				doUpdateObstacles = true;
 			}
 
-			if (doUpdateObstacles) {
+			if (doUpdateObstacles)
+			{
 				doUpdateObstacles = false;
 			}
 		}
 
 		/// <summary>Should be called once per frame</summary>
-		public void Update () {
+		public void Update()
+		{
 			// Initialize last step
-			if (lastStep < 0) {
+			if (lastStep < 0)
+			{
 				lastStep = Time.time;
 				deltaTime = DesiredDeltaTime;
 			}
 
-			if (Time.time - lastStep >= DesiredDeltaTime) {
+			if (Time.time - lastStep >= DesiredDeltaTime)
+			{
 				deltaTime = Time.time - lastStep;
 				lastStep = Time.time;
 
 				// Prevent a zero delta time
-				deltaTime = System.Math.Max(deltaTime, 1.0f/2000f);
+				deltaTime = System.Math.Max(deltaTime, 1.0f / 2000f);
 
-				if (Multithreading) {
+				if (Multithreading)
+				{
 					// Make sure the threads have completed their tasks
 					// Otherwise block until they have
-					if (doubleBuffering) {
+					if (doubleBuffering)
+					{
 						for (int i = 0; i < workers.Length; i++) workers[i].WaitOne();
 						for (int i = 0; i < agents.Count; i++) agents[i].PostCalculation();
 					}
@@ -749,9 +798,10 @@ namespace Pathfinding.RVO {
 					CleanAndUpdateObstaclesIfNecessary();
 					BuildQuadtree();
 
-					for (int i = 0; i < workers.Length; i++) {
-						workers[i].start = i*agents.Count / workers.Length;
-						workers[i].end = (i+1)*agents.Count / workers.Length;
+					for (int i = 0; i < workers.Length; i++)
+					{
+						workers[i].start = i * agents.Count / workers.Length;
+						workers[i].end = (i + 1) * agents.Count / workers.Length;
 					}
 
 					// BufferSwitch
@@ -763,20 +813,25 @@ namespace Pathfinding.RVO {
 
 					// Make sure the threads have completed their tasks
 					// Otherwise block until they have
-					if (!doubleBuffering) {
+					if (!doubleBuffering)
+					{
 						for (int i = 0; i < workers.Length; i++) workers[i].WaitOne();
 						for (int i = 0; i < agents.Count; i++) agents[i].PostCalculation();
 					}
-				} else {
+				}
+				else
+				{
 					PreCalculation();
 					CleanAndUpdateObstaclesIfNecessary();
 					BuildQuadtree();
 
-					for (int i = 0; i < agents.Count; i++) {
+					for (int i = 0; i < agents.Count; i++)
+					{
 						agents[i].BufferSwitch();
 					}
 
-					for (int i = 0; i < agents.Count; i++) {
+					for (int i = 0; i < agents.Count; i++)
+					{
 						agents[i].CalculateNeighbours();
 						agents[i].CalculateVelocity(coroutineWorkerContext);
 					}
@@ -786,20 +841,22 @@ namespace Pathfinding.RVO {
 			}
 		}
 
-		internal class WorkerContext {
+		internal class WorkerContext
+		{
 			public Agent.VOBuffer vos = new Agent.VOBuffer(16);
 
 			public const int KeepCount = 3;
 			public Vector2[] bestPos = new Vector2[KeepCount];
 			public float[] bestSizes = new float[KeepCount];
-			public float[] bestScores = new float[KeepCount+1];
+			public float[] bestScores = new float[KeepCount + 1];
 
 			public Vector2[] samplePos = new Vector2[50];
 			public float[] sampleSize = new float[50];
 		}
 
 		/// <summary>Worker thread for RVO simulation</summary>
-		class Worker {
+		class Worker
+		{
 			public int start, end;
 #if NET_4_6 || NET_STANDARD_2_0
 			readonly ManualResetEventSlim runFlag = new ManualResetEventSlim(false);
@@ -813,7 +870,8 @@ namespace Pathfinding.RVO {
 			bool terminate = false;
 			WorkerContext context = new WorkerContext();
 
-			public Worker (Simulator sim) {
+			public Worker(Simulator sim)
+			{
 				this.simulator = sim;
 				var thread = new Thread(new ThreadStart(Run));
 				thread.IsBackground = true;
@@ -824,13 +882,15 @@ namespace Pathfinding.RVO {
 				thread.Start();
 			}
 
-			public void Execute (int task) {
+			public void Execute(int task)
+			{
 				this.task = task;
 				waitFlag.Reset();
 				runFlag.Set();
 			}
 
-			public void WaitOne () {
+			public void WaitOne()
+			{
 #if NET_4_6 || NET_STANDARD_2_0
 				if (!terminate) waitFlag.Wait();
 #else
@@ -838,13 +898,15 @@ namespace Pathfinding.RVO {
 #endif
 			}
 
-			public void Terminate () {
+			public void Terminate()
+			{
 				WaitOne();
 				terminate = true;
 				Execute(-1);
 			}
 
-			public void Run () {
+			public void Run()
+			{
 #if NET_4_6 || NET_STANDARD_2_0
 				runFlag.Wait();
 				runFlag.Reset();
@@ -852,25 +914,38 @@ namespace Pathfinding.RVO {
 				runFlag.WaitOne();
 #endif
 
-				while (!terminate) {
-					try {
+				while (!terminate)
+				{
+					try
+					{
 						List<Agent> agents = simulator.GetAgents();
-						if (task == 0) {
-							for (int i = start; i < end; i++) {
+						if (task == 0)
+						{
+							for (int i = start; i < end; i++)
+							{
 								agents[i].CalculateNeighbours();
 								agents[i].CalculateVelocity(context);
 							}
-						} else if (task == 1) {
-							for (int i = start; i < end; i++) {
+						}
+						else if (task == 1)
+						{
+							for (int i = start; i < end; i++)
+							{
 								agents[i].BufferSwitch();
 							}
-						} else if (task == 2) {
+						}
+						else if (task == 2)
+						{
 							simulator.BuildQuadtree();
-						} else {
+						}
+						else
+						{
 							Debug.LogError("Invalid Task Number: " + task);
 							throw new System.Exception("Invalid Task Number: " + task);
 						}
-					} catch (System.Exception e) {
+					}
+					catch (System.Exception e)
+					{
 						Debug.LogError(e);
 					}
 					waitFlag.Set();

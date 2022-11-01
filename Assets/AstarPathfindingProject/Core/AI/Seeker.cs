@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.Profiling;
 #endif
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	/// <summary>
 	/// Handles path calls for a single unit.
 	/// \ingroup relevant
@@ -18,7 +19,8 @@ namespace Pathfinding {
 	/// </summary>
 	[AddComponentMenu("Pathfinding/Seeker")]
 	[HelpURL("http://arongranberg.com/astar/docs/class_pathfinding_1_1_seeker.php")]
-	public class Seeker : VersionedMonoBehaviour {
+	public class Seeker : VersionedMonoBehaviour
+	{
 		/// <summary>
 		/// Enables drawing of the last calculated path using Gizmos.
 		/// The path will show up in green.
@@ -148,19 +150,22 @@ namespace Pathfinding {
 		/// <summary>Internal list of all modifiers</summary>
 		readonly List<IPathModifier> modifiers = new List<IPathModifier>();
 
-		public enum ModifierPass {
+		public enum ModifierPass
+		{
 			PreProcess,
 			// An obsolete item occupied index 1 previously
 			PostProcess = 2,
 		}
 
-		public Seeker () {
+		public Seeker()
+		{
 			onPathDelegate = OnPathComplete;
 			onPartialPathDelegate = OnPartialPathComplete;
 		}
 
 		/// <summary>Initializes a few variables</summary>
-		protected override void Awake () {
+		protected override void Awake()
+		{
 			base.Awake();
 			startEndModifier.Awake(this);
 		}
@@ -171,7 +176,8 @@ namespace Pathfinding {
 		///
 		/// See: pathCallback
 		/// </summary>
-		public Path GetCurrentPath () {
+		public Path GetCurrentPath()
+		{
 			return path;
 		}
 
@@ -185,10 +191,13 @@ namespace Pathfinding {
 		/// the path calculation.
 		/// </summary>
 		/// <param name="pool">If true then the path will be pooled when the pathfinding system is done with it.</param>
-		public void CancelCurrentPathRequest (bool pool = true) {
-			if (!IsDone()) {
+		public void CancelCurrentPathRequest(bool pool = true)
+		{
+			if (!IsDone())
+			{
 				path.FailWithError("Canceled by script (Seeker.CancelCurrentPathRequest)");
-				if (pool) {
+				if (pool)
+				{
 					// Make sure the path has had its reference count incremented and decremented once.
 					// If this is not done the system will think no pooling is used at all and will not pool the path.
 					// The particular object that is used as the parameter (in this case 'path') doesn't matter at all
@@ -207,7 +216,8 @@ namespace Pathfinding {
 		/// See: <see cref="ReleaseClaimedPath"/>
 		/// See: <see cref="startEndModifier"/>
 		/// </summary>
-		public void OnDestroy () {
+		public void OnDestroy()
+		{
 			ReleaseClaimedPath();
 			startEndModifier.OnDestroy(this);
 		}
@@ -222,15 +232,18 @@ namespace Pathfinding {
 		///
 		/// See: pooling (view in online documentation for working links)
 		/// </summary>
-		void ReleaseClaimedPath () {
-			if (prevPath != null) {
+		void ReleaseClaimedPath()
+		{
+			if (prevPath != null)
+			{
 				prevPath.Release(this, true);
 				prevPath = null;
 			}
 		}
 
 		/// <summary>Called by modifiers to register themselves</summary>
-		public void RegisterModifier (IPathModifier modifier) {
+		public void RegisterModifier(IPathModifier modifier)
+		{
 			modifiers.Add(modifier);
 
 			// Sort the modifiers based on their specified order
@@ -238,7 +251,8 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Called by modifiers when they are disabled or destroyed</summary>
-		public void DeregisterModifier (IPathModifier modifier) {
+		public void DeregisterModifier(IPathModifier modifier)
+		{
 			modifiers.Remove(modifier);
 		}
 
@@ -249,17 +263,22 @@ namespace Pathfinding {
 		/// See: RunModifiers
 		/// \since Added in 3.2
 		/// </summary>
-		public void PostProcess (Path path) {
+		public void PostProcess(Path path)
+		{
 			RunModifiers(ModifierPass.PostProcess, path);
 		}
 
 		/// <summary>Runs modifiers on a path</summary>
-		public void RunModifiers (ModifierPass pass, Path path) {
-			if (pass == ModifierPass.PreProcess) {
+		public void RunModifiers(ModifierPass pass, Path path)
+		{
+			if (pass == ModifierPass.PreProcess)
+			{
 				if (preProcessPath != null) preProcessPath(path);
 
 				for (int i = 0; i < modifiers.Count; i++) modifiers[i].PreProcess(path);
-			} else if (pass == ModifierPass.PostProcess) {
+			}
+			else if (pass == ModifierPass.PostProcess)
+			{
 				Profiler.BeginSample("Running Path Modifiers");
 				// Call delegates if they exist
 				if (postProcessPath != null) postProcessPath(path);
@@ -280,7 +299,8 @@ namespace Pathfinding {
 		/// \since Added in 3.0.8
 		/// Version: Behaviour changed in 3.2
 		/// </summary>
-		public bool IsDone () {
+		public bool IsDone()
+		{
 			return path == null || path.PipelineState >= PathState.Returned;
 		}
 
@@ -289,7 +309,8 @@ namespace Pathfinding {
 		/// This should have been implemented as optional parameter values, but that didn't seem to work very well with delegates (the values weren't the default ones)
 		/// See: OnPathComplete(Path,bool,bool)
 		/// </summary>
-		void OnPathComplete (Path path) {
+		void OnPathComplete(Path path)
+		{
 			OnPathComplete(path, true, true);
 		}
 
@@ -297,32 +318,38 @@ namespace Pathfinding {
 		/// Called when a path has completed.
 		/// Will post process it and return it by calling <see cref="tmpPathCallback"/> and <see cref="pathCallback"/>
 		/// </summary>
-		void OnPathComplete (Path p, bool runModifiers, bool sendCallbacks) {
-			if (p != null && p != path && sendCallbacks) {
+		void OnPathComplete(Path p, bool runModifiers, bool sendCallbacks)
+		{
+			if (p != null && p != path && sendCallbacks)
+			{
 				return;
 			}
 
 			if (this == null || p == null || p != path)
 				return;
 
-			if (!path.error && runModifiers) {
+			if (!path.error && runModifiers)
+			{
 				// This will send the path for post processing to modifiers attached to this Seeker
 				RunModifiers(ModifierPass.PostProcess, path);
 			}
 
-			if (sendCallbacks) {
+			if (sendCallbacks)
+			{
 				p.Claim(this);
 
 				lastCompletedNodePath = p.path;
 				lastCompletedVectorPath = p.vectorPath;
 
 				// This will send the path to the callback (if any) specified when calling StartPath
-				if (tmpPathCallback != null) {
+				if (tmpPathCallback != null)
+				{
 					tmpPathCallback(p);
 				}
 
 				// This will send the path to any script which has registered to the callback
-				if (pathCallback != null) {
+				if (pathCallback != null)
+				{
 					pathCallback(p);
 				}
 
@@ -334,7 +361,8 @@ namespace Pathfinding {
 				// is kept alive until it is replaced.
 
 				// Recycle the previous path to reduce the load on the GC
-				if (prevPath != null) {
+				if (prevPath != null)
+				{
 					prevPath.Release(this, true);
 				}
 
@@ -346,12 +374,14 @@ namespace Pathfinding {
 		/// Called for each path in a MultiTargetPath.
 		/// Only post processes the path, does not return it.
 		/// </summary>
-		void OnPartialPathComplete (Path p) {
+		void OnPartialPathComplete(Path p)
+		{
 			OnPathComplete(p, true, false);
 		}
 
 		/// <summary>Called once for a MultiTargetPath. Only returns the path, does not post process.</summary>
-		void OnMultiPathComplete (Path p) {
+		void OnMultiPathComplete(Path p)
+		{
 			OnPathComplete(p, false, true);
 		}
 
@@ -369,7 +399,8 @@ namespace Pathfinding {
 		/// Deprecated: Use ABPath.Construct(start, end, null) instead.
 		/// </summary>
 		[System.Obsolete("Use ABPath.Construct(start, end, null) instead")]
-		public ABPath GetNewPath (Vector3 start, Vector3 end) {
+		public ABPath GetNewPath(Vector3 start, Vector3 end)
+		{
 			// Construct a path with start and end points
 			return ABPath.Construct(start, end, null);
 		}
@@ -380,7 +411,8 @@ namespace Pathfinding {
 		/// </summary>
 		/// <param name="start">The start point of the path</param>
 		/// <param name="end">The end point of the path</param>
-		public Path StartPath (Vector3 start, Vector3 end) {
+		public Path StartPath(Vector3 start, Vector3 end)
+		{
 			return StartPath(start, end, null);
 		}
 
@@ -393,7 +425,8 @@ namespace Pathfinding {
 		/// <param name="start">The start point of the path</param>
 		/// <param name="end">The end point of the path</param>
 		/// <param name="callback">The function to call when the path has been calculated</param>
-		public Path StartPath (Vector3 start, Vector3 end, OnPathDelegate callback) {
+		public Path StartPath(Vector3 start, Vector3 end, OnPathDelegate callback)
+		{
 			return StartPath(ABPath.Construct(start, end, null), callback);
 		}
 
@@ -407,7 +440,8 @@ namespace Pathfinding {
 		/// <param name="end">The end point of the path</param>
 		/// <param name="callback">The function to call when the path has been calculated</param>
 		/// <param name="graphMask">Mask used to specify which graphs should be searched for close nodes. See #Pathfinding.NNConstraint.graphMask. This will override #graphMask for this path request.</param>
-		public Path StartPath (Vector3 start, Vector3 end, OnPathDelegate callback, GraphMask graphMask) {
+		public Path StartPath(Vector3 start, Vector3 end, OnPathDelegate callback, GraphMask graphMask)
+		{
 			return StartPath(ABPath.Construct(start, end, null), callback, graphMask);
 		}
 
@@ -424,7 +458,8 @@ namespace Pathfinding {
 		/// </summary>
 		/// <param name="p">The path to start calculating</param>
 		/// <param name="callback">The function to call when the path has been calculated</param>
-		public Path StartPath (Path p, OnPathDelegate callback = null) {
+		public Path StartPath(Path p, OnPathDelegate callback = null)
+		{
 			// Set the graph mask only if the user has not changed it from the default value.
 			// This is not perfect as the user may have wanted it to be precisely -1
 			// however it is the best detection that I can do.
@@ -447,27 +482,33 @@ namespace Pathfinding {
 		/// <param name="p">The path to start calculating</param>
 		/// <param name="callback">The function to call when the path has been calculated</param>
 		/// <param name="graphMask">Mask used to specify which graphs should be searched for close nodes. See #Pathfinding.GraphMask. This will override #graphMask for this path request.</param>
-		public Path StartPath (Path p, OnPathDelegate callback, GraphMask graphMask) {
+		public Path StartPath(Path p, OnPathDelegate callback, GraphMask graphMask)
+		{
 			p.nnConstraint.graphMask = graphMask;
 			StartPathInternal(p, callback);
 			return p;
 		}
 
 		/// <summary>Internal method to start a path and mark it as the currently active path</summary>
-		void StartPathInternal (Path p, OnPathDelegate callback) {
+		void StartPathInternal(Path p, OnPathDelegate callback)
+		{
 			var mtp = p as MultiTargetPath;
 
-			if (mtp != null) {
+			if (mtp != null)
+			{
 				// TODO: Allocation, cache
 				var callbacks = new OnPathDelegate[mtp.targetPoints.Length];
 
-				for (int i = 0; i < callbacks.Length; i++) {
+				for (int i = 0; i < callbacks.Length; i++)
+				{
 					callbacks[i] = onPartialPathDelegate;
 				}
 
 				mtp.callbacks = callbacks;
 				p.callback += OnMultiPathComplete;
-			} else {
+			}
+			else
+			{
 				p.callback += onPathDelegate;
 			}
 
@@ -475,8 +516,9 @@ namespace Pathfinding {
 			p.tagPenalties = tagPenalties;
 
 			// Cancel a previously requested path is it has not been processed yet and also make sure that it has not been recycled and used somewhere else
-			if (path != null && path.PipelineState <= PathState.Processing && path.CompleteState != PathCompleteState.Error && lastPathID == path.pathID) {
-				path.FailWithError("Canceled path because a new one was requested.\n"+
+			if (path != null && path.PipelineState <= PathState.Processing && path.CompleteState != PathCompleteState.Error && lastPathID == path.pathID)
+			{
+				path.FailWithError("Canceled path because a new one was requested.\n" +
 					"This happens when a new path is requested from the seeker when one was already being calculated.\n" +
 					"For example if a unit got a new order, you might request a new path directly instead of waiting for the now" +
 					" invalid path to be calculated. Which is probably what you want.\n" +
@@ -512,7 +554,8 @@ namespace Pathfinding {
 		/// <param name="pathsForAll">Indicates whether or not a path to all end points should be searched for or only to the closest one</param>
 		/// <param name="callback">The function to call when the path has been calculated</param>
 		/// <param name="graphMask">Mask used to specify which graphs should be searched for close nodes. See Pathfinding.NNConstraint.graphMask.</param>
-		public MultiTargetPath StartMultiTargetPath (Vector3 start, Vector3[] endPoints, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
+		public MultiTargetPath StartMultiTargetPath(Vector3 start, Vector3[] endPoints, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1)
+		{
 			MultiTargetPath p = MultiTargetPath.Construct(start, endPoints, null, null);
 
 			p.pathsForAll = pathsForAll;
@@ -534,7 +577,8 @@ namespace Pathfinding {
 		/// <param name="pathsForAll">Indicates whether or not a path from all start points should be searched for or only to the closest one</param>
 		/// <param name="callback">The function to call when the path has been calculated</param>
 		/// <param name="graphMask">Mask used to specify which graphs should be searched for close nodes. See Pathfinding.NNConstraint.graphMask.</param>
-		public MultiTargetPath StartMultiTargetPath (Vector3[] startPoints, Vector3 end, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1) {
+		public MultiTargetPath StartMultiTargetPath(Vector3[] startPoints, Vector3 end, bool pathsForAll, OnPathDelegate callback = null, int graphMask = -1)
+		{
 			MultiTargetPath p = MultiTargetPath.Construct(startPoints, end, null, null);
 
 			p.pathsForAll = pathsForAll;
@@ -560,38 +604,48 @@ namespace Pathfinding {
 		/// <param name="callback">The function to call when the path has been calculated</param>
 		/// <param name="graphMask">Mask used to specify which graphs should be searched for close nodes. See Pathfinding.NNConstraint.graphMask.</param>
 		[System.Obsolete("You can use StartPath instead of this method now. It will behave identically.")]
-		public MultiTargetPath StartMultiTargetPath (MultiTargetPath p, OnPathDelegate callback = null, int graphMask = -1) {
+		public MultiTargetPath StartMultiTargetPath(MultiTargetPath p, OnPathDelegate callback = null, int graphMask = -1)
+		{
 			StartPath(p, callback, graphMask);
 			return p;
 		}
 
 		/// <summary>Draws gizmos for the Seeker</summary>
-		public void OnDrawGizmos () {
-			if (lastCompletedNodePath == null || !drawGizmos) {
+		public void OnDrawGizmos()
+		{
+			if (lastCompletedNodePath == null || !drawGizmos)
+			{
 				return;
 			}
 
-			if (detailedGizmos) {
+			if (detailedGizmos)
+			{
 				Gizmos.color = new Color(0.7F, 0.5F, 0.1F, 0.5F);
 
-				if (lastCompletedNodePath != null) {
-					for (int i = 0; i < lastCompletedNodePath.Count-1; i++) {
-						Gizmos.DrawLine((Vector3)lastCompletedNodePath[i].position, (Vector3)lastCompletedNodePath[i+1].position);
+				if (lastCompletedNodePath != null)
+				{
+					for (int i = 0; i < lastCompletedNodePath.Count - 1; i++)
+					{
+						Gizmos.DrawLine((Vector3)lastCompletedNodePath[i].position, (Vector3)lastCompletedNodePath[i + 1].position);
 					}
 				}
 			}
 
 			Gizmos.color = new Color(0, 1F, 0, 1F);
 
-			if (lastCompletedVectorPath != null) {
-				for (int i = 0; i < lastCompletedVectorPath.Count-1; i++) {
-					Gizmos.DrawLine(lastCompletedVectorPath[i], lastCompletedVectorPath[i+1]);
+			if (lastCompletedVectorPath != null)
+			{
+				for (int i = 0; i < lastCompletedVectorPath.Count - 1; i++)
+				{
+					Gizmos.DrawLine(lastCompletedVectorPath[i], lastCompletedVectorPath[i + 1]);
 				}
 			}
 		}
 
-		protected override int OnUpgradeSerializedData (int version, bool unityThread) {
-			if (graphMaskCompatibility != -1) {
+		protected override int OnUpgradeSerializedData(int version, bool unityThread)
+		{
+			if (graphMaskCompatibility != -1)
+			{
 				Debug.Log("Loaded " + graphMaskCompatibility + " " + graphMask.value);
 				graphMask = graphMaskCompatibility;
 				graphMaskCompatibility = -1;

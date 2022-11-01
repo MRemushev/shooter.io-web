@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Pathfinding.RVO.Sampled {
+namespace Pathfinding.RVO.Sampled
+{
 	using Pathfinding;
 	using Pathfinding.RVO;
 	using Pathfinding.Util;
@@ -12,7 +13,8 @@ namespace Pathfinding.RVO.Sampled {
 	///
 	/// See: IAgent
 	/// </summary>
-	public class Agent : IAgent {
+	public class Agent : IAgent
+	{
 		//Current values for double buffer calculation
 
 		internal float radius, height, desiredSpeed, maxSpeed, agentTimeHorizon, obstacleTimeHorizon;
@@ -78,11 +80,14 @@ namespace Pathfinding.RVO.Sampled {
 		public RVOLayer CollidesWith { get; set; }
 
 		/// <summary>\copydoc Pathfinding::RVO::IAgent::DebugDraw</summary>
-		public bool DebugDraw {
-			get {
+		public bool DebugDraw
+		{
+			get
+			{
 				return debugDraw;
 			}
-			set {
+			set
+			{
 				debugDraw = value && simulator != null && !simulator.Multithreading;
 			}
 		}
@@ -98,7 +103,8 @@ namespace Pathfinding.RVO.Sampled {
 		#region IAgent Methods
 
 		/// <summary>\copydoc Pathfinding::RVO::IAgent::SetTarget</summary>
-		public void SetTarget (Vector2 targetPoint, float desiredSpeed, float maxSpeed) {
+		public void SetTarget(Vector2 targetPoint, float desiredSpeed, float maxSpeed)
+		{
 			maxSpeed = System.Math.Max(maxSpeed, 0);
 			desiredSpeed = System.Math.Min(System.Math.Max(desiredSpeed, 0), maxSpeed);
 
@@ -108,12 +114,14 @@ namespace Pathfinding.RVO.Sampled {
 		}
 
 		/// <summary>\copydoc Pathfinding::RVO::IAgent::SetCollisionNormal</summary>
-		public void SetCollisionNormal (Vector2 normal) {
+		public void SetCollisionNormal(Vector2 normal)
+		{
 			collisionNormal = normal;
 		}
 
 		/// <summary>\copydoc Pathfinding::RVO::IAgent::ForceSetVelocity</summary>
-		public void ForceSetVelocity (Vector2 velocity) {
+		public void ForceSetVelocity(Vector2 velocity)
+		{
 			// A bit hacky, but it is approximately correct
 			// assuming the agent does not move significantly
 			nextTargetPoint = CalculatedTargetPoint = position + velocity * 1000;
@@ -146,13 +154,16 @@ namespace Pathfinding.RVO.Sampled {
 		/// <summary>Extra weight that walls will have</summary>
 		const float WallWeight = 5;
 
-		public List<ObstacleVertex> NeighbourObstacles {
-			get {
+		public List<ObstacleVertex> NeighbourObstacles
+		{
+			get
+			{
 				return null;
 			}
 		}
 
-		public Agent (Vector2 pos, float elevationCoordinate) {
+		public Agent(Vector2 pos, float elevationCoordinate)
+		{
 			AgentTimeHorizon = 2;
 			ObstacleTimeHorizon = 2;
 			Height = 5;
@@ -178,7 +189,8 @@ namespace Pathfinding.RVO.Sampled {
 		/// Will also set CalculatedTargetPoint and CalculatedSpeed to the result
 		/// which was last calculated.
 		/// </summary>
-		public void BufferSwitch () {
+		public void BufferSwitch()
+		{
 			// <== Read public properties
 			radius = Radius;
 			height = Height;
@@ -195,11 +207,14 @@ namespace Pathfinding.RVO.Sampled {
 			collidesWith = CollidesWith;
 			layer = Layer;
 
-			if (locked) {
+			if (locked)
+			{
 				// Locked agents do not move at all
 				desiredTargetPointInVelocitySpace = position;
 				desiredVelocity = currentVelocity = Vector2.zero;
-			} else {
+			}
+			else
+			{
 				desiredTargetPointInVelocitySpace = nextTargetPoint - position;
 
 				// Estimate our current velocity
@@ -208,14 +223,16 @@ namespace Pathfinding.RVO.Sampled {
 				currentVelocity = (CalculatedTargetPoint - position).normalized * CalculatedSpeed;
 
 				// Calculate the desired velocity from the point we want to reach
-				desiredVelocity = desiredTargetPointInVelocitySpace.normalized*desiredSpeed;
+				desiredVelocity = desiredTargetPointInVelocitySpace.normalized * desiredSpeed;
 
-				if (collisionNormal != Vector2.zero) {
+				if (collisionNormal != Vector2.zero)
+				{
 					collisionNormal.Normalize();
 					var dot = Vector2.Dot(currentVelocity, collisionNormal);
 
 					// Check if the velocity is going into the wall
-					if (dot < 0) {
+					if (dot < 0)
+					{
 						// If so: remove that component from the velocity
 						currentVelocity -= collisionNormal * dot;
 					}
@@ -226,15 +243,19 @@ namespace Pathfinding.RVO.Sampled {
 			}
 		}
 
-		public void PreCalculation () {
-			if (PreCalculationCallback != null) {
+		public void PreCalculation()
+		{
+			if (PreCalculationCallback != null)
+			{
 				PreCalculationCallback();
 			}
 		}
 
-		public void PostCalculation () {
+		public void PostCalculation()
+		{
 			// ==> Set public properties
-			if (!manuallyControlled) {
+			if (!manuallyControlled)
+			{
 				CalculatedTargetPoint = calculatedTargetPoint;
 				CalculatedSpeed = calculatedSpeed;
 			}
@@ -247,7 +268,8 @@ namespace Pathfinding.RVO.Sampled {
 		}
 
 		/// <summary>Populate the neighbours and neighbourDists lists with the closest agents to this agent</summary>
-		public void CalculateNeighbours () {
+		public void CalculateNeighbours()
+		{
 			neighbours.Clear();
 			neighbourDists.Clear();
 
@@ -257,41 +279,48 @@ namespace Pathfinding.RVO.Sampled {
 		}
 
 		/// <summary>Square a number</summary>
-		static float Sqr (float x) {
-			return x*x;
+		static float Sqr(float x)
+		{
+			return x * x;
 		}
 
 		/// <summary>
 		/// Used by the Quadtree.
 		/// See: CalculateNeighbours
 		/// </summary>
-		internal float InsertAgentNeighbour (Agent agent, float rangeSq) {
+		internal float InsertAgentNeighbour(Agent agent, float rangeSq)
+		{
 			// Check if this agent collides with the other agent
 			if (this == agent || (agent.layer & collidesWith) == 0) return rangeSq;
 
 			// 2D distance
 			float dist = (agent.position - position).sqrMagnitude;
 
-			if (dist < rangeSq) {
-				if (neighbours.Count < maxNeighbours) {
+			if (dist < rangeSq)
+			{
+				if (neighbours.Count < maxNeighbours)
+				{
 					neighbours.Add(null);
 					neighbourDists.Add(float.PositiveInfinity);
 				}
 
 				// Insert the agent into the ordered list of neighbours
-				int i = neighbours.Count-1;
-				if (dist < neighbourDists[i]) {
-					while (i != 0 && dist < neighbourDists[i-1]) {
-						neighbours[i] = neighbours[i-1];
-						neighbourDists[i] = neighbourDists[i-1];
+				int i = neighbours.Count - 1;
+				if (dist < neighbourDists[i])
+				{
+					while (i != 0 && dist < neighbourDists[i - 1])
+					{
+						neighbours[i] = neighbours[i - 1];
+						neighbourDists[i] = neighbourDists[i - 1];
 						i--;
 					}
 					neighbours[i] = agent;
 					neighbourDists[i] = dist;
 				}
 
-				if (neighbours.Count == maxNeighbours) {
-					rangeSq = neighbourDists[neighbourDists.Count-1];
+				if (neighbours.Count == maxNeighbours)
+				{
+					rangeSq = neighbourDists[neighbourDists.Count - 1];
 				}
 			}
 			return rangeSq;
@@ -299,12 +328,14 @@ namespace Pathfinding.RVO.Sampled {
 
 
 		/// <summary>(x, 0, y)</summary>
-		static Vector3 FromXZ (Vector2 p) {
+		static Vector3 FromXZ(Vector2 p)
+		{
 			return new Vector3(p.x, 0, p.y);
 		}
 
 		/// <summary>(x, z)</summary>
-		static Vector2 ToXZ (Vector3 p) {
+		static Vector2 ToXZ(Vector3 p)
+		{
 			return new Vector2(p.x, p.z);
 		}
 
@@ -315,32 +346,37 @@ namespace Pathfinding.RVO.Sampled {
 		/// otherwise it will be projected onto the XY plane and elevation
 		/// will be the Z coordinate.
 		/// </summary>
-		Vector2 To2D (Vector3 p, out float elevation) {
-			if (simulator.movementPlane == MovementPlane.XY) {
+		Vector2 To2D(Vector3 p, out float elevation)
+		{
+			if (simulator.movementPlane == MovementPlane.XY)
+			{
 				elevation = -p.z;
 				return new Vector2(p.x, p.y);
-			} else {
+			}
+			else
+			{
 				elevation = p.y;
 				return new Vector2(p.x, p.z);
 			}
 		}
 
-		static void DrawVO (Vector2 circleCenter, float radius, Vector2 origin) {
+		static void DrawVO(Vector2 circleCenter, float radius, Vector2 origin)
+		{
 			float alpha = Mathf.Atan2((origin - circleCenter).y, (origin - circleCenter).x);
-			float gamma = radius/(origin-circleCenter).magnitude;
+			float gamma = radius / (origin - circleCenter).magnitude;
 			float delta = gamma <= 1.0f ? Mathf.Abs(Mathf.Acos(gamma)) : 0;
 
-			Draw.Debug.CircleXZ(FromXZ(circleCenter), radius, Color.black, alpha-delta, alpha+delta);
-			Vector2 p1 = new Vector2(Mathf.Cos(alpha-delta), Mathf.Sin(alpha-delta)) * radius;
-			Vector2 p2 = new Vector2(Mathf.Cos(alpha+delta), Mathf.Sin(alpha+delta)) * radius;
+			Draw.Debug.CircleXZ(FromXZ(circleCenter), radius, Color.black, alpha - delta, alpha + delta);
+			Vector2 p1 = new Vector2(Mathf.Cos(alpha - delta), Mathf.Sin(alpha - delta)) * radius;
+			Vector2 p2 = new Vector2(Mathf.Cos(alpha + delta), Mathf.Sin(alpha + delta)) * radius;
 
 			Vector2 p1t = -new Vector2(-p1.y, p1.x);
 			Vector2 p2t = new Vector2(-p2.y, p2.x);
 			p1 += circleCenter;
 			p2 += circleCenter;
 
-			Debug.DrawRay(FromXZ(p1), FromXZ(p1t).normalized*100, Color.black);
-			Debug.DrawRay(FromXZ(p2), FromXZ(p2t).normalized*100, Color.black);
+			Debug.DrawRay(FromXZ(p1), FromXZ(p1t).normalized * 100, Color.black);
+			Debug.DrawRay(FromXZ(p2), FromXZ(p2t).normalized * 100, Color.black);
 		}
 
 		/// <summary>
@@ -349,7 +385,8 @@ namespace Pathfinding.RVO.Sampled {
 		///
 		/// See: https://en.wikipedia.org/wiki/Velocity_obstacle
 		/// </summary>
-		internal struct VO {
+		internal struct VO
+		{
 			Vector2 line1, line2, dir1, dir2;
 
 			Vector2 cutoffLine, cutoffDir;
@@ -369,7 +406,8 @@ namespace Pathfinding.RVO.Sampled {
 			/// <param name="radius">Combined radius of the two agents (radius1 + radius2).</param>
 			/// <param name="inverseDt">1 divided by the local avoidance time horizon (e.g avoid agents that we will hit within the next 2 seconds).</param>
 			/// <param name="inverseDeltaTime">1 divided by the time step length.</param>
-			public VO (Vector2 center, Vector2 offset, float radius, float inverseDt, float inverseDeltaTime) {
+			public VO(Vector2 center, Vector2 offset, float radius, float inverseDt, float inverseDeltaTime)
+			{
 				// Adjusted so that a parameter weightFactor of 1 will be the default ("natural") weight factor
 				this.weightFactor = 1;
 				weightBonus = 0;
@@ -377,11 +415,12 @@ namespace Pathfinding.RVO.Sampled {
 				//this.radius = radius;
 				Vector2 globalCenter;
 
-				circleCenter = center*inverseDt + offset;
+				circleCenter = center * inverseDt + offset;
 
-				this.weightFactor = 4*Mathf.Exp(-Sqr(center.sqrMagnitude/(radius*radius))) + 1;
+				this.weightFactor = 4 * Mathf.Exp(-Sqr(center.sqrMagnitude / (radius * radius))) + 1;
 				// Collision?
-				if (center.magnitude < radius) {
+				if (center.magnitude < radius)
+				{
 					colliding = true;
 
 					// 0.001 is there to make sure lin1.magnitude is not so small that the normalization
@@ -395,12 +434,14 @@ namespace Pathfinding.RVO.Sampled {
 					dir2 = Vector2.zero;
 					line2 = Vector2.zero;
 					this.radius = 0;
-				} else {
+				}
+				else
+				{
 					colliding = false;
 
 					center *= inverseDt;
 					radius *= inverseDt;
-					globalCenter = center+offset;
+					globalCenter = center + offset;
 
 					// 0.001 is there to make sure cutoffDistance is not so small that the normalization
 					// below will return Vector2.zero as that will make the VO invalid and it will be ignored.
@@ -412,20 +453,20 @@ namespace Pathfinding.RVO.Sampled {
 
 					float alpha = Mathf.Atan2(-center.y, -center.x);
 
-					float delta = Mathf.Abs(Mathf.Acos(radius/center.magnitude));
+					float delta = Mathf.Abs(Mathf.Acos(radius / center.magnitude));
 
 					this.radius = radius;
 
 					// Bounding Lines
 
 					// Point on circle
-					line1 = new Vector2(Mathf.Cos(alpha+delta), Mathf.Sin(alpha+delta));
+					line1 = new Vector2(Mathf.Cos(alpha + delta), Mathf.Sin(alpha + delta));
 					// Vector tangent to circle which is the correct line tangent
 					// Note that this vector is normalized
 					dir1 = new Vector2(line1.y, -line1.x);
 
 					// Point on circle
-					line2 = new Vector2(Mathf.Cos(alpha-delta), Mathf.Sin(alpha-delta));
+					line2 = new Vector2(Mathf.Cos(alpha - delta), Mathf.Sin(alpha - delta));
 					// Vector tangent to circle which is the correct line tangent
 					// Note that this vector is normalized
 					dir2 = new Vector2(line2.y, -line2.x);
@@ -443,18 +484,20 @@ namespace Pathfinding.RVO.Sampled {
 			/// Creates a VO for avoiding another agent.
 			/// Note that the segment is directed, the agent will want to be on the left side of the segment.
 			/// </summary>
-			public static VO SegmentObstacle (Vector2 segmentStart, Vector2 segmentEnd, Vector2 offset, float radius, float inverseDt, float inverseDeltaTime) {
+			public static VO SegmentObstacle(Vector2 segmentStart, Vector2 segmentEnd, Vector2 offset, float radius, float inverseDt, float inverseDeltaTime)
+			{
 				var vo = new VO();
 
 				// Adjusted so that a parameter weightFactor of 1 will be the default ("natural") weight factor
 				vo.weightFactor = 1;
 				// Just higher than anything else
-				vo.weightBonus = Mathf.Max(radius, 1)*40;
+				vo.weightBonus = Mathf.Max(radius, 1) * 40;
 
 				var closestOnSegment = VectorMath.ClosestPointOnSegment(segmentStart, segmentEnd, Vector2.zero);
 
 				// Collision?
-				if (closestOnSegment.magnitude <= radius) {
+				if (closestOnSegment.magnitude <= radius)
+				{
 					vo.colliding = true;
 
 					vo.line1 = closestOnSegment.normalized * (closestOnSegment.magnitude - radius) * 0.3f * inverseDeltaTime;
@@ -470,7 +513,9 @@ namespace Pathfinding.RVO.Sampled {
 					vo.segmentStart = Vector2.zero;
 					vo.segmentEnd = Vector2.zero;
 					vo.segment = false;
-				} else {
+				}
+				else
+				{
 					vo.colliding = false;
 
 					segmentStart *= inverseDt;
@@ -485,9 +530,9 @@ namespace Pathfinding.RVO.Sampled {
 					// See documentation for details
 					// The call to Max is just to prevent floating point errors causing NaNs to appear
 					var startSqrMagnitude = segmentStart.sqrMagnitude;
-					var normal1 = -VectorMath.ComplexMultiply(segmentStart, new Vector2(radius, Mathf.Sqrt(Mathf.Max(0, startSqrMagnitude - radius*radius)))) / startSqrMagnitude;
+					var normal1 = -VectorMath.ComplexMultiply(segmentStart, new Vector2(radius, Mathf.Sqrt(Mathf.Max(0, startSqrMagnitude - radius * radius)))) / startSqrMagnitude;
 					var endSqrMagnitude = segmentEnd.sqrMagnitude;
-					var normal2 = -VectorMath.ComplexMultiply(segmentEnd, new Vector2(radius, -Mathf.Sqrt(Mathf.Max(0, endSqrMagnitude - radius*radius)))) / endSqrMagnitude;
+					var normal2 = -VectorMath.ComplexMultiply(segmentEnd, new Vector2(radius, -Mathf.Sqrt(Mathf.Max(0, endSqrMagnitude - radius * radius)))) / endSqrMagnitude;
 
 					vo.line1 = segmentStart + normal1 * radius + offset;
 					vo.line2 = segmentEnd + normal2 * radius + offset;
@@ -510,7 +555,8 @@ namespace Pathfinding.RVO.Sampled {
 			/// The number can be seen as the double signed area of the triangle {a, a+dir, p} multiplied by the length of dir.
 			/// If dir.magnitude=1 this is also the distance from p to the line {a, a+dir}.
 			/// </summary>
-			public static float SignedDistanceFromLine (Vector2 a, Vector2 dir, Vector2 p) {
+			public static float SignedDistanceFromLine(Vector2 a, Vector2 dir, Vector2 p)
+			{
 				return (p.x - a.x) * (dir.y) - (dir.x) * (p.y - a.y);
 			}
 
@@ -519,10 +565,12 @@ namespace Pathfinding.RVO.Sampled {
 			/// Very similar to the <see cref="Gradient"/> method however the gradient
 			/// and value have been scaled and tweaked slightly.
 			/// </summary>
-			public Vector2 ScaledGradient (Vector2 p, out float weight) {
+			public Vector2 ScaledGradient(Vector2 p, out float weight)
+			{
 				var grad = Gradient(p, out weight);
 
-				if (weight > 0) {
+				if (weight > 0)
+				{
 					const float Scale = 2;
 					grad *= Scale * weightFactor;
 					weight *= Scale * weightFactor;
@@ -545,31 +593,40 @@ namespace Pathfinding.RVO.Sampled {
 			/// The value of the function is the distance to the closest edge
 			/// of the VO and the gradient is normalized.
 			/// </summary>
-			public Vector2 Gradient (Vector2 p, out float weight) {
-				if (colliding) {
+			public Vector2 Gradient(Vector2 p, out float weight)
+			{
+				if (colliding)
+				{
 					// Calculate double signed area of the triangle consisting of the points
 					// {line1, line1+dir1, p}
 					float l1 = SignedDistanceFromLine(line1, dir1, p);
 
 					// Serves as a check for which side of the line the point p is
-					if (l1 >= 0) {
+					if (l1 >= 0)
+					{
 						weight = l1;
 						return new Vector2(-dir1.y, dir1.x);
-					} else {
+					}
+					else
+					{
 						weight = 0;
 						return new Vector2(0, 0);
 					}
 				}
 
 				float det3 = SignedDistanceFromLine(cutoffLine, cutoffDir, p);
-				if (det3 <= 0) {
+				if (det3 <= 0)
+				{
 					weight = 0;
 					return Vector2.zero;
-				} else {
+				}
+				else
+				{
 					// Signed distances to the two edges along the sides of the VO
 					float det1 = SignedDistanceFromLine(line1, dir1, p);
 					float det2 = SignedDistanceFromLine(line2, dir2, p);
-					if (det1 >= 0 && det2 >= 0) {
+					if (det1 >= 0 && det2 >= 0)
+					{
 						// We are inside both of the half planes
 						// (all three if we count the cutoff line)
 						// and thus inside the forbidden region in velocity space
@@ -579,10 +636,13 @@ namespace Pathfinding.RVO.Sampled {
 						Vector2 gradient;
 
 						// Check if we are in the semicircle region near the cap of the VO
-						if (Vector2.Dot(p - line1, dir1) > 0 && Vector2.Dot(p - line2, dir2) < 0) {
-							if (segment) {
+						if (Vector2.Dot(p - line1, dir1) > 0 && Vector2.Dot(p - line2, dir2) < 0)
+						{
+							if (segment)
+							{
 								// This part will only be reached for line obstacles (i.e not other agents)
-								if (det3 < radius) {
+								if (det3 < radius)
+								{
 									var closestPointOnLine = (Vector2)VectorMath.ClosestPointOnSegment(segmentStart, segmentEnd, p);
 									var dirFromCenter = p - closestPointOnLine;
 									float distToCenter;
@@ -591,7 +651,9 @@ namespace Pathfinding.RVO.Sampled {
 									weight = radius - distToCenter;
 									return gradient;
 								}
-							} else {
+							}
+							else
+							{
 								var dirFromCenter = p - circleCenter;
 								float distToCenter;
 								gradient = VectorMath.Normalize(dirFromCenter, out distToCenter);
@@ -601,7 +663,8 @@ namespace Pathfinding.RVO.Sampled {
 							}
 						}
 
-						if (segment && det3 < det1 && det3 < det2) {
+						if (segment && det3 < det1 && det3 < det2)
+						{
 							weight = det3;
 							gradient = new Vector2(-cutoffDir.y, cutoffDir.x);
 							return gradient;
@@ -609,10 +672,13 @@ namespace Pathfinding.RVO.Sampled {
 
 						// Just move towards the closest edge
 						// The weight is the distance to the edge
-						if (det1 < det2) {
+						if (det1 < det2)
+						{
 							weight = det1;
 							gradient = new Vector2(-dir1.y, dir1.x);
-						} else {
+						}
+						else
+						{
 							weight = det2;
 							gradient = new Vector2(-dir2.y, dir2.x);
 						}
@@ -632,21 +698,26 @@ namespace Pathfinding.RVO.Sampled {
 		/// a struct (which VO is) then the whole struct will be copied.
 		/// When indexing into an array, that copy can be skipped.
 		/// </summary>
-		internal class VOBuffer {
+		internal class VOBuffer
+		{
 			public VO[] buffer;
 			public int length;
 
-			public void Clear () {
+			public void Clear()
+			{
 				length = 0;
 			}
 
-			public VOBuffer (int n) {
+			public VOBuffer(int n)
+			{
 				buffer = new VO[n];
 				length = 0;
 			}
 
-			public void Add (VO vo) {
-				if (length >= buffer.Length) {
+			public void Add(VO vo)
+			{
+				if (length >= buffer.Length)
+				{
 					var nbuffer = new VO[buffer.Length * 2];
 					buffer.CopyTo(nbuffer, 0);
 					buffer = nbuffer;
@@ -655,12 +726,15 @@ namespace Pathfinding.RVO.Sampled {
 			}
 		}
 
-		internal void CalculateVelocity (Pathfinding.RVO.Simulator.WorkerContext context) {
-			if (manuallyControlled) {
+		internal void CalculateVelocity(Pathfinding.RVO.Simulator.WorkerContext context)
+		{
+			if (manuallyControlled)
+			{
 				return;
 			}
 
-			if (locked) {
+			if (locked)
+			{
 				calculatedSpeed = 0;
 				calculatedTargetPoint = position;
 				return;
@@ -675,7 +749,8 @@ namespace Pathfinding.RVO.Sampled {
 
 			bool insideAnyVO = BiasDesiredVelocity(vos, ref desiredVelocity, ref desiredTargetPointInVelocitySpace, simulator.symmetryBreakingBias);
 
-			if (!insideAnyVO) {
+			if (!insideAnyVO)
+			{
 				// Desired velocity can be used directly since it was not inside any velocity obstacle.
 				// No need to run optimizer because this will be the global minima.
 				// This is also a special case in which we can set the
@@ -695,14 +770,15 @@ namespace Pathfinding.RVO.Sampled {
 
 			result = GradientDescent(vos, currentVelocity, desiredVelocity);
 
-			if (DebugDraw) Draw.Debug.CrossXZ(FromXZ(result+position), Color.white);
+			if (DebugDraw) Draw.Debug.CrossXZ(FromXZ(result + position), Color.white);
 			//Debug.DrawRay (To3D (position), To3D (result));
 
 			calculatedTargetPoint = position + result;
 			calculatedSpeed = Mathf.Min(result.magnitude, maxSpeed);
 		}
 
-		static Color Rainbow (float v) {
+		static Color Rainbow(float v)
+		{
 			Color c = new Color(v, 0, 0);
 
 			if (c.r > 1) { c.g = c.r - 1; c.r = 1; }
@@ -710,17 +786,21 @@ namespace Pathfinding.RVO.Sampled {
 			return c;
 		}
 
-		void GenerateObstacleVOs (VOBuffer vos) {
+		void GenerateObstacleVOs(VOBuffer vos)
+		{
 			var range = maxSpeed * obstacleTimeHorizon;
 
 			// Iterate through all obstacles that we might need to avoid
-			for (int i = 0; i < simulator.obstacles.Count; i++) {
+			for (int i = 0; i < simulator.obstacles.Count; i++)
+			{
 				var obstacle = simulator.obstacles[i];
 				var vertex = obstacle;
 				// Iterate through all edges (defined by vertex and vertex.dir) in the obstacle
-				do {
+				do
+				{
 					// Ignore the edge if the agent should not collide with it
-					if (vertex.ignore || (vertex.layer & collidesWith) == 0) {
+					if (vertex.ignore || (vertex.layer & collidesWith) == 0)
+					{
 						vertex = vertex.next;
 						continue;
 					}
@@ -736,7 +816,8 @@ namespace Pathfinding.RVO.Sampled {
 					// TODO: Can be optimized
 					float dist = VO.SignedDistanceFromLine(p1, dir, position);
 
-					if (dist >= -0.01f && dist < range) {
+					if (dist >= -0.01f && dist < range)
+					{
 						float factorAlongSegment = Vector2.Dot(position - p1, p2 - p1) / (p2 - p1).sqrMagnitude;
 
 						// Calculate the elevation (y) coordinate of the point on the segment closest to the agent
@@ -748,7 +829,8 @@ namespace Pathfinding.RVO.Sampled {
 						// Ignore the segment if it is too far away
 						// or the agent is too high up (or too far down) on the elevation axis (usually y axis) to avoid it.
 						// If the XY plane is used then all elevation checks are disabled
-						if (sqrDistToSegment < range*range && (simulator.movementPlane == MovementPlane.XY || (elevationCoordinate <= segmentY + vertex.height && elevationCoordinate+height >= segmentY))) {
+						if (sqrDistToSegment < range * range && (simulator.movementPlane == MovementPlane.XY || (elevationCoordinate <= segmentY + vertex.height && elevationCoordinate + height >= segmentY)))
+						{
 							vos.Add(VO.SegmentObstacle(p2 - position, p1 - position, Vector2.zero, radius * 0.01f, 1f / ObstacleTimeHorizon, 1f / simulator.DeltaTime));
 						}
 					}
@@ -758,14 +840,16 @@ namespace Pathfinding.RVO.Sampled {
 			}
 		}
 
-		void GenerateNeighbourAgentVOs (VOBuffer vos) {
-			float inverseAgentTimeHorizon = 1.0f/agentTimeHorizon;
+		void GenerateNeighbourAgentVOs(VOBuffer vos)
+		{
+			float inverseAgentTimeHorizon = 1.0f / agentTimeHorizon;
 
 			// The RVO algorithm assumes we will continue to
 			// move in roughly the same direction
 			Vector2 optimalVelocity = currentVelocity;
 
-			for (int o = 0; o < neighbours.Count; o++) {
+			for (int o = 0; o < neighbours.Count; o++)
+			{
 				Agent other = neighbours[o];
 
 				// Don't avoid ourselves
@@ -777,7 +861,8 @@ namespace Pathfinding.RVO.Sampled {
 				float minY = System.Math.Max(elevationCoordinate, other.elevationCoordinate);
 
 				// The agents cannot collide since they are on different y-levels
-				if (maxY - minY < 0) {
+				if (maxY - minY < 0)
+				{
 					continue;
 				}
 
@@ -787,11 +872,16 @@ namespace Pathfinding.RVO.Sampled {
 				Vector2 voBoundingOrigin = other.position - position;
 
 				float avoidanceStrength;
-				if (other.locked || other.manuallyControlled) {
+				if (other.locked || other.manuallyControlled)
+				{
 					avoidanceStrength = 1;
-				} else if (other.Priority > 0.00001f || Priority > 0.00001f) {
+				}
+				else if (other.Priority > 0.00001f || Priority > 0.00001f)
+				{
 					avoidanceStrength = other.Priority / (Priority + other.Priority);
-				} else {
+				}
+				else
+				{
 					// Both this agent's priority and the other agent's priority is zero or negative
 					// Assume they have the same priority
 					avoidanceStrength = 0.5f;
@@ -801,7 +891,7 @@ namespace Pathfinding.RVO.Sampled {
 				// If the other agent has a higher priority than this agent (avoidanceStrength > 0.5) then we will assume it will move more along its
 				// desired velocity. This will have the effect of other agents trying to clear a path for where a high priority agent wants to go.
 				// If this is not done then even high priority agents can get stuck when it is really crowded and they have had to slow down.
-				Vector2 otherOptimalVelocity = Vector2.Lerp(other.currentVelocity, other.desiredVelocity, 2*avoidanceStrength - 1);
+				Vector2 otherOptimalVelocity = Vector2.Lerp(other.currentVelocity, other.desiredVelocity, 2 * avoidanceStrength - 1);
 
 				var voCenter = Vector2.Lerp(optimalVelocity, otherOptimalVelocity, avoidanceStrength);
 
@@ -811,7 +901,8 @@ namespace Pathfinding.RVO.Sampled {
 			}
 		}
 
-		Vector2 GradientDescent (VOBuffer vos, Vector2 sampleAround1, Vector2 sampleAround2) {
+		Vector2 GradientDescent(VOBuffer vos, Vector2 sampleAround1, Vector2 sampleAround2)
+		{
 			float score1;
 			var minima1 = Trace(vos, sampleAround1, out score1);
 
@@ -848,11 +939,13 @@ namespace Pathfinding.RVO.Sampled {
 		///
 		/// Returns: True if the desired velocity was inside any VO
 		/// </summary>
-		static bool BiasDesiredVelocity (VOBuffer vos, ref Vector2 desiredVelocity, ref Vector2 targetPointInVelocitySpace, float maxBiasRadians) {
+		static bool BiasDesiredVelocity(VOBuffer vos, ref Vector2 desiredVelocity, ref Vector2 targetPointInVelocitySpace, float maxBiasRadians)
+		{
 			var desiredVelocityMagn = desiredVelocity.magnitude;
 			var maxValue = 0f;
 
-			for (int i = 0; i < vos.length; i++) {
+			for (int i = 0; i < vos.length; i++)
+			{
 				float value;
 				// The value is approximately the distance to the edge of the VO
 				// so taking the maximum will give us the distance to the edge of the VO
@@ -865,7 +958,8 @@ namespace Pathfinding.RVO.Sampled {
 			var inside = maxValue > 0;
 
 			// Avoid division by zero below
-			if (desiredVelocityMagn < 0.001f) {
+			if (desiredVelocityMagn < 0.001f)
+			{
 				return inside;
 			}
 
@@ -879,16 +973,19 @@ namespace Pathfinding.RVO.Sampled {
 		}
 
 		/// <summary>Evaluate gradient and value of the cost function at velocity p</summary>
-		Vector2 EvaluateGradient (VOBuffer vos, Vector2 p, out float value) {
+		Vector2 EvaluateGradient(VOBuffer vos, Vector2 p, out float value)
+		{
 			Vector2 gradient = Vector2.zero;
 
 			value = 0;
 
 			// Avoid other agents
-			for (int i = 0; i < vos.length; i++) {
+			for (int i = 0; i < vos.length; i++)
+			{
 				float w;
 				var grad = vos.buffer[i].ScaledGradient(p, out w);
-				if (w > value) {
+				if (w > value)
+				{
 					value = w;
 					gradient = grad;
 				}
@@ -897,29 +994,32 @@ namespace Pathfinding.RVO.Sampled {
 			// Move closer to the desired velocity
 			var dirToDesiredVelocity = desiredVelocity - p;
 			var distToDesiredVelocity = dirToDesiredVelocity.magnitude;
-			if (distToDesiredVelocity > 0.0001f) {
-				gradient += dirToDesiredVelocity * (DesiredVelocityWeight/distToDesiredVelocity);
+			if (distToDesiredVelocity > 0.0001f)
+			{
+				gradient += dirToDesiredVelocity * (DesiredVelocityWeight / distToDesiredVelocity);
 				value += distToDesiredVelocity * DesiredVelocityWeight;
 			}
 
 			// Prefer speeds lower or equal to the desired speed
 			// and avoid speeds greater than the max speed
 			var sqrSpeed = p.sqrMagnitude;
-			if (sqrSpeed > desiredSpeed*desiredSpeed) {
+			if (sqrSpeed > desiredSpeed * desiredSpeed)
+			{
 				var speed = Mathf.Sqrt(sqrSpeed);
 
-				if (speed > maxSpeed) {
+				if (speed > maxSpeed)
+				{
 					const float MaxSpeedWeight = 3;
 					value += MaxSpeedWeight * (speed - maxSpeed);
-					gradient -= MaxSpeedWeight * (p/speed);
+					gradient -= MaxSpeedWeight * (p / speed);
 				}
 
 				// Scale needs to be strictly greater than DesiredVelocityWeight
 				// otherwise the agent will not prefer the desired speed over
 				// the maximum speed
-				float scale = 2*DesiredVelocityWeight;
+				float scale = 2 * DesiredVelocityWeight;
 				value += scale * (speed - desiredSpeed);
-				gradient -= scale * (p/speed);
+				gradient -= scale * (p / speed);
 			}
 
 			return gradient;
@@ -931,7 +1031,8 @@ namespace Pathfinding.RVO.Sampled {
 		///
 		/// See: https://en.wikipedia.org/wiki/Gradient_descent
 		/// </summary>
-		Vector2 Trace (VOBuffer vos, Vector2 p, out float score) {
+		Vector2 Trace(VOBuffer vos, Vector2 p, out float score)
+		{
 			// Pick a reasonable initial step size
 			float stepSize = Mathf.Max(radius, 0.2f * desiredSpeed);
 
@@ -942,14 +1043,16 @@ namespace Pathfinding.RVO.Sampled {
 
 			const int MaxIterations = 50;
 
-			for (int s = 0; s < MaxIterations; s++) {
-				float step = 1.0f - (s/(float)MaxIterations);
+			for (int s = 0; s < MaxIterations; s++)
+			{
+				float step = 1.0f - (s / (float)MaxIterations);
 				step = Sqr(step) * stepSize;
 
 				float value;
 				var gradient = EvaluateGradient(vos, p, out value);
 
-				if (value < bestScore) {
+				if (value < bestScore)
+				{
 					bestScore = value;
 					bestP = p;
 				}
@@ -962,7 +1065,7 @@ namespace Pathfinding.RVO.Sampled {
 				Vector2 prev = p;
 				p += gradient;
 
-				if (DebugDraw) Debug.DrawLine(FromXZ(prev + position), FromXZ(p + position), Rainbow(s*0.1f) * new Color(1, 1, 1, 1f));
+				if (DebugDraw) Debug.DrawLine(FromXZ(prev + position), FromXZ(p + position), Rainbow(s * 0.1f) * new Color(1, 1, 1, 1f));
 			}
 
 			score = bestScore;

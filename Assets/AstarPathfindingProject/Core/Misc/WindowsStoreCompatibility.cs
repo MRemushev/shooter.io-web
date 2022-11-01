@@ -8,9 +8,12 @@ using TP = System.Reflection.TypeInfo;
 using TP = System.Type;
 #endif
 
-namespace Pathfinding.WindowsStore {
-	public static class WindowsStoreCompatibility {
-		public static System.Type GetTypeFromInfo (TP type) {
+namespace Pathfinding.WindowsStore
+{
+	public static class WindowsStoreCompatibility
+	{
+		public static System.Type GetTypeFromInfo(TP type)
+		{
 #if NETFX_CORE
 			return type.AsType();
 #else
@@ -18,7 +21,8 @@ namespace Pathfinding.WindowsStore {
 #endif
 		}
 
-		public static TP GetTypeInfo (System.Type type) {
+		public static TP GetTypeInfo(System.Type type)
+		{
 #if NETFX_CORE
 			return type.GetTypeInfo();
 #else

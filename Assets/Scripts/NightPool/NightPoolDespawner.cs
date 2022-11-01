@@ -8,56 +8,56 @@ using UnityEngine;
 
 namespace NTC.Global.Pool
 {
-    public class NightPoolDespawner : MonoBehaviour
-    {
-        [SerializeField] private float timeToDespawn = 3f;
+	public class NightPoolDespawner : MonoBehaviour
+	{
+		[SerializeField] private float timeToDespawn = 3f;
 
-        private bool processed;
-        private float timer;
+		private bool processed;
+		private float timer;
 
-        private void OnEnable()
-        {
-            Restore();
-        }
+		private void OnEnable()
+		{
+			Restore();
+		}
 
-        private void OnDisable()
-        {
-            Restore();
-        }
+		private void OnDisable()
+		{
+			Restore();
+		}
 
-        private void Update()
-        {
-            if (IsDespawnMoment() == false)
-                return;
-            
-            NightPool.Despawn(gameObject);
-            
-            OnProcessed();
-        }
+		private void Update()
+		{
+			if (IsDespawnMoment() == false)
+				return;
 
-        private bool IsDespawnMoment()
-        {
-            if (processed)
-                return false;
-            
-            timer += Time.deltaTime;
+			NightPool.Despawn(gameObject);
 
-            if (timer >= timeToDespawn)
-                return true;
+			OnProcessed();
+		}
 
-            return false;
-        }
+		private bool IsDespawnMoment()
+		{
+			if (processed)
+				return false;
 
-        private void Restore()
-        {
-            timer = 0f;
-            processed = false;
-        }
+			timer += Time.deltaTime;
 
-        private void OnProcessed()
-        {
-            processed = true;
-            timer = 0f;
-        }
-    }
+			if (timer >= timeToDespawn)
+				return true;
+
+			return false;
+		}
+
+		private void Restore()
+		{
+			timer = 0f;
+			processed = false;
+		}
+
+		private void OnProcessed()
+		{
+			processed = true;
+			timer = 0f;
+		}
+	}
 }

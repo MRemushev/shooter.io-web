@@ -1,8 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Pathfinding.Util {
-	public static class MovementUtilities {
+namespace Pathfinding.Util
+{
+	public static class MovementUtilities
+	{
 		/// <summary>
 		/// Clamps the velocity to the max speed and optionally the forwards direction.
 		///
@@ -17,12 +19,14 @@ namespace Pathfinding.Util {
 		/// <param name="slowWhenNotFacingTarget">Prevent the velocity from being too far away from the forward direction of the character
 		///      and slow the character down if the desired velocity is not in the same direction as the forward vector.</param>
 		/// <param name="forward">Forward direction of the character. Used together with the slowWhenNotFacingTarget parameter.</param>
-		public static Vector2 ClampVelocity (Vector2 velocity, float maxSpeed, float slowdownFactor, bool slowWhenNotFacingTarget, Vector2 forward) {
+		public static Vector2 ClampVelocity(Vector2 velocity, float maxSpeed, float slowdownFactor, bool slowWhenNotFacingTarget, Vector2 forward)
+		{
 			// Max speed to use for this frame
 			var currentMaxSpeed = maxSpeed * slowdownFactor;
 
 			// Check if the agent should slow down in case it is not facing the direction it wants to move in
-			if (slowWhenNotFacingTarget && (forward.x != 0 || forward.y != 0)) {
+			if (slowWhenNotFacingTarget && (forward.x != 0 || forward.y != 0))
+			{
 				float currentSpeed;
 				var normalizedVelocity = VectorMath.Normalize(velocity, out currentSpeed);
 				float dot = Vector2.Dot(normalizedVelocity, forward);
@@ -30,7 +34,7 @@ namespace Pathfinding.Util {
 				// Lower the speed when the character's forward direction is not pointing towards the desired velocity
 				// 1 when velocity is in the same direction as forward
 				// 0.2 when they point in the opposite directions
-				float directionSpeedFactor = Mathf.Clamp(dot+0.707f, 0.2f, 1.0f);
+				float directionSpeedFactor = Mathf.Clamp(dot + 0.707f, 0.2f, 1.0f);
 				currentMaxSpeed *= directionSpeedFactor;
 				currentSpeed = Mathf.Min(currentSpeed, currentMaxSpeed);
 
@@ -43,24 +47,27 @@ namespace Pathfinding.Util {
 				// the velocity would always be in the forwards direction of the character then
 				// the character would never rotate.
 				// Allow larger angles when near the end of the path to prevent oscillations.
-				angle = Mathf.Min(angle, (20f + 180f*(1 - slowdownFactor*slowdownFactor))*Mathf.Deg2Rad);
+				angle = Mathf.Min(angle, (20f + 180f * (1 - slowdownFactor * slowdownFactor)) * Mathf.Deg2Rad);
 
 				float sin = Mathf.Sin(angle);
 				float cos = Mathf.Cos(angle);
 
 				// Determine if we should rotate clockwise or counter-clockwise to move towards the current velocity
-				sin *= Mathf.Sign(normalizedVelocity.x*forward.y - normalizedVelocity.y*forward.x);
+				sin *= Mathf.Sign(normalizedVelocity.x * forward.y - normalizedVelocity.y * forward.x);
 				// Rotate the #forward vector by #angle radians
 				// The rotation is done using an inlined rotation matrix.
 				// See https://en.wikipedia.org/wiki/Rotation_matrix
-				return new Vector2(forward.x*cos + forward.y*sin, forward.y*cos - forward.x*sin) * currentSpeed;
-			} else {
+				return new Vector2(forward.x * cos + forward.y * sin, forward.y * cos - forward.x * sin) * currentSpeed;
+			}
+			else
+			{
 				return Vector2.ClampMagnitude(velocity, currentMaxSpeed);
 			}
 		}
 
 		/// <summary>Calculate an acceleration to move deltaPosition units and get there with approximately a velocity of targetVelocity</summary>
-		public static Vector2 CalculateAccelerationToReachPoint (Vector2 deltaPosition, Vector2 targetVelocity, Vector2 currentVelocity, float forwardsAcceleration, float rotationSpeed, float maxSpeed, Vector2 forwardsVector) {
+		public static Vector2 CalculateAccelerationToReachPoint(Vector2 deltaPosition, Vector2 targetVelocity, Vector2 currentVelocity, float forwardsAcceleration, float rotationSpeed, float maxSpeed, Vector2 forwardsVector)
+		{
 			// Guard against div by zero
 			if (forwardsAcceleration <= 0) return Vector2.zero;
 
@@ -79,17 +86,19 @@ namespace Pathfinding.Util {
 			deltaPosition = VectorMath.ComplexMultiplyConjugate(deltaPosition, forwardsVector);
 			targetVelocity = VectorMath.ComplexMultiplyConjugate(targetVelocity, forwardsVector);
 			currentVelocity = VectorMath.ComplexMultiplyConjugate(currentVelocity, forwardsVector);
-			float ellipseSqrFactorX = 1 / (forwardsAcceleration*forwardsAcceleration);
-			float ellipseSqrFactorY = 1 / (sidewaysAcceleration*sidewaysAcceleration);
+			float ellipseSqrFactorX = 1 / (forwardsAcceleration * forwardsAcceleration);
+			float ellipseSqrFactorY = 1 / (sidewaysAcceleration * sidewaysAcceleration);
 
 			// If the target velocity is zero we can use a more fancy approach
 			// and calculate a nicer path.
 			// In particular, this is the case at the end of the path.
-			if (targetVelocity == Vector2.zero) {
+			if (targetVelocity == Vector2.zero)
+			{
 				// Run a binary search over the time to get to the target point.
 				float mn = 0.01f;
 				float mx = 10;
-				while (mx - mn > 0.01f) {
+				while (mx - mn > 0.01f)
+				{
 					var time = (mx + mn) * 0.5f;
 
 					// Given that we want to move deltaPosition units from out current position, that our current velocity is given
@@ -102,8 +111,8 @@ namespace Pathfinding.Util {
 					//{ solve for a
 					// a = acceleration vector
 					// q = derivative of the acceleration vector
-					var a = (6*deltaPosition - 4*time*currentVelocity)/(time*time);
-					var q = 6*(time*currentVelocity - 2*deltaPosition)/(time*time*time);
+					var a = (6 * deltaPosition - 4 * time * currentVelocity) / (time * time);
+					var q = 6 * (time * currentVelocity - 2 * deltaPosition) / (time * time * time);
 
 					// Make sure the acceleration is not greater than our maximum allowed acceleration.
 					// If it is we increase the time we want to use to get to the target
@@ -111,15 +120,18 @@ namespace Pathfinding.Util {
 					// Since the acceleration is described by acceleration = a + q*t
 					// we only need to check at t=0 and t=time.
 					// Note that the acceleration limit is described by an ellipse, not a circle.
-					var nextA = a + q*time;
-					if (a.x*a.x*ellipseSqrFactorX + a.y*a.y*ellipseSqrFactorY > 1.0f || nextA.x*nextA.x*ellipseSqrFactorX + nextA.y*nextA.y*ellipseSqrFactorY > 1.0f) {
+					var nextA = a + q * time;
+					if (a.x * a.x * ellipseSqrFactorX + a.y * a.y * ellipseSqrFactorY > 1.0f || nextA.x * nextA.x * ellipseSqrFactorX + nextA.y * nextA.y * ellipseSqrFactorY > 1.0f)
+					{
 						mn = time;
-					} else {
+					}
+					else
+					{
 						mx = time;
 					}
 				}
 
-				var finalAcceleration = (6*deltaPosition - 4*mx*currentVelocity)/(mx*mx);
+				var finalAcceleration = (6 * deltaPosition - 4 * mx * currentVelocity) / (mx * mx);
 
 				// Boosting
 				{
@@ -134,12 +146,14 @@ namespace Pathfinding.Util {
 
 					// Clamp the velocity to the maximum acceleration.
 					// Note that the maximum acceleration constraint is shaped like an ellipse, not like a circle.
-					float ellipseMagnitude = finalAcceleration.x*finalAcceleration.x*ellipseSqrFactorX + finalAcceleration.y*finalAcceleration.y*ellipseSqrFactorY;
+					float ellipseMagnitude = finalAcceleration.x * finalAcceleration.x * ellipseSqrFactorX + finalAcceleration.y * finalAcceleration.y * ellipseSqrFactorY;
 					if (ellipseMagnitude > 1.0f) finalAcceleration /= Mathf.Sqrt(ellipseMagnitude);
 				}
 
 				return VectorMath.ComplexMultiply(finalAcceleration, forwardsVector);
-			} else {
+			}
+			else
+			{
 				// Here we try to move towards the next waypoint which has been modified slightly using our
 				// desired velocity at that point so that the agent will more smoothly round the corner.
 
@@ -153,18 +167,18 @@ namespace Pathfinding.Util {
 				var normalizedTargetVelocity = VectorMath.Normalize(targetVelocity, out targetSpeed);
 
 				var distance = deltaPosition.magnitude;
-				var targetPoint = deltaPosition - normalizedTargetVelocity * System.Math.Min(TargetVelocityWeight * distance * targetSpeed / (currentSpeed + targetSpeed), maxSpeed*TargetVelocityWeightLimit);
+				var targetPoint = deltaPosition - normalizedTargetVelocity * System.Math.Min(TargetVelocityWeight * distance * targetSpeed / (currentSpeed + targetSpeed), maxSpeed * TargetVelocityWeightLimit);
 
 				// How quickly the agent will try to reach the velocity that we want it to have.
 				// We need this to prevent oscillations and jitter which is what happens if
 				// we let the constant go towards zero. Value is in seconds.
 				const float TimeToReachDesiredVelocity = 0.1f;
 				// TODO: Clamp to ellipse using more accurate acceleration (use rotation speed as well)
-				var finalAcceleration = (targetPoint.normalized*maxSpeed - currentVelocity) * (1f/TimeToReachDesiredVelocity);
+				var finalAcceleration = (targetPoint.normalized * maxSpeed - currentVelocity) * (1f / TimeToReachDesiredVelocity);
 
 				// Clamp the velocity to the maximum acceleration.
 				// Note that the maximum acceleration constraint is shaped like an ellipse, not like a circle.
-				float ellipseMagnitude = finalAcceleration.x*finalAcceleration.x*ellipseSqrFactorX + finalAcceleration.y*finalAcceleration.y*ellipseSqrFactorY;
+				float ellipseMagnitude = finalAcceleration.x * finalAcceleration.x * ellipseSqrFactorX + finalAcceleration.y * finalAcceleration.y * ellipseSqrFactorY;
 				if (ellipseMagnitude > 1.0f) finalAcceleration /= Mathf.Sqrt(ellipseMagnitude);
 
 				return VectorMath.ComplexMultiply(finalAcceleration, forwardsVector);

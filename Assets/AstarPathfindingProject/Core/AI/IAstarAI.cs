@@ -1,14 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	/// <summary>
 	/// Common interface for all movement scripts in the A* Pathfinding Project.
 	/// See: <see cref="Pathfinding.AIPath"/>
 	/// See: <see cref="Pathfinding.RichAI"/>
 	/// See: <see cref="Pathfinding.AILerp"/>
 	/// </summary>
-	public interface IAstarAI {
+	public interface IAstarAI
+	{
 		/// <summary>
 		/// Height of the agent in world units.
 		/// This is visualized in the scene view as a yellow cylinder around the character.
@@ -263,7 +265,7 @@ namespace Pathfinding {
 		/// </summary>
 		/// <param name="buffer">The buffer will be cleared and replaced with the path. The first point is the current position of the agent.</param>
 		/// <param name="stale">May be true if the path is invalid in some way. For example if the agent has no path or (for the RichAI script only) if the agent has detected that some nodes in the path have been destroyed.</param>
-		void GetRemainingPath (List<Vector3> buffer, out bool stale);
+		void GetRemainingPath(List<Vector3> buffer, out bool stale);
 
 		/// <summary>
 		/// Recalculate the current path.
@@ -280,7 +282,7 @@ namespace Pathfinding {
 		///
 		/// See: <see cref="pathPending"/>
 		/// </summary>
-		void SearchPath ();
+		void SearchPath();
 
 		/// <summary>
 		/// Make the AI follow the specified path.
@@ -313,7 +315,7 @@ namespace Pathfinding {
 		/// // ai.destination = ...
 		/// </code>
 		/// </summary>
-		void SetPath (Path path);
+		void SetPath(Path path);
 
 		/// <summary>
 		/// Instantly move the agent to a new position.
@@ -325,7 +327,7 @@ namespace Pathfinding {
 		/// See: Works similarly to Unity's NavmeshAgent.Warp.
 		/// See: <see cref="SearchPath"/>
 		/// </summary>
-		void Teleport (Vector3 newPosition, bool clearPath = true);
+		void Teleport(Vector3 newPosition, bool clearPath = true);
 
 		/// <summary>
 		/// Move the agent.
@@ -344,7 +346,7 @@ namespace Pathfinding {
 		/// </code>
 		/// </summary>
 		/// <param name="deltaPosition">Direction and distance to move the agent in world space.</param>
-		void Move (Vector3 deltaPosition);
+		void Move(Vector3 deltaPosition);
 
 		/// <summary>
 		/// Calculate how the character wants to move during this frame.
@@ -371,7 +373,7 @@ namespace Pathfinding {
 		/// <param name="deltaTime">time to simulate movement for. Usually set to Time.deltaTime.</param>
 		/// <param name="nextPosition">the position that the agent wants to move to during this frame.</param>
 		/// <param name="nextRotation">the rotation that the agent wants to rotate to during this frame.</param>
-		void MovementUpdate (float deltaTime, out Vector3 nextPosition, out Quaternion nextRotation);
+		void MovementUpdate(float deltaTime, out Vector3 nextPosition, out Quaternion nextRotation);
 
 		/// <summary>
 		/// Move the agent.
@@ -381,6 +383,6 @@ namespace Pathfinding {
 		///
 		/// See: <see cref="MovementUpdate"/> for a code example.
 		/// </summary>
-		void FinalizeMovement (Vector3 nextPosition, Quaternion nextRotation);
+		void FinalizeMovement(Vector3 nextPosition, Quaternion nextRotation);
 	}
 }

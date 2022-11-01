@@ -1,11 +1,13 @@
 using UnityEngine;
 
-namespace Pathfinding.RVO {
+namespace Pathfinding.RVO
+{
 	/// <summary>
 	/// One vertex in an obstacle.
 	/// This is a linked list and one vertex can therefore be used to reference the whole obstacle
 	/// </summary>
-	public class ObstacleVertex {
+	public class ObstacleVertex
+	{
 		public bool ignore;
 
 		/// <summary>Position of the vertex</summary>

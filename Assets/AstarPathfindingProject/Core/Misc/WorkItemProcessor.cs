@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.Profiling;
 #endif
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	using UnityEngine;
 
 	/// <summary>
@@ -11,7 +12,8 @@ namespace Pathfinding {
 	/// See: <see cref="AstarPath.UpdateGraphs"/>
 	/// See: <see cref="AstarPath.AddWorkItem"/>
 	/// </summary>
-	public struct AstarWorkItem {
+	public struct AstarWorkItem
+	{
 		/// <summary>
 		/// Init function.
 		/// May be null if no initialization is needed.
@@ -60,28 +62,32 @@ namespace Pathfinding {
 		/// </summary>
 		public System.Func<IWorkItemContext, bool, bool> updateWithContext;
 
-		public AstarWorkItem (System.Func<bool, bool> update) {
+		public AstarWorkItem(System.Func<bool, bool> update)
+		{
 			this.init = null;
 			this.initWithContext = null;
 			this.updateWithContext = null;
 			this.update = update;
 		}
 
-		public AstarWorkItem (System.Func<IWorkItemContext, bool, bool> update) {
+		public AstarWorkItem(System.Func<IWorkItemContext, bool, bool> update)
+		{
 			this.init = null;
 			this.initWithContext = null;
 			this.updateWithContext = update;
 			this.update = null;
 		}
 
-		public AstarWorkItem (System.Action init, System.Func<bool, bool> update = null) {
+		public AstarWorkItem(System.Action init, System.Func<bool, bool> update = null)
+		{
 			this.init = init;
 			this.initWithContext = null;
 			this.update = update;
 			this.updateWithContext = null;
 		}
 
-		public AstarWorkItem (System.Action<IWorkItemContext> init, System.Func<IWorkItemContext, bool, bool> update = null) {
+		public AstarWorkItem(System.Action<IWorkItemContext> init, System.Func<IWorkItemContext, bool, bool> update = null)
+		{
 			this.init = null;
 			this.initWithContext = init;
 			this.update = null;
@@ -90,7 +96,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>Interface to expose a subset of the WorkItemProcessor functionality</summary>
-	public interface IWorkItemContext {
+	public interface IWorkItemContext
+	{
 		/// <summary>
 		/// Call during work items to queue a flood fill.
 		/// An instant flood fill can be done via FloodFill()
@@ -104,7 +111,7 @@ namespace Pathfinding {
 		/// Deprecated: Avoid using. This will force a full recalculation of the connected components. In most cases the HierarchicalGraph class takes care of things automatically behind the scenes now. In pretty much all cases you should be able to remove the call to this function.
 		/// </summary>
 		[System.Obsolete("Avoid using. This will force a full recalculation of the connected components. In most cases the HierarchicalGraph class takes care of things automatically behind the scenes now. In pretty much all cases you should be able to remove the call to this function.")]
-		void QueueFloodFill ();
+		void QueueFloodFill();
 
 		/// <summary>
 		/// If a WorkItem needs to have a valid area information during execution, call this method to ensure there are no pending flood fills.
@@ -124,7 +131,7 @@ namespace Pathfinding {
 		/// }));
 		/// </code>
 		/// </summary>
-		void EnsureValidFloodFill ();
+		void EnsureValidFloodFill();
 
 		/// <summary>
 		/// Trigger a graph modification event.
@@ -132,10 +139,11 @@ namespace Pathfinding {
 		/// Some scripts listen for this event. For example off-mesh links listen to it and will recalculate which nodes they are connected to when it it sent.
 		/// If a graph is dirtied multiple times, or even if multiple graphs are dirtied, the event will only be sent once.
 		/// </summary>
-		void SetGraphDirty (NavGraph graph);
+		void SetGraphDirty(NavGraph graph);
 	}
 
-	class WorkItemProcessor : IWorkItemContext {
+	class WorkItemProcessor : IWorkItemContext
+	{
 		/// <summary>Used to prevent waiting for work items to complete inside other work items as that will cause the program to hang</summary>
 		public bool workItemsInProgressRightNow { get; private set; }
 
@@ -143,7 +151,8 @@ namespace Pathfinding {
 		readonly IndexedQueue<AstarWorkItem> workItems = new IndexedQueue<AstarWorkItem>();
 
 		/// <summary>True if any work items are queued right now</summary>
-		public bool anyQueued {
+		public bool anyQueued
+		{
 			get { return workItems.Count > 0; }
 		}
 
@@ -165,16 +174,20 @@ namespace Pathfinding {
 		public bool workItemsInProgress { get; private set; }
 
 		/// <summary>Similar to Queue<T> but allows random access</summary>
-		class IndexedQueue<T> {
+		class IndexedQueue<T>
+		{
 			T[] buffer = new T[4];
 			int start;
 
-			public T this[int index] {
-				get {
+			public T this[int index]
+			{
+				get
+				{
 					if (index < 0 || index >= Count) throw new System.IndexOutOfRangeException();
 					return buffer[(start + index) % buffer.Length];
 				}
-				set {
+				set
+				{
 					if (index < 0 || index >= Count) throw new System.IndexOutOfRangeException();
 					buffer[(start + index) % buffer.Length] = value;
 				}
@@ -182,10 +195,13 @@ namespace Pathfinding {
 
 			public int Count { get; private set; }
 
-			public void Enqueue (T item) {
-				if (Count == buffer.Length) {
-					var newBuffer = new T[buffer.Length*2];
-					for (int i = 0; i < Count; i++) {
+			public void Enqueue(T item)
+			{
+				if (Count == buffer.Length)
+				{
+					var newBuffer = new T[buffer.Length * 2];
+					for (int i = 0; i < Count; i++)
+					{
 						newBuffer[i] = this[i];
 					}
 					buffer = newBuffer;
@@ -196,7 +212,8 @@ namespace Pathfinding {
 				Count++;
 			}
 
-			public T Dequeue () {
+			public T Dequeue()
+			{
 				if (Count == 0) throw new System.InvalidOperationException();
 				var item = buffer[start];
 				start = (start + 1) % buffer.Length;
@@ -215,28 +232,36 @@ namespace Pathfinding {
 		///
 		/// Once a flood fill is queued it will be done after all WorkItems have been executed.
 		/// </summary>
-		void IWorkItemContext.QueueFloodFill () {
+		void IWorkItemContext.QueueFloodFill()
+		{
 			queuedWorkItemFloodFill = true;
 		}
 
-		void IWorkItemContext.SetGraphDirty (NavGraph graph) {
+		void IWorkItemContext.SetGraphDirty(NavGraph graph)
+		{
 			anyGraphsDirty = true;
 		}
 
 		/// <summary>If a WorkItem needs to have a valid area information during execution, call this method to ensure there are no pending flood fills</summary>
-		public void EnsureValidFloodFill () {
-			if (queuedWorkItemFloodFill) {
+		public void EnsureValidFloodFill()
+		{
+			if (queuedWorkItemFloodFill)
+			{
 				astar.hierarchicalGraph.RecalculateAll();
-			} else {
+			}
+			else
+			{
 				astar.hierarchicalGraph.RecalculateIfNecessary();
 			}
 		}
 
-		public WorkItemProcessor (AstarPath astar) {
+		public WorkItemProcessor(AstarPath astar)
+		{
 			this.astar = astar;
 		}
 
-		public void OnFloodFill () {
+		public void OnFloodFill()
+		{
 			queuedWorkItemFloodFill = false;
 		}
 
@@ -245,7 +270,8 @@ namespace Pathfinding {
 		///
 		/// See: ProcessWorkItems
 		/// </summary>
-		public void AddWorkItem (AstarWorkItem item) {
+		public void AddWorkItem(AstarWorkItem item)
+		{
 			workItems.Enqueue(item);
 		}
 
@@ -261,15 +287,18 @@ namespace Pathfinding {
 		/// See: threadSafeUpdateState
 		/// See: Update
 		/// </summary>
-		public bool ProcessWorkItems (bool force) {
+		public bool ProcessWorkItems(bool force)
+		{
 			if (workItemsInProgressRightNow) throw new System.Exception("Processing work items recursively. Please do not wait for other work items to be completed inside work items. " +
 				"If you think this is not caused by any of your scripts, this might be a bug.");
 
 			workItemsInProgressRightNow = true;
 			astar.data.LockGraphStructure(true);
-			while (workItems.Count > 0) {
+			while (workItems.Count > 0)
+			{
 				// Working on a new batch
-				if (!workItemsInProgress) {
+				if (!workItemsInProgress)
+				{
 					workItemsInProgress = true;
 					queuedWorkItemFloodFill = false;
 				}
@@ -278,14 +307,17 @@ namespace Pathfinding {
 				AstarWorkItem itm = workItems[0];
 				bool status;
 
-				try {
+				try
+				{
 					// Call init the first time the item is seen
-					if (itm.init != null) {
+					if (itm.init != null)
+					{
 						itm.init();
 						itm.init = null;
 					}
 
-					if (itm.initWithContext != null) {
+					if (itm.initWithContext != null)
+					{
 						itm.initWithContext(this);
 						itm.initWithContext = null;
 					}
@@ -293,22 +325,31 @@ namespace Pathfinding {
 					// Make sure the item in the queue is up to date
 					workItems[0] = itm;
 
-					if (itm.update != null) {
+					if (itm.update != null)
+					{
 						status = itm.update(force);
-					} else if (itm.updateWithContext != null) {
+					}
+					else if (itm.updateWithContext != null)
+					{
 						status = itm.updateWithContext(this, force);
-					} else {
+					}
+					else
+					{
 						status = true;
 					}
-				} catch {
+				}
+				catch
+				{
 					workItems.Dequeue();
 					workItemsInProgressRightNow = false;
 					astar.data.UnlockGraphStructure();
 					throw;
 				}
 
-				if (!status) {
-					if (force) {
+				if (!status)
+				{
+					if (force)
+					{
 						Debug.LogError("Misbehaving WorkItem. 'force'=true but the work item did not complete.\nIf force=true is passed to a WorkItem it should always return true.");
 					}
 
@@ -316,7 +357,9 @@ namespace Pathfinding {
 					workItemsInProgressRightNow = false;
 					astar.data.UnlockGraphStructure();
 					return false;
-				} else {
+				}
+				else
+				{
 					workItems.Dequeue();
 				}
 			}

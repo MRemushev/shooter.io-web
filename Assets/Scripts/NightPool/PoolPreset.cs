@@ -9,17 +9,17 @@ using UnityEngine;
 
 namespace NTC.Global.Pool
 {
-    [CreateAssetMenu(menuName = "Source/Pool/PoolPreset", fileName = "PoolPreset", order = 0)]
-    public class PoolPreset : ScriptableObject
-    {
-        [SerializeField] private string poolName;
-        [SerializeField] private List<PoolItem> poolItems = new List<PoolItem>(256);
+	[CreateAssetMenu(menuName = "Source/Pool/PoolPreset", fileName = "PoolPreset", order = 0)]
+	public class PoolPreset : ScriptableObject
+	{
+		[SerializeField] private string poolName;
+		[SerializeField] private List<PoolItem> poolItems = new List<PoolItem>(256);
 
-        public IReadOnlyList<PoolItem> PoolItems => poolItems;
+		public IReadOnlyList<PoolItem> PoolItems => poolItems;
 
-        public string GetName()
-        {
-            return poolName;
-        }
-    }
+		public string GetName()
+		{
+			return poolName;
+		}
+	}
 }

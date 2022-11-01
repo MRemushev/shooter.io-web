@@ -2,25 +2,31 @@
 using System;
 using System.Collections.Generic;
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	/// <summary>Pools path objects to reduce load on the garbage collector</summary>
-	public static class PathPool {
-		static readonly Dictionary<Type, Stack<Path> > pool = new Dictionary<Type, Stack<Path> >();
+	public static class PathPool
+	{
+		static readonly Dictionary<Type, Stack<Path>> pool = new Dictionary<Type, Stack<Path>>();
 		static readonly Dictionary<Type, int> totalCreated = new Dictionary<Type, int>();
 
 		/// <summary>
 		/// Adds a path to the pool.
 		/// This function should not be used directly. Instead use the Path.Claim and Path.Release functions.
 		/// </summary>
-		public static void Pool (Path path) {
+		public static void Pool(Path path)
+		{
 #if !ASTAR_NO_POOLING
-			lock (pool) {
-				if (((IPathInternals)path).Pooled) {
+			lock (pool)
+			{
+				if (((IPathInternals)path).Pooled)
+				{
 					throw new System.ArgumentException("The path is already pooled.");
 				}
 
 				Stack<Path> poolStack;
-				if (!pool.TryGetValue(path.GetType(), out poolStack)) {
+				if (!pool.TryGetValue(path.GetType(), out poolStack))
+				{
 					poolStack = new Stack<Path>();
 					pool[path.GetType()] = poolStack;
 				}
@@ -33,45 +39,59 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Total created instances of paths of the specified type</summary>
-		public static int GetTotalCreated (Type type) {
+		public static int GetTotalCreated(Type type)
+		{
 			int created;
 
-			if (totalCreated.TryGetValue(type, out created)) {
+			if (totalCreated.TryGetValue(type, out created))
+			{
 				return created;
-			} else {
+			}
+			else
+			{
 				return 0;
 			}
 		}
 
 		/// <summary>Number of pooled instances of a path of the specified type</summary>
-		public static int GetSize (Type type) {
+		public static int GetSize(Type type)
+		{
 			Stack<Path> poolStack;
 
-			if (pool.TryGetValue(type, out poolStack)) {
+			if (pool.TryGetValue(type, out poolStack))
+			{
 				return poolStack.Count;
-			} else {
+			}
+			else
+			{
 				return 0;
 			}
 		}
 
 		/// <summary>Get a path from the pool or create a new one if the pool is empty</summary>
-		public static T GetPath<T>() where T : Path, new() {
+		public static T GetPath<T>() where T : Path, new()
+		{
 #if ASTAR_NO_POOLING
 			T result = new T();
 			((IPathInternals)result).Reset();
 			return result;
 #else
-			lock (pool) {
+			lock (pool)
+			{
 				T result;
 				Stack<Path> poolStack;
-				if (pool.TryGetValue(typeof(T), out poolStack) && poolStack.Count > 0) {
+				if (pool.TryGetValue(typeof(T), out poolStack) && poolStack.Count > 0)
+				{
 					// Guaranteed to have the correct type
 					result = poolStack.Pop() as T;
-				} else {
+				}
+				else
+				{
 					result = new T();
 
 					// Make sure an entry for the path type exists
-					if (!totalCreated.ContainsKey(typeof(T))) {
+					if (!totalCreated.ContainsKey(typeof(T)))
+					{
 						totalCreated[typeof(T)] = 0;
 					}
 

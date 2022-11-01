@@ -3,23 +3,23 @@ using UnityEngine;
 
 public class WeaponSwitch : MonoBehaviour
 {
-    public List<string> weaponsName = new();
+	public List<string> weaponsName = new();
 
-    public int WeaponLevel { get; private set; }
+	public int WeaponLevel { get; private set; }
 
-    private void Awake()
-    {
-        foreach (Transform weapon in transform) weaponsName.Add(weapon.gameObject.name);
-    }
+	private void Awake()
+	{
+		foreach (Transform weapon in transform) weaponsName.Add(weapon.gameObject.name);
+	}
 
-    public void ChangeWeapon(int level)
-    {
-        var index = 0;
-        WeaponLevel = level;
-        foreach (Transform weapon in transform)
-        {
-            weapon.gameObject.SetActive(index == WeaponLevel);
-            index++;
-        }
-    }
+	public void ChangeWeapon(int level)
+	{
+		var index = 0;
+		WeaponLevel = level;
+		foreach (Transform weapon in transform)
+		{
+			weapon.gameObject.SetActive(index == WeaponLevel);
+			index++;
+		}
+	}
 }

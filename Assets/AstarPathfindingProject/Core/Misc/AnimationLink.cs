@@ -1,9 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	[HelpURL("http://arongranberg.com/astar/docs/class_pathfinding_1_1_animation_link.php")]
-	public class AnimationLink : NodeLink2 {
+	public class AnimationLink : NodeLink2
+	{
 		public string clip;
 		public float animSpeed = 1;
 		public bool reverseAnim = true;
@@ -13,25 +15,31 @@ namespace Pathfinding {
 		public string boneRoot = "bn_COG_Root";
 
 		[System.Serializable]
-		public class LinkClip {
+		public class LinkClip
+		{
 			public AnimationClip clip;
 			public Vector3 velocity;
 			public int loopCount = 1;
 
-			public string name {
-				get {
+			public string name
+			{
+				get
+				{
 					return clip != null ? clip.name : "";
 				}
 			}
 		}
 
-		static Transform SearchRec (Transform tr, string name) {
+		static Transform SearchRec(Transform tr, string name)
+		{
 			int childCount = tr.childCount;
 
-			for (int i = 0; i < childCount; i++) {
+			for (int i = 0; i < childCount; i++)
+			{
 				Transform ch = tr.GetChild(i);
 				if (ch.name == name) return ch;
-				else {
+				else
+				{
 					Transform rec = SearchRec(ch, name);
 					if (rec != null) return rec;
 				}
@@ -39,7 +47,8 @@ namespace Pathfinding {
 			return null;
 		}
 
-		public void CalculateOffsets (List<Vector3> trace, out Vector3 endPosition) {
+		public void CalculateOffsets(List<Vector3> trace, out Vector3 endPosition)
+		{
 			//Vector3 opos = transform.position;
 			endPosition = transform.position;
 			if (referenceMesh == null) return;
@@ -53,7 +62,8 @@ namespace Pathfinding {
 			Animation anim = ob.GetComponent<Animation>();
 			if (anim == null) anim = ob.AddComponent<Animation>();
 
-			for (int i = 0; i < sequence.Length; i++) {
+			for (int i = 0; i < sequence.Length; i++)
+			{
 				anim.AddClip(sequence[i].clip, sequence[i].clip.name);
 			}
 
@@ -61,9 +71,11 @@ namespace Pathfinding {
 			Vector3 position = transform.position;
 			Vector3 firstOffset = Vector3.zero;
 
-			for (int i = 0; i < sequence.Length; i++) {
+			for (int i = 0; i < sequence.Length; i++)
+			{
 				LinkClip c = sequence[i];
-				if (c == null) {
+				if (c == null)
+				{
 					endPosition = position;
 					return;
 				}
@@ -71,25 +83,30 @@ namespace Pathfinding {
 				anim[c.clip.name].enabled = true;
 				anim[c.clip.name].weight = 1;
 
-				for (int repeat = 0; repeat < c.loopCount; repeat++) {
+				for (int repeat = 0; repeat < c.loopCount; repeat++)
+				{
 					anim[c.clip.name].normalizedTime = 0;
 					anim.Sample();
 					Vector3 soffset = root.position - transform.position;
 
-					if (i > 0) {
+					if (i > 0)
+					{
 						position += prevOffset - soffset;
-					} else {
+					}
+					else
+					{
 						firstOffset = soffset;
 					}
 
-					for (int t = 0; t <= 20; t++) {
-						float tf = t/20.0f;
+					for (int t = 0; t <= 20; t++)
+					{
+						float tf = t / 20.0f;
 						anim[c.clip.name].normalizedTime = tf;
 						anim.Sample();
-						Vector3 tmp = position + (root.position-transform.position) + c.velocity*tf*c.clip.length;
+						Vector3 tmp = position + (root.position - transform.position) + c.velocity * tf * c.clip.length;
 						trace.Add(tmp);
 					}
-					position = position + c.velocity*1*c.clip.length;
+					position = position + c.velocity * 1 * c.clip.length;
 
 					anim[c.clip.name].normalizedTime = 1;
 					anim.Sample();
@@ -108,14 +125,16 @@ namespace Pathfinding {
 			endPosition = position;
 		}
 
-		public override void OnDrawGizmosSelected () {
+		public override void OnDrawGizmosSelected()
+		{
 			base.OnDrawGizmosSelected();
-			List<Vector3> buffer = Pathfinding.Util.ListPool<Vector3>.Claim ();
+			List<Vector3> buffer = Pathfinding.Util.ListPool<Vector3>.Claim();
 			Vector3 endPosition = Vector3.zero;
 			CalculateOffsets(buffer, out endPosition);
 			Gizmos.color = Color.blue;
-			for (int i = 0; i < buffer.Count-1; i++) {
-				Gizmos.DrawLine(buffer[i], buffer[i+1]);
+			for (int i = 0; i < buffer.Count - 1; i++)
+			{
+				Gizmos.DrawLine(buffer[i], buffer[i + 1]);
 			}
 		}
 	}

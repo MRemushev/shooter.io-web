@@ -6,132 +6,132 @@ using static NTC.Global.System.NightSugar;
 
 namespace NTC.Global.System
 {
-    public abstract class MonoAllocation : MonoBehaviour
-    {
-        private Dictionary<int, Component> _get;
-        private Dictionary<int, Component[]> _gets;
-        private Dictionary<int, Component> _childrenGet;
-        private Dictionary<int, Component[]> _childrenGets;
-        private Dictionary<int, Component> _parentGet;
-        private Dictionary<int, Component[]> _parentGets;
-        private Dictionary<int, Component> _find;
-        private Dictionary<int, Component[]> _finds;
+	public abstract class MonoAllocation : MonoBehaviour
+	{
+		private Dictionary<int, Component> _get;
+		private Dictionary<int, Component[]> _gets;
+		private Dictionary<int, Component> _childrenGet;
+		private Dictionary<int, Component[]> _childrenGets;
+		private Dictionary<int, Component> _parentGet;
+		private Dictionary<int, Component[]> _parentGets;
+		private Dictionary<int, Component> _find;
+		private Dictionary<int, Component[]> _finds;
 
-        private bool _allocationEnabled = true;
+		private bool _allocationEnabled = true;
 
-        public void EnableAllocation()
-        {
-            _allocationEnabled = true;
-        }
+		public void EnableAllocation()
+		{
+			_allocationEnabled = true;
+		}
 
-        public void DisableAllocation()
-        {
-            _allocationEnabled = false;
-        }
+		public void DisableAllocation()
+		{
+			_allocationEnabled = false;
+		}
 
-        public T Get<T>() => GetComponent<T>();
-        
-        public T[] Gets<T>() => GetComponents<T>();
-        
-        public T ChildrenGet<T>() => GetComponentInChildren<T>();
-        
-        public T[] ChildrenGets<T>() => GetComponentsInChildren<T>();
-        
-        public T ParentGet<T>() => GetComponentInParent<T>();
-        
-        public T[] ParentGets<T>() => GetComponentsInParent<T>();
-        
-        public static T Find<T>() where T : Object => FindObjectOfType<T>();
-        
-        public static T[] Finds<T>() where T : Object => FindObjectsOfType<T>();
-        
+		public T Get<T>() => GetComponent<T>();
 
-        public T GetCached<T>() where T : Component
-        {
-            return GetSingleCached(_get, GetComponent<T>);
-        }
+		public T[] Gets<T>() => GetComponents<T>();
 
-        public T[] GetsCached<T>() where T : Component
-        {
-            return GetManyCached(_gets, GetComponents<T>);
-        }
+		public T ChildrenGet<T>() => GetComponentInChildren<T>();
 
-        public T ChildrenGetCached<T>() where T : Component
-        {
-            return GetSingleCached(_childrenGet, GetComponentInChildren<T>);
-        }
+		public T[] ChildrenGets<T>() => GetComponentsInChildren<T>();
 
-        public T[] ChildrenGetsCached<T>() where T : Component
-        {
-            return GetManyCached(_childrenGets, GetComponentsInChildren<T>);
-        }
+		public T ParentGet<T>() => GetComponentInParent<T>();
 
-        public T ParentGetCached<T>() where T : Component
-        {
-            return GetSingleCached(_parentGet, GetComponentInParent<T>);
-        }
+		public T[] ParentGets<T>() => GetComponentsInParent<T>();
 
-        public T[] ParentGetsCached<T>() where T : Component
-        {
-            return GetManyCached(_parentGets, GetComponentsInParent<T>);
-        }
+		public static T Find<T>() where T : Object => FindObjectOfType<T>();
 
-        public T FindCached<T>() where T : Component
-        {
-            return GetSingleCached(_find, FindObjectOfType<T>);
-        }
+		public static T[] Finds<T>() where T : Object => FindObjectsOfType<T>();
 
-        public T[] FindsCached<T>() where T : Component
-        {
-            return GetManyCached(_finds, FindObjectsOfType<T>);
-        }
-        
-        private T GetSingleCached<T>(Dictionary<int, Component> storage, Func<T> getMethod) where T : Component
-        {
-            var index = GetInfo<T>.Index;
 
-            if (_allocationEnabled)
-            {
-                storage ??= new Dictionary<int, Component>(16);
+		public T GetCached<T>() where T : Component
+		{
+			return GetSingleCached(_get, GetComponent<T>);
+		}
 
-                if (storage.TryGetValue(index, out var component))
-                {
-                    return (T) component;
-                }
-            }
+		public T[] GetsCached<T>() where T : Component
+		{
+			return GetManyCached(_gets, GetComponents<T>);
+		}
 
-            var instance = getMethod?.Invoke();
+		public T ChildrenGetCached<T>() where T : Component
+		{
+			return GetSingleCached(_childrenGet, GetComponentInChildren<T>);
+		}
 
-            if (_allocationEnabled && instance != null)
-            {
-                storage.Add(index, instance);
-            }
+		public T[] ChildrenGetsCached<T>() where T : Component
+		{
+			return GetManyCached(_childrenGets, GetComponentsInChildren<T>);
+		}
 
-            return instance;
-        }
+		public T ParentGetCached<T>() where T : Component
+		{
+			return GetSingleCached(_parentGet, GetComponentInParent<T>);
+		}
 
-        private T[] GetManyCached<T>(Dictionary<int, Component[]> storage, Func<T[]> getsMethod) where T : Component
-        {
-            var index = GetInfo<T>.Index;
+		public T[] ParentGetsCached<T>() where T : Component
+		{
+			return GetManyCached(_parentGets, GetComponentsInParent<T>);
+		}
 
-            if (_allocationEnabled)
-            {
-                storage ??= new Dictionary<int, Component[]>(16);
+		public T FindCached<T>() where T : Component
+		{
+			return GetSingleCached(_find, FindObjectOfType<T>);
+		}
 
-                if (storage.TryGetValue(index, out var components))
-                {
-                    return (T[]) components;
-                }
-            }
+		public T[] FindsCached<T>() where T : Component
+		{
+			return GetManyCached(_finds, FindObjectsOfType<T>);
+		}
 
-            var instances = getsMethod?.Invoke();
+		private T GetSingleCached<T>(Dictionary<int, Component> storage, Func<T> getMethod) where T : Component
+		{
+			var index = GetInfo<T>.Index;
 
-            if (_allocationEnabled && instances != null)
-            {
-                storage.Add(index, instances);
-            }
+			if (_allocationEnabled)
+			{
+				storage ??= new Dictionary<int, Component>(16);
 
-            return instances;
-        }
-    }
+				if (storage.TryGetValue(index, out var component))
+				{
+					return (T)component;
+				}
+			}
+
+			var instance = getMethod?.Invoke();
+
+			if (_allocationEnabled && instance != null)
+			{
+				storage.Add(index, instance);
+			}
+
+			return instance;
+		}
+
+		private T[] GetManyCached<T>(Dictionary<int, Component[]> storage, Func<T[]> getsMethod) where T : Component
+		{
+			var index = GetInfo<T>.Index;
+
+			if (_allocationEnabled)
+			{
+				storage ??= new Dictionary<int, Component[]>(16);
+
+				if (storage.TryGetValue(index, out var components))
+				{
+					return (T[])components;
+				}
+			}
+
+			var instances = getsMethod?.Invoke();
+
+			if (_allocationEnabled && instances != null)
+			{
+				storage.Add(index, instances);
+			}
+
+			return instances;
+		}
+	}
 }

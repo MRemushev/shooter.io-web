@@ -1,7 +1,8 @@
 #define DECREASE_KEY
 using System.Collections.Generic;
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	/// <summary>
 	/// Stores temporary node data for a single pathfinding request.
 	/// Every node has one PathNode per thread used.
@@ -11,7 +12,8 @@ namespace Pathfinding {
 	/// See: Pathfinding.PathHandler
 	/// See: https://en.wikipedia.org/wiki/A*_search_algorithm
 	/// </summary>
-	public class PathNode {
+	public class PathNode
+	{
 		/// <summary>Reference to the actual graph node</summary>
 		public GraphNode node;
 
@@ -45,11 +47,14 @@ namespace Pathfinding {
 		private const int Flag2Offset = 29;
 		private const uint Flag2Mask = (uint)(1 << Flag2Offset);
 
-		public uint cost {
-			get {
+		public uint cost
+		{
+			get
+			{
 				return flags & CostMask;
 			}
-			set {
+			set
+			{
 				flags = (flags & ~CostMask) | value;
 			}
 		}
@@ -60,11 +65,14 @@ namespace Pathfinding {
 		/// nodes. When done, this flag should be reverted to its default state (false) to
 		/// avoid messing up other pathfinding requests.
 		/// </summary>
-		public bool flag1 {
-			get {
+		public bool flag1
+		{
+			get
+			{
 				return (flags & Flag1Mask) != 0;
 			}
-			set {
+			set
+			{
 				flags = (flags & ~Flag1Mask) | (value ? Flag1Mask : 0U);
 			}
 		}
@@ -75,11 +83,14 @@ namespace Pathfinding {
 		/// nodes. When done, this flag should be reverted to its default state (false) to
 		/// avoid messing up other pathfinding requests.
 		/// </summary>
-		public bool flag2 {
-			get {
+		public bool flag2
+		{
+			get
+			{
 				return (flags & Flag2Mask) != 0;
 			}
-			set {
+			set
+			{
 				flags = (flags & ~Flag2Mask) | (value ? Flag2Mask : 0U);
 			}
 		}
@@ -97,9 +108,10 @@ namespace Pathfinding {
 		public uint H { get { return h; } set { h = value; } }
 
 		/// <summary>F score. H score + G score</summary>
-		public uint F { get { return g+h; } }
+		public uint F { get { return g + h; } }
 
-		public void UpdateG (Path path) {
+		public void UpdateG(Path path)
+		{
 #if ASTAR_NO_TRAVERSAL_COST
 			g = parent.g + cost;
 #else
@@ -109,7 +121,8 @@ namespace Pathfinding {
 	}
 
 	/// <summary>Handles thread specific path data.</summary>
-	public class PathHandler {
+	public class PathHandler
+	{
 		/// <summary>
 		/// Current PathID.
 		/// See: <see cref="PathID"/>
@@ -137,18 +150,21 @@ namespace Pathfinding {
 		/// </summary>
 		public readonly System.Text.StringBuilder DebugStringBuilder = new System.Text.StringBuilder();
 
-		public PathHandler (int threadID, int totalThreadCount) {
+		public PathHandler(int threadID, int totalThreadCount)
+		{
 			this.threadID = threadID;
 			this.totalThreadCount = totalThreadCount;
 		}
 
-		public void InitializeForPath (Path p) {
+		public void InitializeForPath(Path p)
+		{
 			pathID = p.pathID;
 			heap.Clear();
 		}
 
 		/// <summary>Internal method to clean up node data</summary>
-		public void DestroyNode (GraphNode node) {
+		public void DestroyNode(GraphNode node)
+		{
 			PathNode pn = GetPathNode(node);
 
 			// Clean up references to help the GC
@@ -162,13 +178,15 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Internal method to initialize node data</summary>
-		public void InitializeNode (GraphNode node) {
+		public void InitializeNode(GraphNode node)
+		{
 			//Get the index of the node
 			int ind = node.NodeIndex;
 
-			if (ind >= nodes.Length) {
+			if (ind >= nodes.Length)
+			{
 				// Grow by a factor of 2
-				PathNode[] newNodes = new PathNode[System.Math.Max(128, nodes.Length*2)];
+				PathNode[] newNodes = new PathNode[System.Math.Max(128, nodes.Length * 2)];
 				nodes.CopyTo(newNodes, 0);
 				// Initialize all PathNode instances at once
 				// It is important that we do this here and don't for example leave the entries as NULL and initialize
@@ -183,7 +201,8 @@ namespace Pathfinding {
 			nodes[ind].node = node;
 		}
 
-		public PathNode GetPathNode (int nodeIndex) {
+		public PathNode GetPathNode(int nodeIndex)
+		{
 			return nodes[nodeIndex];
 		}
 
@@ -192,7 +211,8 @@ namespace Pathfinding {
 		/// The PathNode is specific to this PathHandler since multiple PathHandlers
 		/// are used at the same time if multithreading is enabled.
 		/// </summary>
-		public PathNode GetPathNode (GraphNode node) {
+		public PathNode GetPathNode(GraphNode node)
+		{
 			return nodes[node.NodeIndex];
 		}
 
@@ -200,8 +220,10 @@ namespace Pathfinding {
 		/// Set all nodes' pathIDs to 0.
 		/// See: Pathfinding.PathNode.pathID
 		/// </summary>
-		public void ClearPathIDs () {
-			for (int i = 0; i < nodes.Length; i++) {
+		public void ClearPathIDs()
+		{
+			for (int i = 0; i < nodes.Length; i++)
+			{
 				if (nodes[i] != null) nodes[i].pathID = 0;
 			}
 		}

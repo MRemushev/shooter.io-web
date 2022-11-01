@@ -2,7 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	using Pathfinding.RVO;
 	using Pathfinding.Util;
 
@@ -59,7 +60,8 @@ namespace Pathfinding {
 	/// It may take one or sometimes multiple frames for the path to be calculated, but finally the <see cref="OnPathComplete"/> method will be called and the current path that the AI is following will be replaced.
 	/// </summary>
 	[AddComponentMenu("Pathfinding/AI/AIPath (2D,3D)")]
-	public partial class AIPath : AIBase, IAstarAI {
+	public partial class AIPath : AIBase, IAstarAI
+	{
 		/// <summary>
 		/// How quickly the agent accelerates.
 		/// Positive values represent an acceleration in world units per second squared.
@@ -165,31 +167,37 @@ namespace Pathfinding {
 		#region IAstarAI implementation
 
 		/// <summary>\copydoc Pathfinding::IAstarAI::Teleport</summary>
-		public override void Teleport (Vector3 newPosition, bool clearPath = true) {
+		public override void Teleport(Vector3 newPosition, bool clearPath = true)
+		{
 			reachedEndOfPath = false;
 			base.Teleport(newPosition, clearPath);
 		}
 
 		/// <summary>\copydoc Pathfinding::IAstarAI::remainingDistance</summary>
-		public float remainingDistance {
-			get {
+		public float remainingDistance
+		{
+			get
+			{
 				return interpolator.valid ? interpolator.remainingDistance + movementPlane.ToPlane(interpolator.position - position).magnitude : float.PositiveInfinity;
 			}
 		}
 
 		/// <summary>\copydoc Pathfinding::IAstarAI::reachedDestination</summary>
-		public bool reachedDestination {
-			get {
+		public bool reachedDestination
+		{
+			get
+			{
 				if (!reachedEndOfPath) return false;
 				if (remainingDistance + movementPlane.ToPlane(destination - interpolator.endPoint).magnitude > endReachedDistance) return false;
 
 				// Don't do height checks in 2D mode
-				if (orientation != OrientationMode.YAxisForward) {
+				if (orientation != OrientationMode.YAxisForward)
+				{
 					// Check if the destination is above the head of the character or far below the feet of it
 					float yDifference;
 					movementPlane.ToPlane(destination - position, out yDifference);
 					var h = tr.localScale.y * height;
-					if (yDifference > h || yDifference < -h*0.5) return false;
+					if (yDifference > h || yDifference < -h * 0.5) return false;
 				}
 
 				return true;
@@ -200,22 +208,28 @@ namespace Pathfinding {
 		public bool reachedEndOfPath { get; protected set; }
 
 		/// <summary>\copydoc Pathfinding::IAstarAI::hasPath</summary>
-		public bool hasPath {
-			get {
+		public bool hasPath
+		{
+			get
+			{
 				return interpolator.valid;
 			}
 		}
 
 		/// <summary>\copydoc Pathfinding::IAstarAI::pathPending</summary>
-		public bool pathPending {
-			get {
+		public bool pathPending
+		{
+			get
+			{
 				return waitingForPathCalculation;
 			}
 		}
 
 		/// <summary>\copydoc Pathfinding::IAstarAI::steeringTarget</summary>
-		public Vector3 steeringTarget {
-			get {
+		public Vector3 steeringTarget
+		{
+			get
+			{
 				return interpolator.valid ? interpolator.position : position;
 			}
 		}
@@ -238,10 +252,12 @@ namespace Pathfinding {
 		#endregion
 
 		/// <summary>\copydoc Pathfinding::IAstarAI::GetRemainingPath</summary>
-		public void GetRemainingPath (List<Vector3> buffer, out bool stale) {
+		public void GetRemainingPath(List<Vector3> buffer, out bool stale)
+		{
 			buffer.Clear();
 			buffer.Add(position);
-			if (!interpolator.valid) {
+			if (!interpolator.valid)
+			{
 				stale = true;
 				return;
 			}
@@ -250,7 +266,8 @@ namespace Pathfinding {
 			interpolator.GetRemainingPath(buffer);
 		}
 
-		protected override void OnDisable () {
+		protected override void OnDisable()
+		{
 			base.OnDisable();
 
 			// Release current path so that it can be pooled
@@ -267,7 +284,8 @@ namespace Pathfinding {
 		/// This method will be called again if a new path is calculated as the destination may have changed.
 		/// So when the agent is close to the destination this method will typically be called every <see cref="repathRate"/> seconds.
 		/// </summary>
-		public virtual void OnTargetReached () {
+		public virtual void OnTargetReached()
+		{
 		}
 
 		/// <summary>
@@ -275,7 +293,8 @@ namespace Pathfinding {
 		/// A path is first requested by <see cref="UpdatePath"/>, it is then calculated, probably in the same or the next frame.
 		/// Finally it is returned to the seeker which forwards it to this function.
 		/// </summary>
-		protected override void OnPathComplete (Path newPath) {
+		protected override void OnPathComplete(Path newPath)
+		{
 			ABPath p = newPath as ABPath;
 
 			if (p == null) throw new System.Exception("This function only handles ABPaths, do not use special path types");
@@ -288,7 +307,8 @@ namespace Pathfinding {
 
 			// Path couldn't be calculated of some reason.
 			// More info in p.errorLog (debug string)
-			if (p.error) {
+			if (p.error)
+			{
 				p.Release(this);
 				return;
 			}
@@ -323,26 +343,30 @@ namespace Pathfinding {
 			interpolator.MoveToCircleIntersection2D(position, pickNextWaypointDist, movementPlane);
 
 			var distanceToEnd = remainingDistance;
-			if (distanceToEnd <= endReachedDistance) {
+			if (distanceToEnd <= endReachedDistance)
+			{
 				reachedEndOfPath = true;
 				OnTargetReached();
 			}
 		}
 
-		protected override void ClearPath () {
+		protected override void ClearPath()
+		{
 			CancelCurrentPathRequest();
 			interpolator.SetPath(null);
 			reachedEndOfPath = false;
 		}
 
 		/// <summary>Called during either Update or FixedUpdate depending on if rigidbodies are used for movement or not</summary>
-		protected override void MovementUpdateInternal (float deltaTime, out Vector3 nextPosition, out Quaternion nextRotation) {
+		protected override void MovementUpdateInternal(float deltaTime, out Vector3 nextPosition, out Quaternion nextRotation)
+		{
 			float currentAcceleration = maxAcceleration;
 
 			// If negative, calculate the acceleration from the max speed
 			if (currentAcceleration < 0) currentAcceleration *= -maxSpeed;
 
-			if (updatePosition) {
+			if (updatePosition)
+			{
 				// Get our current position. We read from transform.position as few times as possible as it is relatively slow
 				// (at least compared to a local variable)
 				simulatedPosition = tr.position;
@@ -368,19 +392,25 @@ namespace Pathfinding {
 			var forwards = movementPlane.ToPlane(simulatedRotation * (orientation == OrientationMode.YAxisForward ? Vector3.up : Vector3.forward));
 
 			// Check if we have a valid path to follow and some other script has not stopped the character
-			if (interpolator.valid && !isStopped) {
+			if (interpolator.valid && !isStopped)
+			{
 				// How fast to move depending on the distance to the destination.
 				// Move slower as the character gets closer to the destination.
 				// This is always a value between 0 and 1.
-				slowdown = distanceToEnd < slowdownDistance? Mathf.Sqrt (distanceToEnd / slowdownDistance) : 1;
+				slowdown = distanceToEnd < slowdownDistance ? Mathf.Sqrt(distanceToEnd / slowdownDistance) : 1;
 
-				if (reachedEndOfPath && whenCloseToDestination == CloseToDestinationMode.Stop) {
+				if (reachedEndOfPath && whenCloseToDestination == CloseToDestinationMode.Stop)
+				{
 					// Slow down as quickly as possible
 					velocity2D -= Vector2.ClampMagnitude(velocity2D, currentAcceleration * deltaTime);
-				} else {
-					velocity2D += MovementUtilities.CalculateAccelerationToReachPoint(dir, dir.normalized*maxSpeed, velocity2D, currentAcceleration, rotationSpeed, maxSpeed, forwards) * deltaTime;
 				}
-			} else {
+				else
+				{
+					velocity2D += MovementUtilities.CalculateAccelerationToReachPoint(dir, dir.normalized * maxSpeed, velocity2D, currentAcceleration, rotationSpeed, maxSpeed, forwards) * deltaTime;
+				}
+			}
+			else
+			{
 				slowdown = 1;
 				// Slow down as quickly as possible
 				velocity2D -= Vector2.ClampMagnitude(velocity2D, currentAcceleration * deltaTime);
@@ -390,7 +420,8 @@ namespace Pathfinding {
 
 			ApplyGravity(deltaTime);
 
-			if (rvoController != null && rvoController.enabled) {
+			if (rvoController != null && rvoController.enabled)
+			{
 				// Send a message to the RVOController that we want to move
 				// with this velocity. In the next simulation step, this
 				// velocity will be processed and it will be fed back to the
@@ -410,17 +441,22 @@ namespace Pathfinding {
 			CalculateNextRotation(slowdown, out nextRotation);
 		}
 
-		protected virtual void CalculateNextRotation (float slowdown, out Quaternion nextRotation) {
-			if (lastDeltaTime > 0.00001f && enableRotation) {
+		protected virtual void CalculateNextRotation(float slowdown, out Quaternion nextRotation)
+		{
+			if (lastDeltaTime > 0.00001f && enableRotation)
+			{
 				Vector2 desiredRotationDirection;
-				if (rvoController != null && rvoController.enabled) {
+				if (rvoController != null && rvoController.enabled)
+				{
 					// When using local avoidance, use the actual velocity we are moving with if that velocity
 					// is high enough, otherwise fall back to the velocity that we want to move with (velocity2D).
 					// The local avoidance velocity can be very jittery when the character is close to standing still
 					// as it constantly makes small corrections. We do not want the rotation of the character to be jittery.
-					var actualVelocity = lastDeltaPosition/lastDeltaTime;
+					var actualVelocity = lastDeltaPosition / lastDeltaTime;
 					desiredRotationDirection = Vector2.Lerp(velocity2D, actualVelocity, 4 * actualVelocity.magnitude / (maxSpeed + 0.0001f));
-				} else {
+				}
+				else
+				{
 					desiredRotationDirection = velocity2D;
 				}
 
@@ -428,15 +464,19 @@ namespace Pathfinding {
 				// Don't rotate when we are very close to the target.
 				var currentRotationSpeed = rotationSpeed * Mathf.Max(0, (slowdown - 0.3f) / 0.7f);
 				nextRotation = SimulateRotationTowards(desiredRotationDirection, currentRotationSpeed * lastDeltaTime);
-			} else {
+			}
+			else
+			{
 				// TODO: simulatedRotation
 				nextRotation = rotation;
 			}
 		}
 
 		static NNConstraint cachedNNConstraint = NNConstraint.Default;
-		protected override Vector3 ClampToNavmesh (Vector3 position, out bool positionChanged) {
-			if (constrainInsideGraph) {
+		protected override Vector3 ClampToNavmesh(Vector3 position, out bool positionChanged)
+		{
+			if (constrainInsideGraph)
+			{
 				cachedNNConstraint.tags = seeker.traversableTags;
 				cachedNNConstraint.graphMask = seeker.graphMask;
 				cachedNNConstraint.distanceXZ = true;
@@ -446,7 +486,8 @@ namespace Pathfinding {
 				// if any coordinate transformations are used.
 				var difference = movementPlane.ToPlane(clampedPosition - position);
 				float sqrDifference = difference.sqrMagnitude;
-				if (sqrDifference > 0.001f*0.001f) {
+				if (sqrDifference > 0.001f * 0.001f)
+				{
 					// The agent was outside the navmesh. Remove that component of the velocity
 					// so that the velocity only goes along the direction of the wall, not into it
 					velocity2D -= difference * Vector2.Dot(difference, velocity2D) / sqrDifference;
@@ -454,7 +495,8 @@ namespace Pathfinding {
 					// Make sure the RVO system knows that there was a collision here
 					// Otherwise other agents may think this agent continued
 					// to move forwards and avoidance quality may suffer
-					if (rvoController != null && rvoController.enabled) {
+					if (rvoController != null && rvoController.enabled)
+					{
 						rvoController.SetCollisionNormal(difference);
 					}
 					positionChanged = true;
@@ -474,26 +516,30 @@ namespace Pathfinding {
 		[System.NonSerialized]
 		float lastChangedTime = float.NegativeInfinity;
 
-		protected static readonly Color GizmoColor = new Color(46.0f/255, 104.0f/255, 201.0f/255);
+		protected static readonly Color GizmoColor = new Color(46.0f / 255, 104.0f / 255, 201.0f / 255);
 
-		protected override void OnDrawGizmos () {
+		protected override void OnDrawGizmos()
+		{
 			base.OnDrawGizmos();
 			if (alwaysDrawGizmos) OnDrawGizmosInternal();
 		}
 
-		protected override void OnDrawGizmosSelected () {
+		protected override void OnDrawGizmosSelected()
+		{
 			base.OnDrawGizmosSelected();
 			if (!alwaysDrawGizmos) OnDrawGizmosInternal();
 		}
 
-		void OnDrawGizmosInternal () {
+		void OnDrawGizmosInternal()
+		{
 			var newGizmoHash = pickNextWaypointDist.GetHashCode() ^ slowdownDistance.GetHashCode() ^ endReachedDistance.GetHashCode();
 
 			if (newGizmoHash != gizmoHash && gizmoHash != 0) lastChangedTime = Time.realtimeSinceStartup;
 			gizmoHash = newGizmoHash;
-			float alpha = alwaysDrawGizmos ? 1 : Mathf.SmoothStep(1, 0, (Time.realtimeSinceStartup - lastChangedTime - 5f)/0.5f) * (UnityEditor.Selection.gameObjects.Length == 1 ? 1 : 0);
+			float alpha = alwaysDrawGizmos ? 1 : Mathf.SmoothStep(1, 0, (Time.realtimeSinceStartup - lastChangedTime - 5f) / 0.5f) * (UnityEditor.Selection.gameObjects.Length == 1 ? 1 : 0);
 
-			if (alpha > 0) {
+			if (alpha > 0)
+			{
 				// Make sure the scene view is repainted while the gizmos are visible
 				if (!alwaysDrawGizmos) UnityEditor.SceneView.RepaintAll();
 				Draw.Gizmos.Line(position, steeringTarget, GizmoColor * new Color(1, 1, 1, alpha));
@@ -505,7 +551,8 @@ namespace Pathfinding {
 		}
 #endif
 
-		protected override int OnUpgradeSerializedData (int version, bool unityThread) {
+		protected override int OnUpgradeSerializedData(int version, bool unityThread)
+		{
 			base.OnUpgradeSerializedData(version, unityThread);
 			// Approximately convert from a damping value to a degrees per second value.
 			if (version < 1) rotationSpeed *= 90;

@@ -3,7 +3,8 @@
 using UnityEngine;
 using System.Text;
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	[AddComponentMenu("Pathfinding/Pathfinding Debugger")]
 	[ExecuteInEditMode]
 	/// <summary>
@@ -35,7 +36,8 @@ namespace Pathfinding {
 	/// TODO: Add field showing how many graph updates are being done right now
 	/// </summary>
 	[HelpURL("http://arongranberg.com/astar/docs/class_pathfinding_1_1_astar_debugger.php")]
-	public class AstarDebugger : VersionedMonoBehaviour {
+	public class AstarDebugger : VersionedMonoBehaviour
+	{
 		public int yOffset = 5;
 
 		public bool show = true;
@@ -61,7 +63,8 @@ namespace Pathfinding {
 
 		private GraphPoint[] graph;
 
-		struct GraphPoint {
+		struct GraphPoint
+		{
 			public float fps, memory;
 			public bool collectEvent;
 		}
@@ -91,20 +94,24 @@ namespace Pathfinding {
 		float graphHeight = 100;
 		float graphOffset = 50;
 
-		public void Start () {
+		public void Start()
+		{
 			useGUILayout = false;
 
 			fpsDrops = new float[fpsDropCounterSize];
 
 			cam = GetComponent<Camera>();
-			if (cam == null) {
+			if (cam == null)
+			{
 				cam = Camera.main;
 			}
 
 			graph = new GraphPoint[graphBufferSize];
 
-			if (Time.unscaledDeltaTime > 0) {
-				for (int i = 0; i < fpsDrops.Length; i++) {
+			if (Time.unscaledDeltaTime > 0)
+			{
+				for (int i = 0; i < fpsDrops.Length; i++)
+				{
 					fpsDrops[i] = 1F / Time.unscaledDeltaTime;
 				}
 			}
@@ -124,26 +131,31 @@ namespace Pathfinding {
 			new PathTypeDebug("FloodPathTracer", () => PathPool.GetSize(typeof(FloodPathTracer)), () => PathPool.GetTotalCreated(typeof(FloodPathTracer)))
 		};
 
-		struct PathTypeDebug {
+		struct PathTypeDebug
+		{
 			string name;
 			System.Func<int> getSize;
 			System.Func<int> getTotalCreated;
-			public PathTypeDebug (string name, System.Func<int> getSize, System.Func<int> getTotalCreated) {
+			public PathTypeDebug(string name, System.Func<int> getSize, System.Func<int> getTotalCreated)
+			{
 				this.name = name;
 				this.getSize = getSize;
 				this.getTotalCreated = getTotalCreated;
 			}
 
-			public void Print (StringBuilder text) {
+			public void Print(StringBuilder text)
+			{
 				int totCreated = getTotalCreated();
 
-				if (totCreated > 0) {
+				if (totCreated > 0)
+				{
 					text.Append("\n").Append(("  " + name).PadRight(25)).Append(getSize()).Append("/").Append(totCreated);
 				}
 			}
 		}
 
-		public void LateUpdate () {
+		public void LateUpdate()
+		{
 			if (!show || (!Application.isPlaying && !showInEditor)) return;
 
 			if (Time.unscaledDeltaTime <= 0.0001f)
@@ -151,9 +163,10 @@ namespace Pathfinding {
 
 			int collCount = System.GC.CollectionCount(0);
 
-			if (lastCollectNum != collCount) {
+			if (lastCollectNum != collCount)
+			{
 				lastCollectNum = collCount;
-				delta = Time.realtimeSinceStartup-lastCollect;
+				delta = Time.realtimeSinceStartup - lastCollect;
 				lastCollect = Time.realtimeSinceStartup;
 				lastDeltaTime = Time.unscaledDeltaTime;
 				collectAlloc = allocMem;
@@ -164,18 +177,21 @@ namespace Pathfinding {
 			bool collectEvent = allocMem < peakAlloc;
 			peakAlloc = !collectEvent ? allocMem : peakAlloc;
 
-			if (Time.realtimeSinceStartup - lastAllocSet > 0.3F || !Application.isPlaying) {
+			if (Time.realtimeSinceStartup - lastAllocSet > 0.3F || !Application.isPlaying)
+			{
 				int diff = allocMem - lastAllocMemory;
 				lastAllocMemory = allocMem;
 				lastAllocSet = Time.realtimeSinceStartup;
 				delayedDeltaTime = Time.unscaledDeltaTime;
 
-				if (diff >= 0) {
+				if (diff >= 0)
+				{
 					allocRate = diff;
 				}
 			}
 
-			if (Application.isPlaying) {
+			if (Application.isPlaying)
+			{
 				fpsDrops[Time.frameCount % fpsDrops.Length] = Time.unscaledDeltaTime > 0.00001f ? 1F / Time.unscaledDeltaTime : 0;
 				int graphIndex = Time.frameCount % graph.Length;
 				graph[graphIndex].fps = Time.unscaledDeltaTime < 0.00001f ? 1F / Time.unscaledDeltaTime : 0;
@@ -183,12 +199,14 @@ namespace Pathfinding {
 				graph[graphIndex].memory = allocMem;
 			}
 
-			if (Application.isPlaying && cam != null && showGraph) {
-				graphWidth = cam.pixelWidth*0.8f;
+			if (Application.isPlaying && cam != null && showGraph)
+			{
+				graphWidth = cam.pixelWidth * 0.8f;
 
 
 				float minMem = float.PositiveInfinity, maxMem = 0, minFPS = float.PositiveInfinity, maxFPS = 0;
-				for (int i = 0; i < graph.Length; i++) {
+				for (int i = 0; i < graph.Length; i++)
+				{
 					minMem = Mathf.Min(graph[i].memory, minMem);
 					maxMem = Mathf.Max(graph[i].memory, maxMem);
 					minFPS = Mathf.Min(graph[i].fps, minFPS);
@@ -197,31 +215,36 @@ namespace Pathfinding {
 
 				int currentGraphIndex = Time.frameCount % graph.Length;
 
-				Matrix4x4 m = Matrix4x4.TRS(new Vector3((cam.pixelWidth - graphWidth)/2f, graphOffset, 1), Quaternion.identity, new Vector3(graphWidth, graphHeight, 1));
+				Matrix4x4 m = Matrix4x4.TRS(new Vector3((cam.pixelWidth - graphWidth) / 2f, graphOffset, 1), Quaternion.identity, new Vector3(graphWidth, graphHeight, 1));
 
-				for (int i = 0; i < graph.Length-1; i++) {
+				for (int i = 0; i < graph.Length - 1; i++)
+				{
 					if (i == currentGraphIndex) continue;
 
-					DrawGraphLine(i, m, i/(float)graph.Length, (i+1)/(float)graph.Length, Mathf.InverseLerp(minMem, maxMem, graph[i].memory), Mathf.InverseLerp(minMem, maxMem, graph[i+1].memory), Color.blue);
-					DrawGraphLine(i, m, i/(float)graph.Length, (i+1)/(float)graph.Length, Mathf.InverseLerp(minFPS, maxFPS, graph[i].fps), Mathf.InverseLerp(minFPS, maxFPS, graph[i+1].fps), Color.green);
+					DrawGraphLine(i, m, i / (float)graph.Length, (i + 1) / (float)graph.Length, Mathf.InverseLerp(minMem, maxMem, graph[i].memory), Mathf.InverseLerp(minMem, maxMem, graph[i + 1].memory), Color.blue);
+					DrawGraphLine(i, m, i / (float)graph.Length, (i + 1) / (float)graph.Length, Mathf.InverseLerp(minFPS, maxFPS, graph[i].fps), Mathf.InverseLerp(minFPS, maxFPS, graph[i + 1].fps), Color.green);
 				}
 			}
 		}
 
-		void DrawGraphLine (int index, Matrix4x4 m, float x1, float x2, float y1, float y2, Color color) {
+		void DrawGraphLine(int index, Matrix4x4 m, float x1, float x2, float y1, float y2, Color color)
+		{
 			Debug.DrawLine(cam.ScreenToWorldPoint(m.MultiplyPoint3x4(new Vector3(x1, y1))), cam.ScreenToWorldPoint(m.MultiplyPoint3x4(new Vector3(x2, y2))), color);
 		}
 
-		public void OnGUI () {
+		public void OnGUI()
+		{
 			if (!show || (!Application.isPlaying && !showInEditor)) return;
 
-			if (style == null) {
+			if (style == null)
+			{
 				style = new GUIStyle();
 				style.normal.textColor = Color.white;
 				style.padding = new RectOffset(5, 5, 5, 5);
 			}
 
-			if (Time.realtimeSinceStartup - lastUpdate > 0.5f || cachedText == null || !Application.isPlaying) {
+			if (Time.realtimeSinceStartup - lastUpdate > 0.5f || cachedText == null || !Application.isPlaying)
+			{
 				lastUpdate = Time.realtimeSinceStartup;
 
 				boxRect = new Rect(5, yOffset, 310, 40);
@@ -230,40 +253,42 @@ namespace Pathfinding {
 				text.AppendLine("A* Pathfinding Project Debugger");
 				text.Append("A* Version: ").Append(AstarPath.Version.ToString());
 
-				if (showMemProfile) {
+				if (showMemProfile)
+				{
 					boxRect.height += 200;
 
 					text.AppendLine();
 					text.AppendLine();
 					text.Append("Currently allocated".PadRight(25));
-					text.Append((allocMem/1000000F).ToString("0.0 MB"));
+					text.Append((allocMem / 1000000F).ToString("0.0 MB"));
 					text.AppendLine();
 
 					text.Append("Peak allocated".PadRight(25));
-					text.Append((peakAlloc/1000000F).ToString("0.0 MB")).AppendLine();
+					text.Append((peakAlloc / 1000000F).ToString("0.0 MB")).AppendLine();
 
 					text.Append("Last collect peak".PadRight(25));
-					text.Append((collectAlloc/1000000F).ToString("0.0 MB")).AppendLine();
+					text.Append((collectAlloc / 1000000F).ToString("0.0 MB")).AppendLine();
 
 
 					text.Append("Allocation rate".PadRight(25));
-					text.Append((allocRate/1000000F).ToString("0.0 MB")).AppendLine();
+					text.Append((allocRate / 1000000F).ToString("0.0 MB")).AppendLine();
 
 					text.Append("Collection frequency".PadRight(25));
 					text.Append(delta.ToString("0.00"));
 					text.Append("s\n");
 
 					text.Append("Last collect fps".PadRight(25));
-					text.Append((1F/lastDeltaTime).ToString("0.0 fps"));
+					text.Append((1F / lastDeltaTime).ToString("0.0 fps"));
 					text.Append(" (");
 					text.Append(lastDeltaTime.ToString("0.000 s"));
 					text.Append(")");
 				}
 
-				if (showFPS) {
+				if (showFPS)
+				{
 					text.AppendLine();
 					text.AppendLine();
-					var delayedFPS = delayedDeltaTime > 0.00001f ? 1F/delayedDeltaTime : 0;
+					var delayedFPS = delayedDeltaTime > 0.00001f ? 1F / delayedDeltaTime : 0;
 					text.Append("FPS".PadRight(25)).Append(delayedFPS.ToString("0.0 fps"));
 
 
@@ -275,25 +300,30 @@ namespace Pathfinding {
 					text.Append(("Lowest fps (last " + fpsDrops.Length + ")").PadRight(25)).Append(minFps.ToString("0.0"));
 				}
 
-				if (showPathProfile) {
+				if (showPathProfile)
+				{
 					AstarPath astar = AstarPath.active;
 
 					text.AppendLine();
 
-					if (astar == null) {
+					if (astar == null)
+					{
 						text.Append("\nNo AstarPath Object In The Scene");
-					} else {
+					}
+					else
+					{
 #if ProfileAstar
 						double searchSpeed = (double)AstarPath.TotalSearchedNodes*10000 / (double)AstarPath.TotalSearchTime;
 						text.Append("\nSearch Speed	(nodes/ms)	").Append(searchSpeed.ToString("0")).Append(" ("+AstarPath.TotalSearchedNodes+" / ").Append(((double)AstarPath.TotalSearchTime/10000F).ToString("0")+")");
 #endif
 
-						if (Pathfinding.Util.ListPool<Vector3>.GetSize() > maxVecPool) maxVecPool = Pathfinding.Util.ListPool<Vector3>.GetSize ();
-						if (Pathfinding.Util.ListPool<Pathfinding.GraphNode>.GetSize() > maxNodePool) maxNodePool = Pathfinding.Util.ListPool<Pathfinding.GraphNode>.GetSize ();
+						if (Pathfinding.Util.ListPool<Vector3>.GetSize() > maxVecPool) maxVecPool = Pathfinding.Util.ListPool<Vector3>.GetSize();
+						if (Pathfinding.Util.ListPool<Pathfinding.GraphNode>.GetSize() > maxNodePool) maxNodePool = Pathfinding.Util.ListPool<Pathfinding.GraphNode>.GetSize();
 
 						text.Append("\nPool Sizes (size/total created)");
 
-						for (int i = 0; i < debugTypes.Length; i++) {
+						for (int i = 0; i < debugTypes.Length; i++)
+						{
 							debugTypes[i].Print(text);
 						}
 					}
@@ -303,7 +333,8 @@ namespace Pathfinding {
 			}
 
 
-			if (font != null) {
+			if (font != null)
+			{
 				style.font = font;
 				style.fontSize = fontSize;
 			}
@@ -313,9 +344,11 @@ namespace Pathfinding {
 			GUI.Box(boxRect, "");
 			GUI.Label(boxRect, cachedText, style);
 
-			if (showGraph) {
+			if (showGraph)
+			{
 				float minMem = float.PositiveInfinity, maxMem = 0, minFPS = float.PositiveInfinity, maxFPS = 0;
-				for (int i = 0; i < graph.Length; i++) {
+				for (int i = 0; i < graph.Length; i++)
+				{
 					minMem = Mathf.Min(graph[i].memory, minMem);
 					maxMem = Mathf.Max(graph[i].memory, maxMem);
 					minFPS = Mathf.Min(graph[i].fps, minFPS);
@@ -325,11 +358,11 @@ namespace Pathfinding {
 				float line;
 				GUI.color = Color.blue;
 				// Round to nearest x.x MB
-				line = Mathf.RoundToInt(maxMem/(100.0f*1000));
-				GUI.Label(new Rect(5, Screen.height - AstarMath.MapTo(minMem, maxMem, 0 + graphOffset, graphHeight + graphOffset, line*1000*100) - 10, 100, 20), (line/10.0f).ToString("0.0 MB"));
+				line = Mathf.RoundToInt(maxMem / (100.0f * 1000));
+				GUI.Label(new Rect(5, Screen.height - AstarMath.MapTo(minMem, maxMem, 0 + graphOffset, graphHeight + graphOffset, line * 1000 * 100) - 10, 100, 20), (line / 10.0f).ToString("0.0 MB"));
 
-				line = Mathf.Round(minMem/(100.0f*1000));
-				GUI.Label(new Rect(5, Screen.height - AstarMath.MapTo(minMem, maxMem, 0 + graphOffset, graphHeight + graphOffset, line*1000*100) - 10, 100, 20), (line/10.0f).ToString("0.0 MB"));
+				line = Mathf.Round(minMem / (100.0f * 1000));
+				GUI.Label(new Rect(5, Screen.height - AstarMath.MapTo(minMem, maxMem, 0 + graphOffset, graphHeight + graphOffset, line * 1000 * 100) - 10, 100, 20), (line / 10.0f).ToString("0.0 MB"));
 
 				GUI.color = Color.green;
 				// Round to nearest x.x MB

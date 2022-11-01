@@ -6,14 +6,16 @@ using System.Threading;
 using UnityEngine.Profiling;
 #endif
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 #if NETFX_CORE
 	using Thread = Pathfinding.WindowsStore.Thread;
 #else
 	using Thread = System.Threading.Thread;
 #endif
 
-	public class PathProcessor {
+	public class PathProcessor
+	{
 		public event System.Action<Path> OnPathPreSearch;
 		public event System.Action<Path> OnPathPostSearch;
 		public event System.Action OnQueueUnblocked;
@@ -64,28 +66,35 @@ namespace Pathfinding {
 		/// See: threadInfos
 		/// See: IsUsingMultithreading
 		/// </summary>
-		public int NumThreads {
-			get {
+		public int NumThreads
+		{
+			get
+			{
 				return pathHandlers.Length;
 			}
 		}
 
 		/// <summary>Returns whether or not multithreading is used</summary>
-		public bool IsUsingMultithreading {
-			get {
+		public bool IsUsingMultithreading
+		{
+			get
+			{
 				return threads != null;
 			}
 		}
 
-		internal PathProcessor (AstarPath astar, PathReturnQueue returnQueue, int processors, bool multithreaded) {
+		internal PathProcessor(AstarPath astar, PathReturnQueue returnQueue, int processors, bool multithreaded)
+		{
 			this.astar = astar;
 			this.returnQueue = returnQueue;
 
-			if (processors < 0) {
+			if (processors < 0)
+			{
 				throw new System.ArgumentOutOfRangeException("processors");
 			}
 
-			if (!multithreaded && processors != 1) {
+			if (!multithreaded && processors != 1)
+			{
 				throw new System.Exception("Only a single non-multithreaded processor is allowed");
 			}
 
@@ -93,11 +102,13 @@ namespace Pathfinding {
 			queue = new ThreadControlQueue(processors);
 			pathHandlers = new PathHandler[processors];
 
-			for (int i = 0; i < processors; i++) {
+			for (int i = 0; i < processors; i++)
+			{
 				pathHandlers[i] = new PathHandler(i, processors);
 			}
 
-			if (multithreaded) {
+			if (multithreaded)
+			{
 #if UNITY_2017_3_OR_NEWER
 				profilingSampler = CustomSampler.Create("Calculating Path");
 #endif
@@ -105,7 +116,8 @@ namespace Pathfinding {
 				threads = new Thread[processors];
 
 				// Start lots of threads
-				for (int i = 0; i < processors; i++) {
+				for (int i = 0; i < processors; i++)
+				{
 					var pathHandler = pathHandlers[i];
 					threads[i] = new Thread(() => CalculatePathsThreaded(pathHandler));
 #if !UNITY_SWITCH || UNITY_EDITOR
@@ -115,18 +127,22 @@ namespace Pathfinding {
 					threads[i].IsBackground = true;
 					threads[i].Start();
 				}
-			} else {
+			}
+			else
+			{
 				// Start coroutine if not using multithreading
 				threadCoroutine = CalculatePaths(pathHandlers[0]);
 			}
 		}
 
 		/// <summary>Prevents pathfinding from running while held</summary>
-		public struct GraphUpdateLock {
+		public struct GraphUpdateLock
+		{
 			PathProcessor pathProcessor;
 			int id;
 
-			public GraphUpdateLock (PathProcessor pathProcessor, bool block) {
+			public GraphUpdateLock(PathProcessor pathProcessor, bool block)
+			{
 				this.pathProcessor = pathProcessor;
 				id = pathProcessor.Lock(block);
 			}
@@ -135,26 +151,35 @@ namespace Pathfinding {
 			/// True while this lock is preventing the pathfinding threads from processing more paths.
 			/// Note that the pathfinding threads may not be paused yet (if this lock was obtained using PausePathfinding(false)).
 			/// </summary>
-			public bool Held {
-				get {
+			public bool Held
+			{
+				get
+				{
 					return pathProcessor != null && pathProcessor.locks.Contains(id);
 				}
 			}
 
 			/// <summary>Allow pathfinding to start running again if no other locks are still held</summary>
-			public void Release () {
+			public void Release()
+			{
 				pathProcessor.Unlock(id);
 			}
 		}
 
-		int Lock (bool block) {
+		int Lock(bool block)
+		{
 			queue.Block();
 
-			if (block) {
-				while (!queue.AllReceiversBlocked) {
-					if (IsUsingMultithreading) {
+			if (block)
+			{
+				while (!queue.AllReceiversBlocked)
+				{
+					if (IsUsingMultithreading)
+					{
 						Thread.Sleep(1);
-					} else {
+					}
+					else
+					{
 						TickNonMultithreaded();
 					}
 				}
@@ -165,13 +190,16 @@ namespace Pathfinding {
 			return nextLockID;
 		}
 
-		void Unlock (int id) {
-			if (!locks.Remove(id)) {
+		void Unlock(int id)
+		{
+			if (!locks.Remove(id))
+			{
 				throw new System.ArgumentException("This lock has already been released");
 			}
 
 			// Check if there are no remaining active locks
-			if (locks.Count == 0) {
+			if (locks.Count == 0)
+			{
 				if (OnQueueUnblocked != null) OnQueueUnblocked();
 
 				queue.Unblock();
@@ -187,40 +215,53 @@ namespace Pathfinding {
 		/// </summary>
 		/// <param name="block">If true, this call will block until all pathfinding threads are paused.
 		/// otherwise the threads will be paused as soon as they are done with what they are currently doing.</param>
-		public GraphUpdateLock PausePathfinding (bool block) {
+		public GraphUpdateLock PausePathfinding(bool block)
+		{
 			return new GraphUpdateLock(this, block);
 		}
 
-		public void TickNonMultithreaded () {
+		public void TickNonMultithreaded()
+		{
 			// Process paths
-			if (threadCoroutine != null) {
-				try {
+			if (threadCoroutine != null)
+			{
+				try
+				{
 					threadCoroutine.MoveNext();
-				} catch (System.Exception e) {
+				}
+				catch (System.Exception e)
+				{
 					//This will kill pathfinding
 					threadCoroutine = null;
 
 					// Queue termination exceptions should be ignored, they are supposed to kill the thread
-					if (!(e is ThreadControlQueue.QueueTerminationException)) {
+					if (!(e is ThreadControlQueue.QueueTerminationException))
+					{
 						Debug.LogException(e);
 						Debug.LogError("Unhandled exception during pathfinding. Terminating.");
 						queue.TerminateReceivers();
 
 						// This will throw an exception supposed to kill the thread
-						try {
+						try
+						{
 							queue.PopNoBlock(false);
-						} catch {}
+						}
+						catch { }
 					}
 				}
 			}
 		}
 
 		/// <summary>Calls 'Join' on each of the threads to block until they have completed</summary>
-		public void JoinThreads () {
-			if (threads != null) {
-				for (int i = 0; i < threads.Length; i++) {
-					if (!threads[i].Join(200)) {
-						Debug.LogError("Could not terminate pathfinding thread["+i+"] in 200ms, trying Thread.Abort");
+		public void JoinThreads()
+		{
+			if (threads != null)
+			{
+				for (int i = 0; i < threads.Length; i++)
+				{
+					if (!threads[i].Join(200))
+					{
+						Debug.LogError("Could not terminate pathfinding thread[" + i + "] in 200ms, trying Thread.Abort");
 						threads[i].Abort();
 					}
 				}
@@ -228,9 +269,11 @@ namespace Pathfinding {
 		}
 
 		/// <summary>Calls 'Abort' on each of the threads</summary>
-		public void AbortThreads () {
+		public void AbortThreads()
+		{
 			if (threads == null) return;
-			for (int i = 0; i < threads.Length; i++) {
+			for (int i = 0; i < threads.Length; i++)
+			{
 				if (threads[i] != null && threads[i].IsAlive) threads[i].Abort();
 			}
 		}
@@ -239,7 +282,8 @@ namespace Pathfinding {
 		/// Returns a new global node index.
 		/// Warning: This method should not be called directly. It is used by the GraphNode constructor.
 		/// </summary>
-		public int GetNewNodeIndex () {
+		public int GetNewNodeIndex()
+		{
 			return nodeIndexPool.Count > 0 ? nodeIndexPool.Pop() : nextNodeIndex++;
 		}
 
@@ -247,12 +291,15 @@ namespace Pathfinding {
 		/// Initializes temporary path data for a node.
 		/// Warning: This method should not be called directly. It is used by the GraphNode constructor.
 		/// </summary>
-		public void InitializeNode (GraphNode node) {
-			if (!queue.AllReceiversBlocked) {
+		public void InitializeNode(GraphNode node)
+		{
+			if (!queue.AllReceiversBlocked)
+			{
 				throw new System.Exception("Trying to initialize a node when it is not safe to initialize any nodes. Must be done during a graph update. See http://arongranberg.com/astar/docs/graph-updates.php#direct");
 			}
 
-			for (int i = 0; i < pathHandlers.Length; i++) {
+			for (int i = 0; i < pathHandlers.Length; i++)
+			{
 				pathHandlers[i].InitializeNode(node);
 			}
 
@@ -266,12 +313,14 @@ namespace Pathfinding {
 		///
 		/// Warning: This method should not be called by user code. It is used internally by the system.
 		/// </summary>
-		public void DestroyNode (GraphNode node) {
+		public void DestroyNode(GraphNode node)
+		{
 			if (node.NodeIndex == -1) return;
 
 			nodeIndexPool.Push(node.NodeIndex);
 
-			for (int i = 0; i < pathHandlers.Length; i++) {
+			for (int i = 0; i < pathHandlers.Length; i++)
+			{
 				pathHandlers[i].DestroyNode(node);
 			}
 
@@ -285,134 +334,145 @@ namespace Pathfinding {
 		/// See: CalculatePaths
 		/// See: StartPath
 		/// </summary>
-		void CalculatePathsThreaded (PathHandler pathHandler) {
+		void CalculatePathsThreaded(PathHandler pathHandler)
+		{
 #if UNITY_2017_3_OR_NEWER
-			UnityEngine.Profiling.Profiler.BeginThreadProfiling("Pathfinding", "Pathfinding thread #" + (pathHandler.threadID+1));
+			UnityEngine.Profiling.Profiler.BeginThreadProfiling("Pathfinding", "Pathfinding thread #" + (pathHandler.threadID + 1));
 #endif
 
 #if !ASTAR_FAST_BUT_NO_EXCEPTIONS
-			try {
+			try
+			{
 #endif
 
-			// Max number of ticks we are allowed to continue working in one run.
-			// One tick is 1/10000 of a millisecond.
-			// We need to check once in a while if the thread should be stopped.
-			long maxTicks = (long)(10*10000);
-			long targetTick = System.DateTime.UtcNow.Ticks + maxTicks;
-			while (true) {
-				// The path we are currently calculating
-				Path path = queue.Pop();
+				// Max number of ticks we are allowed to continue working in one run.
+				// One tick is 1/10000 of a millisecond.
+				// We need to check once in a while if the thread should be stopped.
+				long maxTicks = (long)(10 * 10000);
+				long targetTick = System.DateTime.UtcNow.Ticks + maxTicks;
+				while (true)
+				{
+					// The path we are currently calculating
+					Path path = queue.Pop();
 #if UNITY_2017_3_OR_NEWER
-				profilingSampler.Begin();
+					profilingSampler.Begin();
 #endif
-				// Access the internal implementation methods
-				IPathInternals ipath = (IPathInternals)path;
+					// Access the internal implementation methods
+					IPathInternals ipath = (IPathInternals)path;
 
 
-				AstarProfiler.StartFastProfile(0);
-				ipath.PrepareBase(pathHandler);
+					AstarProfiler.StartFastProfile(0);
+					ipath.PrepareBase(pathHandler);
 
-				// Now processing the path
-				// Will advance to Processing
-				ipath.AdvanceState(PathState.Processing);
+					// Now processing the path
+					// Will advance to Processing
+					ipath.AdvanceState(PathState.Processing);
 
-				// Call some callbacks
-				if (OnPathPreSearch != null) {
-					OnPathPreSearch(path);
-				}
-
-				// Tick for when the path started, used for calculating how long time the calculation took
-				long startTicks = System.DateTime.UtcNow.Ticks;
-
-				// Prepare the path
-				ipath.Prepare();
-
-				AstarProfiler.EndFastProfile(0);
-
-				if (path.CompleteState == PathCompleteState.NotCalculated) {
-					// For visualization purposes, we set the last computed path to p, so we can view debug info on it in the editor (scene view).
-					astar.debugPathData = ipath.PathHandler;
-					astar.debugPathID = path.pathID;
-
-					AstarProfiler.StartFastProfile(1);
-
-					// Initialize the path, now ready to begin search
-					ipath.Initialize();
-
-					AstarProfiler.EndFastProfile(1);
-
-					// Loop while the path has not been fully calculated
-					while (path.CompleteState == PathCompleteState.NotCalculated) {
-						// Do some work on the path calculation.
-						// The function will return when it has taken too much time
-						// or when it has finished calculation
-						AstarProfiler.StartFastProfile(2);
-						ipath.CalculateStep(targetTick);
-						AstarProfiler.EndFastProfile(2);
-
-						targetTick = System.DateTime.UtcNow.Ticks + maxTicks;
-
-						// Cancel function (and thus the thread) if no more paths should be accepted.
-						// This is done when the A* object is about to be destroyed
-						// The path is returned and then this function will be terminated
-						if (queue.IsTerminating) {
-							path.FailWithError("AstarPath object destroyed");
-						}
+					// Call some callbacks
+					if (OnPathPreSearch != null)
+					{
+						OnPathPreSearch(path);
 					}
 
-					path.duration = (System.DateTime.UtcNow.Ticks - startTicks)*0.0001F;
+					// Tick for when the path started, used for calculating how long time the calculation took
+					long startTicks = System.DateTime.UtcNow.Ticks;
+
+					// Prepare the path
+					ipath.Prepare();
+
+					AstarProfiler.EndFastProfile(0);
+
+					if (path.CompleteState == PathCompleteState.NotCalculated)
+					{
+						// For visualization purposes, we set the last computed path to p, so we can view debug info on it in the editor (scene view).
+						astar.debugPathData = ipath.PathHandler;
+						astar.debugPathID = path.pathID;
+
+						AstarProfiler.StartFastProfile(1);
+
+						// Initialize the path, now ready to begin search
+						ipath.Initialize();
+
+						AstarProfiler.EndFastProfile(1);
+
+						// Loop while the path has not been fully calculated
+						while (path.CompleteState == PathCompleteState.NotCalculated)
+						{
+							// Do some work on the path calculation.
+							// The function will return when it has taken too much time
+							// or when it has finished calculation
+							AstarProfiler.StartFastProfile(2);
+							ipath.CalculateStep(targetTick);
+							AstarProfiler.EndFastProfile(2);
+
+							targetTick = System.DateTime.UtcNow.Ticks + maxTicks;
+
+							// Cancel function (and thus the thread) if no more paths should be accepted.
+							// This is done when the A* object is about to be destroyed
+							// The path is returned and then this function will be terminated
+							if (queue.IsTerminating)
+							{
+								path.FailWithError("AstarPath object destroyed");
+							}
+						}
+
+						path.duration = (System.DateTime.UtcNow.Ticks - startTicks) * 0.0001F;
 
 #if ProfileAstar
 					System.Threading.Interlocked.Increment(ref AstarPath.PathsCompleted);
 					System.Threading.Interlocked.Add(ref AstarPath.TotalSearchTime, System.DateTime.UtcNow.Ticks - startTicks);
 #endif
-				}
+					}
 
-				// Cleans up node tagging and other things
-				ipath.Cleanup();
+					// Cleans up node tagging and other things
+					ipath.Cleanup();
 
-				AstarProfiler.StartFastProfile(9);
+					AstarProfiler.StartFastProfile(9);
 
-				if (path.immediateCallback != null) path.immediateCallback(path);
+					if (path.immediateCallback != null) path.immediateCallback(path);
 
-				if (OnPathPostSearch != null) {
-					OnPathPostSearch(path);
-				}
+					if (OnPathPostSearch != null)
+					{
+						OnPathPostSearch(path);
+					}
 
-				// Push the path onto the return stack
-				// It will be detected by the main Unity thread and returned as fast as possible (the next late update hopefully)
-				returnQueue.Enqueue(path);
+					// Push the path onto the return stack
+					// It will be detected by the main Unity thread and returned as fast as possible (the next late update hopefully)
+					returnQueue.Enqueue(path);
 
-				// Will advance to ReturnQueue
-				ipath.AdvanceState(PathState.ReturnQueue);
+					// Will advance to ReturnQueue
+					ipath.AdvanceState(PathState.ReturnQueue);
 
-				AstarProfiler.EndFastProfile(9);
+					AstarProfiler.EndFastProfile(9);
 #if UNITY_2017_3_OR_NEWER
-				profilingSampler.End();
+					profilingSampler.End();
 #endif
-			}
+				}
 #if !ASTAR_FAST_BUT_NO_EXCEPTIONS
-		}
-		catch (System.Exception e) {
+			}
+			catch (System.Exception e)
+			{
 #if !NETFX_CORE
-			if (e is ThreadAbortException || e is ThreadControlQueue.QueueTerminationException)
+				if (e is ThreadAbortException || e is ThreadControlQueue.QueueTerminationException)
 #else
 			if (e is ThreadControlQueue.QueueTerminationException)
 #endif
-			{
-				if (astar.logPathResults == PathLog.Heavy)
-					Debug.LogWarning("Shutting down pathfinding thread #" + pathHandler.threadID);
-				return;
+				{
+					if (astar.logPathResults == PathLog.Heavy)
+						Debug.LogWarning("Shutting down pathfinding thread #" + pathHandler.threadID);
+					return;
+				}
+				Debug.LogException(e);
+				Debug.LogError("Unhandled exception during pathfinding. Terminating.");
+				// Unhandled exception, kill pathfinding
+				queue.TerminateReceivers();
 			}
-			Debug.LogException(e);
-			Debug.LogError("Unhandled exception during pathfinding. Terminating.");
-			// Unhandled exception, kill pathfinding
-			queue.TerminateReceivers();
-		} finally {
+			finally
+			{
 #if UNITY_2017_3_OR_NEWER
-			UnityEngine.Profiling.Profiler.EndThreadProfiling();
+				UnityEngine.Profiling.Profiler.EndThreadProfiling();
 #endif
-		}
+			}
 #endif
 
 			Debug.LogError("Error : This part should never be reached.");
@@ -426,12 +486,14 @@ namespace Pathfinding {
 		/// See: CalculatePathsThreaded
 		/// See: StartPath
 		/// </summary>
-		IEnumerator CalculatePaths (PathHandler pathHandler) {
+		IEnumerator CalculatePaths(PathHandler pathHandler)
+		{
 			// Max number of ticks before yielding/sleeping
-			long maxTicks = (long)(astar.maxFrameTime*10000);
+			long maxTicks = (long)(astar.maxFrameTime * 10000);
 			long targetTick = System.DateTime.UtcNow.Ticks + maxTicks;
 
-			while (true) {
+			while (true)
+			{
 				// The path we are currently calculating
 				Path p = null;
 
@@ -439,15 +501,20 @@ namespace Pathfinding {
 
 				// Try to get the next path to be calculated
 				bool blockedBefore = false;
-				while (p == null) {
-					try {
+				while (p == null)
+				{
+					try
+					{
 						p = queue.PopNoBlock(blockedBefore);
 						blockedBefore |= p == null;
-					} catch (ThreadControlQueue.QueueTerminationException) {
+					}
+					catch (ThreadControlQueue.QueueTerminationException)
+					{
 						yield break;
 					}
 
-					if (p == null) {
+					if (p == null)
+					{
 						AstarProfiler.EndProfile();
 						yield return null;
 						AstarProfiler.StartProfile("Path Queue");
@@ -462,7 +529,7 @@ namespace Pathfinding {
 
 				// Max number of ticks we are allowed to continue working in one run
 				// One tick is 1/10000 of a millisecond
-				maxTicks = (long)(astar.maxFrameTime*10000);
+				maxTicks = (long)(astar.maxFrameTime * 10000);
 
 				ip.PrepareBase(pathHandler);
 
@@ -490,7 +557,8 @@ namespace Pathfinding {
 
 				// Check if the Prepare call caused the path to complete
 				// If this happens the path usually failed
-				if (p.CompleteState == PathCompleteState.NotCalculated) {
+				if (p.CompleteState == PathCompleteState.NotCalculated)
+				{
 					// For debug uses, we set the last computed path to p, so we can view debug info on it in the editor (scene view).
 					astar.debugPathData = ip.PathHandler;
 					astar.debugPathID = p.pathID;
@@ -501,7 +569,8 @@ namespace Pathfinding {
 					AstarProfiler.EndProfile();
 
 					// The error can turn up in the Init function
-					while (p.CompleteState == PathCompleteState.NotCalculated) {
+					while (p.CompleteState == PathCompleteState.NotCalculated)
+					{
 						// Do some work on the path calculation.
 						// The function will return when it has taken too much time
 						// or when it has finished calculation
@@ -518,7 +587,7 @@ namespace Pathfinding {
 						if (p.CompleteState != PathCompleteState.NotCalculated) break;
 
 						AstarProfiler.EndFastProfile(8);
-						totalTicks += System.DateTime.UtcNow.Ticks-startTicks;
+						totalTicks += System.DateTime.UtcNow.Ticks - startTicks;
 						// Yield/sleep so other threads can work
 
 						AstarProfiler.EndProfile();
@@ -531,15 +600,16 @@ namespace Pathfinding {
 						// Cancel function (and thus the thread) if no more paths should be accepted.
 						// This is done when the A* object is about to be destroyed
 						// The path is returned and then this function will be terminated (see similar IF statement higher up in the function)
-						if (queue.IsTerminating) {
+						if (queue.IsTerminating)
+						{
 							p.FailWithError("AstarPath object destroyed");
 						}
 
 						targetTick = System.DateTime.UtcNow.Ticks + maxTicks;
 					}
 
-					totalTicks += System.DateTime.UtcNow.Ticks-startTicks;
-					p.duration = totalTicks*0.0001F;
+					totalTicks += System.DateTime.UtcNow.Ticks - startTicks;
+					p.duration = totalTicks * 0.0001F;
 
 #if ProfileAstar
 					System.Threading.Interlocked.Increment(ref AstarPath.PathsCompleted);
@@ -573,7 +643,8 @@ namespace Pathfinding {
 				AstarProfiler.EndProfile();
 
 				// Wait a bit if we have calculated a lot of paths
-				if (System.DateTime.UtcNow.Ticks > targetTick) {
+				if (System.DateTime.UtcNow.Ticks > targetTick)
+				{
 					yield return null;
 					targetTick = System.DateTime.UtcNow.Ticks + maxTicks;
 				}

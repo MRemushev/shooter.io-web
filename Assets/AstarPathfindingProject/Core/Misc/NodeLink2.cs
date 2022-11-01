@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Pathfinding {
+namespace Pathfinding
+{
 	using Pathfinding.Util;
 
 	/// <summary>
@@ -22,9 +23,11 @@ namespace Pathfinding {
 	/// </summary>
 	[AddComponentMenu("Pathfinding/Link2")]
 	[HelpURL("http://arongranberg.com/astar/docs/class_pathfinding_1_1_node_link2.php")]
-	public class NodeLink2 : GraphModifier {
+	public class NodeLink2 : GraphModifier
+	{
 		protected static Dictionary<GraphNode, NodeLink2> reference = new Dictionary<GraphNode, NodeLink2>();
-		public static NodeLink2 GetNodeLink (GraphNode node) {
+		public static NodeLink2 GetNodeLink(GraphNode node)
+		{
 			NodeLink2 v;
 
 			reference.TryGetValue(node, out v);
@@ -44,11 +47,13 @@ namespace Pathfinding {
 		/// <summary>Make a one-way connection</summary>
 		public bool oneWay = false;
 
-		public Transform StartTransform {
+		public Transform StartTransform
+		{
 			get { return transform; }
 		}
 
-		public Transform EndTransform {
+		public Transform EndTransform
+		{
 			get { return end; }
 		}
 
@@ -59,36 +64,43 @@ namespace Pathfinding {
 		bool postScanCalled = false;
 
 		[System.Obsolete("Use startNode instead (lowercase s)")]
-		public GraphNode StartNode {
+		public GraphNode StartNode
+		{
 			get { return startNode; }
 		}
 
 		[System.Obsolete("Use endNode instead (lowercase e)")]
-		public GraphNode EndNode {
+		public GraphNode EndNode
+		{
 			get { return endNode; }
 		}
 
-		public override void OnPostScan () {
+		public override void OnPostScan()
+		{
 			InternalOnPostScan();
 		}
 
-		public void InternalOnPostScan () {
+		public void InternalOnPostScan()
+		{
 			if (EndTransform == null || StartTransform == null) return;
 
 #if ASTAR_NO_POINT_GRAPH
 			throw new System.Exception("Point graph is not included. Check your A* optimization settings.");
 #else
-			if (AstarPath.active.data.pointGraph == null) {
+			if (AstarPath.active.data.pointGraph == null)
+			{
 				var graph = AstarPath.active.data.AddGraph(typeof(PointGraph)) as PointGraph;
 				graph.name = "PointGraph (used for node links)";
 			}
 
-			if (startNode != null && startNode.Destroyed) {
+			if (startNode != null && startNode.Destroyed)
+			{
 				reference.Remove(startNode);
 				startNode = null;
 			}
 
-			if (endNode != null && endNode.Destroyed) {
+			if (endNode != null && endNode.Destroyed)
+			{
 				reference.Remove(endNode);
 				endNode = null;
 			}
@@ -100,7 +112,8 @@ namespace Pathfinding {
 			connectedNode1 = null;
 			connectedNode2 = null;
 
-			if (startNode == null || endNode == null) {
+			if (startNode == null || endNode == null)
+			{
 				startNode = null;
 				endNode = null;
 				return;
@@ -113,37 +126,46 @@ namespace Pathfinding {
 #endif
 		}
 
-		public override void OnGraphsPostUpdate () {
+		public override void OnGraphsPostUpdate()
+		{
 			// Don't bother running it now since OnPostScan will be called later anyway
 			if (AstarPath.active.isScanning)
 				return;
 
-			if (connectedNode1 != null && connectedNode1.Destroyed) {
+			if (connectedNode1 != null && connectedNode1.Destroyed)
+			{
 				connectedNode1 = null;
 			}
-			if (connectedNode2 != null && connectedNode2.Destroyed) {
+			if (connectedNode2 != null && connectedNode2.Destroyed)
+			{
 				connectedNode2 = null;
 			}
 
-			if (!postScanCalled) {
+			if (!postScanCalled)
+			{
 				OnPostScan();
-			} else {
+			}
+			else
+			{
 				Apply(false);
 			}
 		}
 
-		protected override void OnEnable () {
+		protected override void OnEnable()
+		{
 			base.OnEnable();
 
 #if !ASTAR_NO_POINT_GRAPH
-			if (Application.isPlaying && AstarPath.active != null && AstarPath.active.data != null && AstarPath.active.data.pointGraph != null && !AstarPath.active.isScanning) {
+			if (Application.isPlaying && AstarPath.active != null && AstarPath.active.data != null && AstarPath.active.data.pointGraph != null && !AstarPath.active.isScanning)
+			{
 				// Call OnGraphsPostUpdate as soon as possible when it is safe to update the graphs
 				AstarPath.active.AddWorkItem(OnGraphsPostUpdate);
 			}
 #endif
 		}
 
-		protected override void OnDisable () {
+		protected override void OnDisable()
+		{
 			base.OnDisable();
 
 			postScanCalled = false;
@@ -151,11 +173,13 @@ namespace Pathfinding {
 			if (startNode != null) reference.Remove(startNode);
 			if (endNode != null) reference.Remove(endNode);
 
-			if (startNode != null && endNode != null) {
+			if (startNode != null && endNode != null)
+			{
 				startNode.RemoveConnection(endNode);
 				endNode.RemoveConnection(startNode);
 
-				if (connectedNode1 != null && connectedNode2 != null) {
+				if (connectedNode1 != null && connectedNode2 != null)
+				{
 					startNode.RemoveConnection(connectedNode1);
 					connectedNode1.RemoveConnection(startNode);
 
@@ -165,19 +189,23 @@ namespace Pathfinding {
 			}
 		}
 
-		void RemoveConnections (GraphNode node) {
+		void RemoveConnections(GraphNode node)
+		{
 			//TODO, might be better to replace connection
 			node.ClearConnections(true);
 		}
 
 		[ContextMenu("Recalculate neighbours")]
-		void ContextApplyForce () {
-			if (Application.isPlaying) {
+		void ContextApplyForce()
+		{
+			if (Application.isPlaying)
+			{
 				Apply(true);
 			}
 		}
 
-		public void Apply (bool forceNewCheck) {
+		public void Apply(bool forceNewCheck)
+		{
 			//TODO
 			//This function assumes that connections from the n1,n2 nodes never need to be removed in the future (e.g because the nodes move or something)
 			NNConstraint nn = NNConstraint.None;
@@ -192,17 +220,19 @@ namespace Pathfinding {
 			RemoveConnections(startNode);
 			RemoveConnections(endNode);
 
-			uint cost = (uint)Mathf.RoundToInt(((Int3)(StartTransform.position-EndTransform.position)).costMagnitude*costFactor);
+			uint cost = (uint)Mathf.RoundToInt(((Int3)(StartTransform.position - EndTransform.position)).costMagnitude * costFactor);
 			startNode.AddConnection(endNode, cost);
 			endNode.AddConnection(startNode, cost);
 
-			if (connectedNode1 == null || forceNewCheck) {
+			if (connectedNode1 == null || forceNewCheck)
+			{
 				var info = AstarPath.active.GetNearest(StartTransform.position, nn);
 				connectedNode1 = info.node;
 				clamped1 = info.position;
 			}
 
-			if (connectedNode2 == null || forceNewCheck) {
+			if (connectedNode2 == null || forceNewCheck)
+			{
 				var info = AstarPath.active.GetNearest(EndTransform.position, nn);
 				connectedNode2 = info.node;
 				clamped2 = info.position;
@@ -211,49 +241,58 @@ namespace Pathfinding {
 			if (connectedNode2 == null || connectedNode1 == null) return;
 
 			//Add connections between nodes, or replace old connections if existing
-			connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((Int3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
-			if (!oneWay) connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((Int3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));
+			connectedNode1.AddConnection(startNode, (uint)Mathf.RoundToInt(((Int3)(clamped1 - StartTransform.position)).costMagnitude * costFactor));
+			if (!oneWay) connectedNode2.AddConnection(endNode, (uint)Mathf.RoundToInt(((Int3)(clamped2 - EndTransform.position)).costMagnitude * costFactor));
 
-			if (!oneWay) startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((Int3)(clamped1 - StartTransform.position)).costMagnitude*costFactor));
-			endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((Int3)(clamped2 - EndTransform.position)).costMagnitude*costFactor));
+			if (!oneWay) startNode.AddConnection(connectedNode1, (uint)Mathf.RoundToInt(((Int3)(clamped1 - StartTransform.position)).costMagnitude * costFactor));
+			endNode.AddConnection(connectedNode2, (uint)Mathf.RoundToInt(((Int3)(clamped2 - EndTransform.position)).costMagnitude * costFactor));
 		}
 
-		private readonly static Color GizmosColor = new Color(206.0f/255.0f, 136.0f/255.0f, 48.0f/255.0f, 0.5f);
-		private readonly static Color GizmosColorSelected = new Color(235.0f/255.0f, 123.0f/255.0f, 32.0f/255.0f, 1.0f);
+		private readonly static Color GizmosColor = new Color(206.0f / 255.0f, 136.0f / 255.0f, 48.0f / 255.0f, 0.5f);
+		private readonly static Color GizmosColorSelected = new Color(235.0f / 255.0f, 123.0f / 255.0f, 32.0f / 255.0f, 1.0f);
 
-		public virtual void OnDrawGizmosSelected () {
+		public virtual void OnDrawGizmosSelected()
+		{
 			OnDrawGizmos(true);
 		}
 
-		public void OnDrawGizmos () {
+		public void OnDrawGizmos()
+		{
 			OnDrawGizmos(false);
 		}
 
-		public void OnDrawGizmos (bool selected) {
+		public void OnDrawGizmos(bool selected)
+		{
 			Color color = selected ? GizmosColorSelected : GizmosColor;
 
-			if (StartTransform != null) {
+			if (StartTransform != null)
+			{
 				Draw.Gizmos.CircleXZ(StartTransform.position, 0.4f, color);
 			}
-			if (EndTransform != null) {
+			if (EndTransform != null)
+			{
 				Draw.Gizmos.CircleXZ(EndTransform.position, 0.4f, color);
 			}
 
-			if (StartTransform != null && EndTransform != null) {
+			if (StartTransform != null && EndTransform != null)
+			{
 				Draw.Gizmos.Bezier(StartTransform.position, EndTransform.position, color);
-				if (selected) {
-					Vector3 cross = Vector3.Cross(Vector3.up, (EndTransform.position-StartTransform.position)).normalized;
-					Draw.Gizmos.Bezier(StartTransform.position+cross*0.1f, EndTransform.position+cross*0.1f, color);
-					Draw.Gizmos.Bezier(StartTransform.position-cross*0.1f, EndTransform.position-cross*0.1f, color);
+				if (selected)
+				{
+					Vector3 cross = Vector3.Cross(Vector3.up, (EndTransform.position - StartTransform.position)).normalized;
+					Draw.Gizmos.Bezier(StartTransform.position + cross * 0.1f, EndTransform.position + cross * 0.1f, color);
+					Draw.Gizmos.Bezier(StartTransform.position - cross * 0.1f, EndTransform.position - cross * 0.1f, color);
 				}
 			}
 		}
 
-		internal static void SerializeReferences (Pathfinding.Serialization.GraphSerializationContext ctx) {
+		internal static void SerializeReferences(Pathfinding.Serialization.GraphSerializationContext ctx)
+		{
 			var links = GetModifiersOfType<NodeLink2>();
 
 			ctx.writer.Write(links.Count);
-			foreach (var link in links) {
+			foreach (var link in links)
+			{
 				ctx.writer.Write(link.uniqueID);
 				ctx.SerializeNodeReference(link.startNode);
 				ctx.SerializeNodeReference(link.endNode);
@@ -265,10 +304,12 @@ namespace Pathfinding {
 			}
 		}
 
-		internal static void DeserializeReferences (Pathfinding.Serialization.GraphSerializationContext ctx) {
+		internal static void DeserializeReferences(Pathfinding.Serialization.GraphSerializationContext ctx)
+		{
 			int count = ctx.reader.ReadInt32();
 
-			for (int i = 0; i < count; i++) {
+			for (int i = 0; i < count; i++)
+			{
 				var linkID = ctx.reader.ReadUInt64();
 				var startNode = ctx.DeserializeNodeReference();
 				var endNode = ctx.DeserializeNodeReference();
@@ -279,9 +320,11 @@ namespace Pathfinding {
 				var postScanCalled = ctx.reader.ReadBoolean();
 
 				GraphModifier link;
-				if (usedIDs.TryGetValue(linkID, out link)) {
+				if (usedIDs.TryGetValue(linkID, out link))
+				{
 					var link2 = link as NodeLink2;
-					if (link2 != null) {
+					if (link2 != null)
+					{
 						if (startNode != null) reference[startNode] = link2;
 						if (endNode != null) reference[endNode] = link2;
 
@@ -296,10 +339,14 @@ namespace Pathfinding {
 						link2.postScanCalled = postScanCalled;
 						link2.clamped1 = clamped1;
 						link2.clamped2 = clamped2;
-					} else {
+					}
+					else
+					{
 						throw new System.Exception("Tried to deserialize a NodeLink2 reference, but the link was not of the correct type or it has been destroyed.\nIf a NodeLink2 is included in serialized graph data, the same NodeLink2 component must be present in the scene when loading the graph data.");
 					}
-				} else {
+				}
+				else
+				{
 					throw new System.Exception("Tried to deserialize a NodeLink2 reference, but the link could not be found in the scene.\nIf a NodeLink2 is included in serialized graph data, the same NodeLink2 component must be present in the scene when loading the graph data.");
 				}
 			}

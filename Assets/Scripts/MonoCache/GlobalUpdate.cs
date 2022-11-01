@@ -10,41 +10,41 @@ using UnityEngine;
 
 namespace NTC.Global.Cache
 {
-    [DisallowMultipleComponent]
-    public sealed class GlobalUpdate : Singleton<GlobalUpdate>
-    {
-        public event Action OnUpdate;
-        public event Action OnFixedUpdate;
-        public event Action OnLateUpdate;
+	[DisallowMultipleComponent]
+	public sealed class GlobalUpdate : Singleton<GlobalUpdate>
+	{
+		public event Action OnUpdate;
+		public event Action OnFixedUpdate;
+		public event Action OnLateUpdate;
 
-        public const string OnEnableMethodName = "OnEnable";
-        public const string OnDisableMethodName = "OnDisable";
-        
-        public const string UpdateMethodName = nameof(Update);
-        public const string FixedUpdateMethodName = nameof(FixedUpdate);
-        public const string LateUpdateMethodName = nameof(LateUpdate);
+		public const string OnEnableMethodName = "OnEnable";
+		public const string OnDisableMethodName = "OnDisable";
 
-        private readonly MonoCacheExceptionsChecker monoCacheExceptionsChecker = 
-            new MonoCacheExceptionsChecker();
-        
-        private void Awake()
-        {
-            monoCacheExceptionsChecker.CheckForExceptions();
-        }
+		public const string UpdateMethodName = nameof(Update);
+		public const string FixedUpdateMethodName = nameof(FixedUpdate);
+		public const string LateUpdateMethodName = nameof(LateUpdate);
 
-        private void Update()
-        {
-            OnUpdate?.Invoke();
-        }
+		private readonly MonoCacheExceptionsChecker monoCacheExceptionsChecker =
+			new MonoCacheExceptionsChecker();
 
-        private void FixedUpdate()
-        {
-            OnFixedUpdate?.Invoke();
-        }
+		private void Awake()
+		{
+			monoCacheExceptionsChecker.CheckForExceptions();
+		}
 
-        private void LateUpdate()
-        {
-            OnLateUpdate?.Invoke();
-        }
-    }
+		private void Update()
+		{
+			OnUpdate?.Invoke();
+		}
+
+		private void FixedUpdate()
+		{
+			OnFixedUpdate?.Invoke();
+		}
+
+		private void LateUpdate()
+		{
+			OnLateUpdate?.Invoke();
+		}
+	}
 }
