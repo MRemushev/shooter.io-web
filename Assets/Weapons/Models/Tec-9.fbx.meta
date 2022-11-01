@@ -104,7 +104,7 @@ ModelImporter:
   meshes:
     lODScreenPercentages: []
     globalScale: 0.04597734
-    meshCompression: 3
+    meshCompression: 2
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1

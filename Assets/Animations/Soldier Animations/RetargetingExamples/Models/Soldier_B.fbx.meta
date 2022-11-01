@@ -1,109 +1,305 @@
 fileFormatVersion: 2
 guid: dcc64cb3c6d1557439d2b002e20440ce
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: Ankle_L
-    100004: Ankle_R
-    100006: Ball_L
-    100008: Ball_R
-    100010: Clavicle_L
-    100012: Clavicle_R
-    100014: DummySkeleton_B
-    100016: Elbow_L
-    100018: Elbow_R
-    100020: Finger_01
-    100022: Finger_01_001
-    100024: Finger_02
-    100026: Finger_02_001
-    100028: Finger_03
-    100030: Finger_03_001
-    100032: Gunner_B
-    100034: Hand_L
-    100036: Hand_R
-    100038: Head
-    100040: Helmet_B
-    100042: Hips
-    100044: IndexFinger_01
-    100046: IndexFinger_01_001
-    100048: IndexFinger_02
-    100050: IndexFinger_02_001
-    100052: IndexFinger_03
-    100054: IndexFinger_03_001
-    100056: LowerLeg_L
-    100058: LowerLeg_R
-    100060: Neck
-    100062: Root
-    100064: Shoulder_L
-    100066: Shoulder_R
-    100068: Spine_01
-    100070: Spine_02
-    100072: Spine_03
-    100074: Thumb_01
-    100076: Thumb_01_001
-    100078: Thumb_02
-    100080: Thumb_02_001
-    100082: UpperLeg_L
-    100084: UpperLeg_R
-    400000: //RootNode
-    400002: Ankle_L
-    400004: Ankle_R
-    400006: Ball_L
-    400008: Ball_R
-    400010: Clavicle_L
-    400012: Clavicle_R
-    400014: DummySkeleton_B
-    400016: Elbow_L
-    400018: Elbow_R
-    400020: Finger_01
-    400022: Finger_01_001
-    400024: Finger_02
-    400026: Finger_02_001
-    400028: Finger_03
-    400030: Finger_03_001
-    400032: Gunner_B
-    400034: Hand_L
-    400036: Hand_R
-    400038: Head
-    400040: Helmet_B
-    400042: Hips
-    400044: IndexFinger_01
-    400046: IndexFinger_01_001
-    400048: IndexFinger_02
-    400050: IndexFinger_02_001
-    400052: IndexFinger_03
-    400054: IndexFinger_03_001
-    400056: LowerLeg_L
-    400058: LowerLeg_R
-    400060: Neck
-    400062: Root
-    400064: Shoulder_L
-    400066: Shoulder_R
-    400068: Spine_01
-    400070: Spine_02
-    400072: Spine_03
-    400074: Thumb_01
-    400076: Thumb_01_001
-    400078: Thumb_02
-    400080: Thumb_02_001
-    400082: UpperLeg_L
-    400084: UpperLeg_R
-    2100000: Mat__VillagerTexture_png
-    2100002: Mat_001__VillagerTexture_png_003
-    2300000: Gunner_B
-    2300002: Helmet_B
-    3300000: Gunner_B
-    3300002: Helmet_B
-    4300000: Gunner_B
-    4300002: Helmet_B
-    9500000: //RootNode
-    13700000: Gunner_B
-    13700002: Helmet_B
-    2186277476908879412: ImportLogs
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: Ankle_L
+  - first:
+      1: 100004
+    second: Ankle_R
+  - first:
+      1: 100006
+    second: Ball_L
+  - first:
+      1: 100008
+    second: Ball_R
+  - first:
+      1: 100010
+    second: Clavicle_L
+  - first:
+      1: 100012
+    second: Clavicle_R
+  - first:
+      1: 100014
+    second: DummySkeleton_B
+  - first:
+      1: 100016
+    second: Elbow_L
+  - first:
+      1: 100018
+    second: Elbow_R
+  - first:
+      1: 100020
+    second: Finger_01
+  - first:
+      1: 100022
+    second: Finger_01_001
+  - first:
+      1: 100024
+    second: Finger_02
+  - first:
+      1: 100026
+    second: Finger_02_001
+  - first:
+      1: 100028
+    second: Finger_03
+  - first:
+      1: 100030
+    second: Finger_03_001
+  - first:
+      1: 100032
+    second: Gunner_B
+  - first:
+      1: 100034
+    second: Hand_L
+  - first:
+      1: 100036
+    second: Hand_R
+  - first:
+      1: 100038
+    second: Head
+  - first:
+      1: 100040
+    second: Helmet_B
+  - first:
+      1: 100042
+    second: Hips
+  - first:
+      1: 100044
+    second: IndexFinger_01
+  - first:
+      1: 100046
+    second: IndexFinger_01_001
+  - first:
+      1: 100048
+    second: IndexFinger_02
+  - first:
+      1: 100050
+    second: IndexFinger_02_001
+  - first:
+      1: 100052
+    second: IndexFinger_03
+  - first:
+      1: 100054
+    second: IndexFinger_03_001
+  - first:
+      1: 100056
+    second: LowerLeg_L
+  - first:
+      1: 100058
+    second: LowerLeg_R
+  - first:
+      1: 100060
+    second: Neck
+  - first:
+      1: 100062
+    second: Root
+  - first:
+      1: 100064
+    second: Shoulder_L
+  - first:
+      1: 100066
+    second: Shoulder_R
+  - first:
+      1: 100068
+    second: Spine_01
+  - first:
+      1: 100070
+    second: Spine_02
+  - first:
+      1: 100072
+    second: Spine_03
+  - first:
+      1: 100074
+    second: Thumb_01
+  - first:
+      1: 100076
+    second: Thumb_01_001
+  - first:
+      1: 100078
+    second: Thumb_02
+  - first:
+      1: 100080
+    second: Thumb_02_001
+  - first:
+      1: 100082
+    second: UpperLeg_L
+  - first:
+      1: 100084
+    second: UpperLeg_R
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: Ankle_L
+  - first:
+      4: 400004
+    second: Ankle_R
+  - first:
+      4: 400006
+    second: Ball_L
+  - first:
+      4: 400008
+    second: Ball_R
+  - first:
+      4: 400010
+    second: Clavicle_L
+  - first:
+      4: 400012
+    second: Clavicle_R
+  - first:
+      4: 400014
+    second: DummySkeleton_B
+  - first:
+      4: 400016
+    second: Elbow_L
+  - first:
+      4: 400018
+    second: Elbow_R
+  - first:
+      4: 400020
+    second: Finger_01
+  - first:
+      4: 400022
+    second: Finger_01_001
+  - first:
+      4: 400024
+    second: Finger_02
+  - first:
+      4: 400026
+    second: Finger_02_001
+  - first:
+      4: 400028
+    second: Finger_03
+  - first:
+      4: 400030
+    second: Finger_03_001
+  - first:
+      4: 400032
+    second: Gunner_B
+  - first:
+      4: 400034
+    second: Hand_L
+  - first:
+      4: 400036
+    second: Hand_R
+  - first:
+      4: 400038
+    second: Head
+  - first:
+      4: 400040
+    second: Helmet_B
+  - first:
+      4: 400042
+    second: Hips
+  - first:
+      4: 400044
+    second: IndexFinger_01
+  - first:
+      4: 400046
+    second: IndexFinger_01_001
+  - first:
+      4: 400048
+    second: IndexFinger_02
+  - first:
+      4: 400050
+    second: IndexFinger_02_001
+  - first:
+      4: 400052
+    second: IndexFinger_03
+  - first:
+      4: 400054
+    second: IndexFinger_03_001
+  - first:
+      4: 400056
+    second: LowerLeg_L
+  - first:
+      4: 400058
+    second: LowerLeg_R
+  - first:
+      4: 400060
+    second: Neck
+  - first:
+      4: 400062
+    second: Root
+  - first:
+      4: 400064
+    second: Shoulder_L
+  - first:
+      4: 400066
+    second: Shoulder_R
+  - first:
+      4: 400068
+    second: Spine_01
+  - first:
+      4: 400070
+    second: Spine_02
+  - first:
+      4: 400072
+    second: Spine_03
+  - first:
+      4: 400074
+    second: Thumb_01
+  - first:
+      4: 400076
+    second: Thumb_01_001
+  - first:
+      4: 400078
+    second: Thumb_02
+  - first:
+      4: 400080
+    second: Thumb_02_001
+  - first:
+      4: 400082
+    second: UpperLeg_L
+  - first:
+      4: 400084
+    second: UpperLeg_R
+  - first:
+      21: 2100000
+    second: Mat__VillagerTexture_png
+  - first:
+      21: 2100002
+    second: Mat_001__VillagerTexture_png_003
+  - first:
+      23: 2300000
+    second: Gunner_B
+  - first:
+      23: 2300002
+    second: Helmet_B
+  - first:
+      33: 3300000
+    second: Gunner_B
+  - first:
+      33: 3300002
+    second: Helmet_B
+  - first:
+      43: 4300000
+    second: Gunner_B
+  - first:
+      43: 4300002
+    second: Helmet_B
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: Gunner_B
+  - first:
+      137: 13700002
+    second: Helmet_B
+  - first:
+      41386430: 2186277476908879412
+    second: ImportLogs
   externalObjects: {}
   materials:
-    importMaterials: 0
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -112,6 +308,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -133,28 +330,37 @@ ModelImporter:
   meshes:
     lODScreenPercentages: []
     globalScale: 1
-    meshCompression: 0
+    meshCompression: 2
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 0
     importBlendShapes: 0
     importCameras: 0
     importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.01
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -163,10 +369,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 0
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human:
     - boneName: Root
       humanName: Hips
@@ -695,13 +901,18 @@ ModelImporter:
     armStretch: 1
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
