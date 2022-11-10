@@ -111,4 +111,4 @@ MonoBehaviour:
     de: 
     hi: 
   SDKStartDelay: 0
-  debug: 1
+  debug: 0

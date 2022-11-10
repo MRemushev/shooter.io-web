@@ -10,7 +10,7 @@ public class Spawner : MonoBehaviour
 	[SerializeField] private Vector3 worldSize;
 	[SerializeField] private bool isPoolable;
 
-	private void Awake()
+	private void Start()
 	{
 		for (var index = 0; index < prefabCount; index++) SpawnObject();
 	}

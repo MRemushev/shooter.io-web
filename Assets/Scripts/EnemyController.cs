@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using Pathfinding;
+using UnityEngine.AI;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using NTC.Global.Pool;
 using System.Collections;
 
-[RequireComponent(typeof(AIPath))]
-public class EnemyController : MainCharacter, IPoolItem
+[RequireComponent(typeof(NavMeshAgent))]
+public class EnemyController : MainCharacter
 {
 	[Header("Enemy components")]
-	[SerializeField] private AIPath agent;
+	[SerializeField] private NavMeshAgent _agent;
 	[SerializeField] private Transform point;
 	[SerializeField] private CapsuleCollider capsuleCollider;
 
@@ -22,46 +22,37 @@ public class EnemyController : MainCharacter, IPoolItem
 
 	private static readonly int DeadAnim = Animator.StringToHash("IsDead");
 
-	public void OnSpawn()
+	protected override void OnEnabled()
 	{
 		skinObject.material.mainTexture = skinArray.textureList[Random.Range(0, skinArray.textureList.Length)];
 		characterName = NameRandomizer.GetRandomName();
-		scoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel"));
-		weapons.ChangeWeapon(scoreKills);
+		_foods = Finds<FoodMovement>();
+		_playerPrefab = GameObject.Find("Player");
+		_playerScript = _playerPrefab.GetComponent<PlayerController>();
 		PointerManager.instance.AddToList(point);
 		_levelText = PointerManager.instance.dictionary[point].GetComponent<PointerIcon>();
 		_levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
-		_playerPrefab = GameObject.Find("Player");
-		_playerScript = _playerPrefab.GetComponent<PlayerController>();
-		AddCharacter(cachedTransform.position, Random.Range(0, PlayerPrefs.GetInt("PlayerPeople")));
+		if (_playerScript.CharacterCount < PlayerPrefs.GetInt("PlayerPeople"))
+			AddCharacter(cachedTransform.position, Random.Range(0, PlayerPrefs.GetInt("PlayerPeople")));
+		else AddCharacter(cachedTransform.position, Random.Range(0, _playerScript.CharacterCount));
+		if (_playerScript.CountKills / 2 < PlayerPrefs.GetInt("WeaponLevel"))
+			scoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel"));
+		else scoreKills = Random.Range(0, _playerScript.CountKills / 2);
+		weapons.ChangeWeapon(scoreKills);
 		shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
-		health = previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.CountKills * 10;
-		rankManager.charactersData.Add(this);
+		health = previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.CountKills * 5;
 	}
-
-	public void OnDespawn()
-	{
-		IsDead = false;
-		agent.isStopped = false;
-		characterList = new List<TeamController>();
-		capsuleCollider.enabled = true;
-		shootingArea.enabled = true;
-		rigidbody.isKinematic = false;
-		enemySpawner.SpawnObject();
-	}
-
-	private void Start() => _foods = Finds<FoodMovement>();
 
 	protected override void Run()
 	{
 		if (IsDead) return;
 		// Movement enemy
-		relativeVector = Vector3.ClampMagnitude(transform.InverseTransformDirection(agent.velocity), 1);
+		relativeVector = Vector3.ClampMagnitude(transform.InverseTransformDirection(_agent.velocity), 1);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
 		isStop = relativeVector.magnitude < 0.1f;
 		// If the agent is stuck, then we try to find a new target
-		if (isStop && !agent.isStopped) FindClosestFood();
+		if (isStop && !_agent.isStopped) FindClosestFood();
 	}
 
 	private void OnCollisionEnter(Collision col)
@@ -86,14 +77,14 @@ public class EnemyController : MainCharacter, IPoolItem
 	{
 		if (IsDead) return;
 		isFire = false;
-		agent.isStopped = false;
+		_agent.isStopped = false;
 		fireTarget = null;
 	}
 
 	private void EnemyShooting(Component col)
 	{
 		isFire = true;
-		agent.isStopped = true;
+		_agent.isStopped = true;
 		fireTarget = col.transform;
 		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation,
 			Quaternion.LookRotation(fireTarget.position - cachedTransform.position), 10 * Time.deltaTime);
@@ -162,7 +153,7 @@ public class EnemyController : MainCharacter, IPoolItem
 	private void DeathPlay(EnemyController enemyController = null)
 	{
 		IsDead = true;
-		agent.isStopped = true;
+		_agent.isStopped = true;
 		capsuleCollider.enabled = false;
 		rigidbody.isKinematic = true;
 		animator.SetBool(DeadAnim, true);
@@ -176,7 +167,8 @@ public class EnemyController : MainCharacter, IPoolItem
 	private IEnumerator DeadTimer()
 	{
 		yield return new WaitForSeconds(5f);
-		NightPool.Despawn(gameObject);
+		enemySpawner.SpawnObject();
+		Destroy(gameObject);
 	}
 
 	private void FindClosestFood()
@@ -190,6 +182,6 @@ public class EnemyController : MainCharacter, IPoolItem
 			closestDistance = currentDistance;
 			closestPeople = person.transform;
 		}
-		agent.destination = closestPeople!.position;
+		_agent.destination = _playerPrefab.transform.position;
 	}
 }

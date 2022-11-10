@@ -15,8 +15,11 @@ public class RankManager : MonoBehaviour
 		charactersData = charactersData.OrderByDescending(x => x.CharacterScore).ToList();
 		for (var i = 0; i < ratingTexts.Length; i++)
 		{
-			if (!ratingTexts[i]) return;
-			ratingTexts[i].text = charactersData[i].characterName + " " + charactersData[i].CharacterScore;
+			try {
+				ratingTexts[i].text = charactersData[i].characterName + " " + charactersData[i].CharacterScore;
+			} catch {
+				return;
+			}
 		}
 		var playerStats = charactersData.Find(x => x.Get<PlayerController>());
 		playerRating.text = charactersData.LastIndexOf(playerStats) + 1 + " " + playerStats.characterName + " " +

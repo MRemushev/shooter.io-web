@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 public class PlayerController : MainCharacter
 {
@@ -15,27 +16,24 @@ public class PlayerController : MainCharacter
 	[SerializeField] private TextMeshProUGUI weaponStatsText;
 	[SerializeField] private float movementSpeed;
 
+	private bool isImmortality;
 	private int _killPromotion = 2;
 	private CameraController _cameraOffset;
 	private Vector3 _movementVector;
-
-	protected override void OnEnabled() => rankManager.charactersData.Add(this);
-	protected override void OnDisabled() => rankManager.charactersData.Remove(this);
 
 	private void Start()
 	{
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
 		characterName = PlayerPrefs.GetString("PlayerName");
-		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel"));
-		weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
+		previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
+		Renaissance();
 		shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
 		laserBeam.SetPosition(1, new Vector3(0, 2.2f, characterWeapon.FireRange * 3));
+		weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
 		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
-		previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
 		ChangeWeaponStatsText();
 		ChangeHpText();
-		Renaissance();
 	}
 
 	protected override void Run()
@@ -116,7 +114,7 @@ public class PlayerController : MainCharacter
 	// Damage acceptance function
 	public void TakeDamage(float damage)
 	{
-		if (damage < 1) return; // Check that the damage is not less than one
+		if (damage < 1 || isImmortality) return; // Check that the damage is not less than one
 		health -= damage;
 		ChangeHpText();
 		// Check if the player has teammates
@@ -167,18 +165,23 @@ public class PlayerController : MainCharacter
 		laserBeam.SetPosition(1, new Vector3(0, 2.1f, characterWeapon.FireRange * 3));
 		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
 		ChangeWeaponStatsText();
-		rankManager.ChangeRating(); // Update rating
-									// Updating weapons to all the player's teammates
+		rankManager.ChangeRating();
 		foreach (var people in characterList) people.LevelUp();
 		_killPromotion = 2;
 	}
 
 	public void Renaissance()
 	{
-		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2);
+		weapons.ChangeWeapon(25);
 		health = previousHealth;
 		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
 		if (PlayerPrefs.HasKey("PlayerPeople"))
 			AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
+	}
+
+	private IEnumerator Immortality() {
+		isImmortality = true;
+		yield return new WaitForSeconds(4f);
+		isImmortality = false;
 	}
 }

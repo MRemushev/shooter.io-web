@@ -370,7 +370,7 @@ Transform:
   - {fileID: 4613747948447724}
   - {fileID: 1212642340290775143}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33932132066457294
 MeshFilter:
@@ -535,13 +535,14 @@ MonoBehaviour:
   damage: 5
   fireRange: 6
   isRifle: 1
-  shootFX: {fileID: 0}
+  shootFX: {fileID: 1212642340305923475}
   fireRate: 8
 --- !u!1001 &7199391844918017451
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 4152200447138942}
     m_Modifications:
     - target: {fileID: 8303876256903685020, guid: 7c137d3d2cee0dd49be8c903de8a31c4,
@@ -620,10 +621,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c137d3d2cee0dd49be8c903de8a31c4, type: 3}
 --- !u!4 &1212642340290775143 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8303876256903984588, guid: 7c137d3d2cee0dd49be8c903de8a31c4,
+    type: 3}
+  m_PrefabInstance: {fileID: 7199391844918017451}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1212642340305923475 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8303876256888705080, guid: 7c137d3d2cee0dd49be8c903de8a31c4,
     type: 3}
   m_PrefabInstance: {fileID: 7199391844918017451}
   m_PrefabAsset: {fileID: 0}

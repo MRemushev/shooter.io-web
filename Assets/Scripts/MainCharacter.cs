@@ -41,7 +41,7 @@ public class MainCharacter : MonoCache
 	protected float TotalDamage => (characterList.Count + 1) * characterWeapon.Damage;
 	public bool IsStopped => isStop;
 	public int CountKills => scoreKills;
-	protected int CharacterCount => characterList.Count;
+	public int CharacterCount => characterList.Count;
 	public int CharacterScore => (int)(characterWeapon.DamagePerSecond * (CharacterCount + 1));
 
 	private void Awake()
@@ -52,6 +52,7 @@ public class MainCharacter : MonoCache
 		enemySpawner = spawners[1];
 		_foodBoxSpawner = spawners[2];
 		rankManager = FindObjectOfType<RankManager>();
+		rankManager.charactersData.Add(this);
 	}
 
 	// The function of adding a teammate
