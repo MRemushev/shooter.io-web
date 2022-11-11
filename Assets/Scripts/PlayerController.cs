@@ -172,7 +172,7 @@ public class PlayerController : MainCharacter
 
 	public void Renaissance()
 	{
-		weapons.ChangeWeapon(25);
+		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2);
 		health = previousHealth;
 		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
 		if (PlayerPrefs.HasKey("PlayerPeople"))

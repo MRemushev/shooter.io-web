@@ -27,24 +27,9 @@ namespace NTC.Global.Cache
 		private readonly MonoCacheExceptionsChecker monoCacheExceptionsChecker =
 			new MonoCacheExceptionsChecker();
 
-		private void Awake()
-		{
-			monoCacheExceptionsChecker.CheckForExceptions();
-		}
-
-		private void Update()
-		{
-			OnUpdate?.Invoke();
-		}
-
-		private void FixedUpdate()
-		{
-			OnFixedUpdate?.Invoke();
-		}
-
-		private void LateUpdate()
-		{
-			OnLateUpdate?.Invoke();
-		}
+		private void Awake() => monoCacheExceptionsChecker.CheckForExceptions();
+		private void Update() => OnUpdate?.Invoke();
+		private void FixedUpdate() => OnFixedUpdate?.Invoke();
+		private void LateUpdate() => OnLateUpdate?.Invoke();
 	}
 }

@@ -26,12 +26,8 @@ public class EnemyController : MainCharacter
 	{
 		skinObject.material.mainTexture = skinArray.textureList[Random.Range(0, skinArray.textureList.Length)];
 		characterName = NameRandomizer.GetRandomName();
-		_foods = Finds<FoodMovement>();
 		_playerPrefab = GameObject.Find("Player");
 		_playerScript = _playerPrefab.GetComponent<PlayerController>();
-		PointerManager.instance.AddToList(point);
-		_levelText = PointerManager.instance.dictionary[point].GetComponent<PointerIcon>();
-		_levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
 		if (_playerScript.CharacterCount < PlayerPrefs.GetInt("PlayerPeople"))
 			AddCharacter(cachedTransform.position, Random.Range(0, PlayerPrefs.GetInt("PlayerPeople")));
 		else AddCharacter(cachedTransform.position, Random.Range(0, _playerScript.CharacterCount));
@@ -39,9 +35,14 @@ public class EnemyController : MainCharacter
 			scoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel"));
 		else scoreKills = Random.Range(0, _playerScript.CountKills / 2);
 		weapons.ChangeWeapon(scoreKills);
+		PointerManager.instance.AddToList(point);
+		_levelText = PointerManager.instance.dictionary[point].GetComponent<PointerIcon>();
+		_levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
 		shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
 		health = previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.CountKills * 5;
 	}
+
+	private void Start() => _foods = Finds<FoodMovement>();
 
 	protected override void Run()
 	{
@@ -182,6 +183,6 @@ public class EnemyController : MainCharacter
 			closestDistance = currentDistance;
 			closestPeople = person.transform;
 		}
-		_agent.destination = _playerPrefab.transform.position;
+		_agent.destination = closestPeople ? closestPeople.position : _playerPrefab.transform.position;
 	}
 }
