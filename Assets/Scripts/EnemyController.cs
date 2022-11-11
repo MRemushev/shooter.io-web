@@ -39,7 +39,7 @@ public class EnemyController : MainCharacter
 		_levelText = PointerManager.instance.dictionary[point].GetComponent<PointerIcon>();
 		_levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
 		shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
-		health = previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.CountKills * 5;
+		health = previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.CountKills * 10;
 	}
 
 	private void Start() => _foods = Finds<FoodMovement>();

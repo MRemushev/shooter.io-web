@@ -31,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2211564899198745196
 MonoBehaviour:
@@ -67,6 +67,15 @@ MonoBehaviour:
   CheaterVideoAd:
     m_PersistentCalls:
       m_Calls: []
+  PurchaseSuccess:
+    m_PersistentCalls:
+      m_Calls: []
+  PurchaseFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  PromptDo:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &3157483472541429372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,7 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a5b227a20855044e9f75626696e0719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseType: 0
+  pauseType: 1
   pauseMethod: 1
   openAudioPause: 1
   closeAudioPause: 0

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4296090696343770}
   - component: {fileID: 33857389428952074}
   - component: {fileID: 23227241829598722}
-  - component: {fileID: 64585182019766198}
+  - component: {fileID: 466880658950684341}
   m_Layer: 0
   m_Name: Parking_Gate_handle_3
   m_TagString: Untagged
@@ -85,8 +85,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &64585182019766198
-MeshCollider:
+--- !u!65 &466880658950684341
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -95,10 +95,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300002, guid: 9d91d2b30be050c4789d76987bbcaac3, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 5.1202664, y: 0.15798095, z: 0.08816561}
+  m_Center: {x: 2.3273227, y: 0.000000033527613, z: -0.00000011920929}
 --- !u!1 &1197473990548934
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,8 +109,7 @@ GameObject:
   - component: {fileID: 4651438604820558}
   - component: {fileID: 33484195688566640}
   - component: {fileID: 23486923746331250}
-  - component: {fileID: 64851693557239556}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Parking_Gate_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -185,17 +183,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &64851693557239556
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1197473990548934}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 9d91d2b30be050c4789d76987bbcaac3, type: 3}

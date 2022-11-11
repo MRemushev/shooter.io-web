@@ -22,6 +22,8 @@ body {
 	position: relative;
 }
 #unity-canvas {
+	margin: 0 auto;
+	width: 100%;
 	max-width: 600px;
 	height: 100%;
 	background: {{{ BACKGROUND_COLOR }}};

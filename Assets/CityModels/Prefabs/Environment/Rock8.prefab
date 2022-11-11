@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 4826055261801158}
   - component: {fileID: 33325831333176244}
   - component: {fileID: 23706918685202748}
-  - component: {fileID: 64648103035878052}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Rock8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,17 +83,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &64648103035878052
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1207979803453072}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 644913352b0a64f4582e3a716d3d080e, type: 3}

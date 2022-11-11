@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 4089133362627008}
   - component: {fileID: 33903715057494772}
   - component: {fileID: 23503673961947350}
-  - component: {fileID: 64508378345596316}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Rock6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,17 +83,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &64508378345596316
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1772738230119852}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 409d38ca1a928dc4c9cd5896eeb4e530, type: 3}
