@@ -28,12 +28,12 @@ public class GameManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		YandexGame.CloseVideoEvent += BuyChance;
+		YandexGame.CloseVideoEvent += AdChance;
 		YandexGame.CloseVideoEvent += DoubleReward;
 	}
 	private void OnDestroy()
 	{
-		YandexGame.CloseVideoEvent -= BuyChance;
+		YandexGame.CloseVideoEvent -= AdChance;
 		YandexGame.CloseVideoEvent -= DoubleReward;
 	}
 
@@ -53,13 +53,20 @@ public class GameManager : MonoBehaviour
 		priceChance.text = (PlayerPrefs.GetInt("CountBuyChance") * 5).ToString();
 	}
 
-	public void BuyChance(int idAd = 0)
+	public void BuyChance()
 	{
-		if (idAd != 1) return;
 		var price = int.Parse(priceChance.text);
 		var countGems = PlayerPrefs.GetInt("Gems");
 		if (price > countGems) return;
 		PlayerPrefs.SetInt("Gems", countGems - price);
+		FindObjectOfType<PlayerController>().Renaissance();
+		SetPause(false);
+		deadScreen.SetActive(false);
+	}
+
+	public void AdChance(int idAd = 0)
+	{
+		if (idAd != 1) return;
 		FindObjectOfType<PlayerController>().Renaissance();
 		SetPause(false);
 		deadScreen.SetActive(false);

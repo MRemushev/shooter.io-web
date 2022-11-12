@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33251878809492654}
   - component: {fileID: 23518792608073882}
   - component: {fileID: 64377769215263922}
+  - component: {fileID: -7045044155580111952}
   m_Layer: 0
   m_Name: fountain4
   m_TagString: Untagged
@@ -99,3 +100,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 758b92950b87b7d41af15bdc699e6310, type: 3}
+--- !u!208 &-7045044155580111952
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493957904483954}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 1.151, y: 0.404, z: 1.115}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0.404, z: 0}
+  m_TimeToStationary: 0.5

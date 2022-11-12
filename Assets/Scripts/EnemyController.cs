@@ -156,7 +156,6 @@ public class EnemyController : MainCharacter
 		IsDead = true;
 		_agent.isStopped = true;
 		capsuleCollider.enabled = false;
-		rigidbody.isKinematic = true;
 		animator.SetBool(DeadAnim, true);
 		PointerManager.instance.RemoveFromList(point);
 		rankManager.charactersData.Remove(this);

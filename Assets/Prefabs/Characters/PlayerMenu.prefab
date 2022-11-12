@@ -1395,7 +1395,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cf8e485bb1ece814e8ac9b1932bbcd8d, type: 2}
+  - {fileID: 2100000, guid: a54e381d21da97147b62db3a77dd098a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2336,6 +2336,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 7155605915680111318}
     m_Modifications:
     - target: {fileID: 2460906955843296329, guid: 5591b9e41b9a5044782f27ec87a58a86,
@@ -2398,7 +2399,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2460906955862891485, guid: 5591b9e41b9a5044782f27ec87a58a86,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 813f01be7c1d68e46bf06a313a7053c1, type: 2}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 5591b9e41b9a5044782f27ec87a58a86, type: 3}
 --- !u!4 &2619507706569249048 stripped
 Transform:
@@ -2411,6 +2418,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 7155605915680111236}
     m_Modifications:
     - target: {fileID: 297441688395009547, guid: 68b9337fbb778b84d8ac5f39ff208593,
@@ -2629,6 +2637,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7155605915680138998}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 68b9337fbb778b84d8ac5f39ff208593, type: 3}
 --- !u!114 &1187167128202419080 stripped
 MonoBehaviour:

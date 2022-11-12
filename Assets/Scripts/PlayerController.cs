@@ -6,6 +6,7 @@ using System.Collections;
 public class PlayerController : MainCharacter
 {
 	[Header("Player components")]
+	[SerializeField] private new Rigidbody rigidbody;
 	[SerializeField] private LineRenderer laserBeam;
 	[SerializeField] private Joystick walkJoystick;
 	[SerializeField] private GameObject deadScreen;
@@ -33,7 +34,6 @@ public class PlayerController : MainCharacter
 		weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
 		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
 		ChangeWeaponStatsText();
-		ChangeHpText();
 	}
 
 	protected override void Run()
@@ -177,9 +177,12 @@ public class PlayerController : MainCharacter
 		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
 		if (PlayerPrefs.HasKey("PlayerPeople"))
 			AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
+		ChangeHpText();
+		StartCoroutine(Immortality());
 	}
 
-	private IEnumerator Immortality() {
+	private IEnumerator Immortality()
+	{
 		isImmortality = true;
 		yield return new WaitForSeconds(4f);
 		isImmortality = false;

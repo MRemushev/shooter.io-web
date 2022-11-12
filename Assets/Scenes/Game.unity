@@ -45017,7 +45017,7 @@ MonoBehaviour:
       - m_Target: {fileID: 959696689}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: BuyChance
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -52756,7 +52756,7 @@ GameObject:
   - component: {fileID: 1381802033}
   - component: {fileID: 1381802032}
   m_Layer: 0
-  m_Name: Button_x2Claim
+  m_Name: Button_Ad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57918,7 +57918,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_BuildHeightMesh: 0
-  m_NavMeshData: {fileID: 23800000, guid: bd8ba5b701d914c4f814b9342d7eb0d9, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 8946475ed810c6a41b12f46e2807a5ac, type: 2}
 --- !u!4 &1494451762
 Transform:
   m_ObjectHideFlags: 0
@@ -81375,7 +81375,7 @@ PrefabInstance:
     - target: {fileID: 6616973649722776758, guid: 3b5cae6b0bffa7a4cbef73539b1aa09a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -11.6
+      value: -11.5
       objectReference: {fileID: 0}
     - target: {fileID: 6616973649722776758, guid: 3b5cae6b0bffa7a4cbef73539b1aa09a,
         type: 3}
@@ -81427,6 +81427,16 @@ PrefabInstance:
       propertyPath: Camera
       value: 
       objectReference: {fileID: 132622163}
+    - target: {fileID: 9145745613313520012, guid: 3b5cae6b0bffa7a4cbef73539b1aa09a,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9145745613313520012, guid: 3b5cae6b0bffa7a4cbef73539b1aa09a,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 116
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b5cae6b0bffa7a4cbef73539b1aa09a, type: 3}

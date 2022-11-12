@@ -8,7 +8,6 @@ using Random = UnityEngine.Random;
 public class MainCharacter : MonoCache
 {
 	[Header("Character components")]
-	[SerializeField] protected new Rigidbody rigidbody;
 	[SerializeField] protected Animator animator;
 	[SerializeField] protected BoxCollider shootingArea;
 	[SerializeField] protected Renderer skinObject;
