@@ -26,7 +26,10 @@ public class PlayerController : MainCharacter
 	{
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
-		characterName = PlayerPrefs.GetString("PlayerName");
+		var spawnPosition = enemySpawner.RandomPosition();
+		spawnPosition.y = cachedTransform.position.y;
+		cachedTransform.position = spawnPosition;
+		_cameraOffset.GetComponent<Transform>().position = spawnPosition;
 		previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
 		Renaissance();
 		shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
@@ -56,12 +59,14 @@ public class PlayerController : MainCharacter
 	private void OnTriggerStay(Collider col) // Shooting area stay
 	{
 		if (Vector3.Distance(cachedTransform.position, col.transform.position) > characterWeapon.FireRange) return;
-		if (col.CompareTag("Team") && !col.GetComponent<TeamController>().IsDead) AutoShooting(col);
-		else if (col.CompareTag("Enemy") && !col.GetComponent<EnemyController>().IsDead) AutoShooting(col);
+		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) AutoShooting(col);
+		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) AutoShooting(col);
+		else FireReset();
 	}
 
-	private void OnTriggerExit(Collider col)
-	{
+	private void OnTriggerExit(Collider col) => FireReset();
+
+	public void FireReset() {
 		isFire = false;
 		fireTarget = null;
 		laserBeam.enabled = false;
@@ -153,6 +158,7 @@ public class PlayerController : MainCharacter
 
 	public void AddKill()
 	{
+		FireReset();
 		scoreKills += 1;
 		killsCountText.text = scoreKills.ToString();
 		_killPromotion -= 1;

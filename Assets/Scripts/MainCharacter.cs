@@ -45,7 +45,7 @@ public class MainCharacter : MonoCache
 
 	private void Awake()
 	{
-		cachedTransform = transform;
+		cachedTransform = GetComponent<Transform>();
 		var spawners = FindObjectOfType<Spawner>().GetComponents<Spawner>();
 		_foodSpawner = spawners[0];
 		enemySpawner = spawners[1];

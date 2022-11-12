@@ -31,13 +31,14 @@ public class GameManager : MonoBehaviour
 		YandexGame.CloseVideoEvent += AdChance;
 		YandexGame.CloseVideoEvent += DoubleReward;
 	}
-	private void OnDestroy()
+
+	private void OnDisable()
 	{
 		YandexGame.CloseVideoEvent -= AdChance;
 		YandexGame.CloseVideoEvent -= DoubleReward;
 	}
 
-	public void ChangeScene(int index) => SceneManager.LoadScene(index);
+	public void ChangeScene(int index) => SceneManager.LoadSceneAsync(index);
 	public void SetPause(bool status) => Time.timeScale = status ? 0 : 1;
 
 	public static void SetVolume(bool status)

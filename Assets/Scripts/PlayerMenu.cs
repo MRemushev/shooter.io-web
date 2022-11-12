@@ -9,7 +9,6 @@ public class PlayerMenu : MonoBehaviour
 	[SerializeField] private SkinnedMeshRenderer skinObject;
 	[SerializeField] private TextureList skinArray;
 	[Header("Menu")]
-	[SerializeField] private TMP_InputField inputName;
 	[SerializeField] private TextMeshProUGUI coinsText;
 	[SerializeField] private TextMeshProUGUI gemsText;
 	[SerializeField] private GameObject battleButton;
@@ -37,16 +36,10 @@ public class PlayerMenu : MonoBehaviour
 	private int _countCoins;
 	private int _countGems;
 
-	private void Start()
+	private void Awake()
 	{
-		// PlayerPrefs.DeleteAll();
-#if UNITY_EDITOR
-		PlayerPrefs.SetInt("Coins", 1000000);
-		if (!PlayerPrefs.HasKey("Gems")) PlayerPrefs.SetInt("Gems", 1000);
-#endif
 		if (!PlayerPrefs.HasKey("PlayerName")) PlayerPrefs.SetString("PlayerName", "Player");
 		if (bestCountText) bestCountText.text = PlayerPrefs.GetInt("HighScore").ToString();
-		if (inputName) inputName.text = PlayerPrefs.GetString("PlayerName");
 		if (peopleTitleText && peoplePriceText) UpdatePricePeople();
 		if (healthTitleText && healthPriceText) UpdatePriceHealth();
 		if (healthTitleText && healthPriceText) UpdatePriceWeapon();

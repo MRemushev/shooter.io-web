@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour
 
 	private void Awake()
 	{
-		_cachedTransform = transform;
+		_cachedTransform = GetComponent<Transform>();
 		_previousOffset = new Vector3(_cachedTransform.eulerAngles.x, offset.y, offset.z);
 	}
 

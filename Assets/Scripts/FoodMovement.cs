@@ -6,9 +6,11 @@ public class FoodMovement : MonoBehaviour
 {
 	private float _updateTime = 5;
 	private Quaternion _direction;
+	private Transform _cachedTransform;
 
-	private void Start()
+	private void Awake()
 	{
+		_cachedTransform = GetComponent<Transform>();
 		_updateTime /= Random.Range(0.75f, 1.25f); // Setting the rotation interval
 		StartCoroutine(Rotate());
 	}

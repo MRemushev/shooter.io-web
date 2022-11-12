@@ -19,14 +19,14 @@ body {
 #unity-container {
 	width: 100%;
 	height: 100%;
-	background-color: #202020;
+	background-color: {{{ BACKGROUND_COLOR }}};
 	position: relative;
 }
 #unity-canvas {
 	margin: 0 auto;
-	width: 100%;
 	max-width: 600px;
-	height: 100%;
+	width: 100vw;
+	height: 100vh;
 	background: {{{ BACKGROUND_COLOR }}};
 }
 #loading-cover {

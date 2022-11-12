@@ -11,7 +11,7 @@ public class PointerIcon : MonoBehaviour
 	private void Awake()
 	{
 		image.color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
-		_mainTransform = transform;
+		_mainTransform = GetComponent<Transform>();
 	}
 
 	public void SetIconPosition(Vector3 position, Quaternion rotation)

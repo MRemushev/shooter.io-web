@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine.AI;
+﻿using UnityEngine.AI;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using NTC.Global.Pool;
@@ -72,14 +71,13 @@ public class EnemyController : MainCharacter
 		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Player")) EnemyShooting(col);
+		else FireReset();
 	}
 
 	private void OnTriggerExit(Collider other)
 	{
 		if (IsDead) return;
-		isFire = false;
-		_agent.isStopped = false;
-		fireTarget = null;
+		FireReset();
 	}
 
 	private void EnemyShooting(Component col)
@@ -141,6 +139,7 @@ public class EnemyController : MainCharacter
 
 	private void AddKill()
 	{
+		FireReset();
 		scoreKills += 1;
 		// Updating weapons to the main man
 		weapons.ChangeWeapon(scoreKills);
@@ -154,14 +153,21 @@ public class EnemyController : MainCharacter
 	private void DeathPlay(EnemyController enemyController = null)
 	{
 		IsDead = true;
-		_agent.isStopped = true;
+		_agent.enabled = false;
 		capsuleCollider.enabled = false;
+		shootingArea.enabled = false;
 		animator.SetBool(DeadAnim, true);
 		PointerManager.instance.RemoveFromList(point);
 		rankManager.charactersData.Remove(this);
 		StartCoroutine(DeadTimer());
 		if (enemyController) enemyController.AddKill();
 		else _playerScript.AddKill();
+	}
+
+	private void FireReset() {
+		isFire = false;
+		_agent.isStopped = false;
+		fireTarget = null;
 	}
 
 	private IEnumerator DeadTimer()
