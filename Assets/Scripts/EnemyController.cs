@@ -94,11 +94,11 @@ public class EnemyController : MainCharacter
 			var teamController = col.GetComponent<TeamController>();
 			var enemyController = teamController.targetScript.Get<EnemyController>();
 			if (enemyController) enemyController.TakeDamage(TotalDamage, this);
-			else _playerScript.TakeDamage(TotalDamage);
+			else _playerScript.TakeDamage(this, TotalDamage);
 		}
 		if (col.CompareTag("Enemy"))
 			col.GetComponent<EnemyController>().TakeDamage(TotalDamage, this);
-		else _playerScript.TakeDamage(TotalDamage);
+		else _playerScript.TakeDamage(this, TotalDamage);
 	}
 
 	public void TakeDamage(float damage, EnemyController enemyController = null)
@@ -127,6 +127,8 @@ public class EnemyController : MainCharacter
 					characterList[deadCharacter].DeathPlay();
 					health += previousHealth;
 					rankManager.ChangeRating();
+					if (enemyController) enemyController.FireReset();
+					else _playerScript.FireReset();
 				}
 				else
 				{
@@ -164,7 +166,8 @@ public class EnemyController : MainCharacter
 		else _playerScript.AddKill();
 	}
 
-	private void FireReset() {
+	public void FireReset()
+	{
 		isFire = false;
 		_agent.isStopped = false;
 		fireTarget = null;
@@ -179,15 +182,19 @@ public class EnemyController : MainCharacter
 
 	private void FindClosestFood()
 	{
-		var closestDistance = Mathf.Infinity;
-		Transform closestPeople = null;
-		foreach (var person in _foods)
+		if (TotalDamage > _playerScript.TotalDamage * 1.25f) _agent.destination = enemySpawner.RandomPosition();
+		else
 		{
-			var currentDistance = Vector3.Distance(cachedTransform.position, person.transform.position);
-			if (currentDistance > closestDistance) continue;
-			closestDistance = currentDistance;
-			closestPeople = person.transform;
+			var closestDistance = Mathf.Infinity;
+			Transform closestPeople = null;
+			foreach (var person in _foods)
+			{
+				var currentDistance = Vector3.Distance(cachedTransform.position, person.transform.position);
+				if (currentDistance > closestDistance) continue;
+				closestDistance = currentDistance;
+				closestPeople = person.transform;
+			}
+			_agent.destination = closestPeople ? closestPeople.position : _playerPrefab.transform.position;
 		}
-		_agent.destination = closestPeople ? closestPeople.position : _playerPrefab.transform.position;
 	}
 }

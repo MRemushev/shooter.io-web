@@ -1,4 +1,5 @@
 using UnityEngine;
+using YG;
 using TMPro;
 using Random = UnityEngine.Random;
 using System.Collections;
@@ -24,6 +25,7 @@ public class PlayerController : MainCharacter
 
 	private void Start()
 	{
+		if (YandexGame.playerName != "unauthorized") characterName = YandexGame.playerName;
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
 		var spawnPosition = enemySpawner.RandomPosition();
@@ -117,7 +119,7 @@ public class PlayerController : MainCharacter
 	}
 
 	// Damage acceptance function
-	public void TakeDamage(float damage)
+	public void TakeDamage(EnemyController enemyController, float damage)
 	{
 		if (damage < 1 || isImmortality) return; // Check that the damage is not less than one
 		health -= damage;
@@ -145,6 +147,7 @@ public class PlayerController : MainCharacter
 					countTeamText.text = CharacterCount.ToString();
 					health += previousHealth;
 					rankManager.ChangeRating();
+					enemyController.FireReset();
 				}
 				else
 				{
@@ -184,6 +187,7 @@ public class PlayerController : MainCharacter
 		if (PlayerPrefs.HasKey("PlayerPeople"))
 			AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
 		ChangeHpText();
+		FireReset();
 		StartCoroutine(Immortality());
 	}
 

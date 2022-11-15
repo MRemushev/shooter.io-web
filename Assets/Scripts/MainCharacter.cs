@@ -37,7 +37,7 @@ public class MainCharacter : MonoCache
 		Horizontal = Animator.StringToHash("Horizontal"), Vertical = Animator.StringToHash("Vertical");
 
 	private Material MainSkin => skinObject.material;
-	protected float TotalDamage => (characterList.Count + 1) * characterWeapon.Damage;
+	public float TotalDamage => (characterList.Count + 1) * characterWeapon.Damage;
 	public bool IsStopped => isStop;
 	public int CountKills => scoreKills;
 	public int CharacterCount => characterList.Count;
