@@ -1543,7 +1543,6 @@ MonoBehaviour:
   weapons: {fileID: 1187167128202419080}
   skinObject: {fileID: 7155605915668638710}
   skinArray: {fileID: 11400000, guid: 728df200ca9c04c49af906087c9f07a5, type: 2}
-  inputName: {fileID: 0}
   coinsText: {fileID: 0}
   gemsText: {fileID: 0}
   battleButton: {fileID: 0}

@@ -24,8 +24,15 @@ public class CameraController : MonoBehaviour
 
 	public void ChangeOffset(float newOffset)
 	{
-		_cachedTransform.eulerAngles = new Vector3(_previousOffset.x + newOffset * forceOffset / 1.25f, 0, 0);
-		if (newOffset >= 40)offset = new Vector3(0, _previousOffset.y + newOffset * forceOffset, _previousOffset.z - newOffset * forceOffset);
-		else offset = new Vector3(0, _previousOffset.y + 40 * forceOffset, _previousOffset.z - 40 * forceOffset);
+		if (newOffset >= 60)
+		{
+			offset = new Vector3(0, _previousOffset.y + newOffset * forceOffset, _previousOffset.z - newOffset * forceOffset);
+			_cachedTransform.eulerAngles = new Vector3(_previousOffset.x + newOffset * forceOffset / 1.25f, 0, 0);
+		}
+		else
+		{
+			offset = new Vector3(0, _previousOffset.y + 60 * forceOffset, _previousOffset.z - 60 * forceOffset);
+			_cachedTransform.eulerAngles = new Vector3(_previousOffset.x + 60 * forceOffset / 1.25f, 0, 0);
+		}
 	}
 }

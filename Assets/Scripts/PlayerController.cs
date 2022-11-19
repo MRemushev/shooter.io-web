@@ -67,7 +67,8 @@ public class PlayerController : MainCharacter
 
 	private void OnTriggerExit(Collider col) => FireReset();
 
-	public void FireReset() {
+	public void FireReset()
+	{
 		isFire = false;
 		fireTarget = null;
 		laserBeam.enabled = false;

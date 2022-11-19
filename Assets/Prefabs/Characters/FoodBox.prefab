@@ -483,7 +483,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 5370934186002409361, guid: 54e49a5c5e79c2c418923c5b528312c1, type: 2}
+  - {fileID: -9081392193046209325, guid: 54e49a5c5e79c2c418923c5b528312c1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -528,7 +528,7 @@ MonoBehaviour:
   m_text: +5
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 54e49a5c5e79c2c418923c5b528312c1, type: 2}
-  m_sharedMaterial: {fileID: 5370934186002409361, guid: 54e49a5c5e79c2c418923c5b528312c1,
+  m_sharedMaterial: {fileID: -9081392193046209325, guid: 54e49a5c5e79c2c418923c5b528312c1,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2221,7 +2221,7 @@ Animator:
   m_GameObject: {fileID: 7430802815779681347}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 96b49c2e0c48b5e4589c88448563e6cc, type: 3}
-  m_Controller: {fileID: 9100000, guid: 99c0f839efff6b64daf246bed224b271, type: 2}
+  m_Controller: {fileID: 9100000, guid: 9414acf0f828d5e41a3926437e30c5a4, type: 2}
   m_CullingMode: 2
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

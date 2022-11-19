@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.UI;
+using TMPro;
 using UnityEditor.SceneManagement;
 
 namespace YG
@@ -37,13 +37,13 @@ namespace YG
             {
                 if (GUILayout.Button("Identify Text/TextMesh"))
                 {
-                    scr.textUIComponent = scr.GetComponent<Text>();
-                    scr.textMeshComponent = scr.GetComponent<TextMesh>();
+                    scr.textUIComponent = scr.GetComponent<TextMeshProUGUI>();
+                    scr.textMeshComponent = scr.GetComponent<TextMeshPro>();
                 }
-                if (GUILayout.Button("Create Text компонент"))
-                    scr.textUIComponent = scr.gameObject.AddComponent<Text>();
-                if (GUILayout.Button("Create TextMesh компонент"))
-                    scr.textMeshComponent = scr.gameObject.AddComponent<TextMesh>();
+                if (GUILayout.Button("Create Text пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"))
+                    scr.textUIComponent = scr.gameObject.AddComponent<TextMeshProUGUI>();
+                if (GUILayout.Button("Create TextMesh пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"))
+                    scr.textMeshComponent = scr.gameObject.AddComponent<TextMeshPro>();
 
                 GUILayout.Space(10);
             }
@@ -54,7 +54,7 @@ namespace YG
                 {
                     scr.infoYG = GameObject.Find("YandexGame").GetComponent<YandexGame>().infoYG;
                     if (scr.infoYG == null)
-                        Debug.LogError("InfoYG not found!  (ru) InfoYG не найден!");
+                        Debug.LogError("InfoYG not found!  (ru) InfoYG пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ!");
                 }
             }
 
@@ -65,7 +65,7 @@ namespace YG
                     GUILayout.BeginVertical("HelpBox");
 
                     scr.componentTextField = EditorGUILayout.ToggleLeft("Component Text/TextMesh Translate", scr.componentTextField);
-                   
+
                     GUILayout.BeginHorizontal();
 
                     if (GUILayout.Button(">", GUILayout.Width(20)))
@@ -99,7 +99,7 @@ namespace YG
 
                         scr.text = EditorGUILayout.TextField(scr.text, GUILayout.Height(20));
                     }
-                    
+
                     if (availableStr)
                     {
                         GUILayout.Label("ID Translate");
@@ -289,7 +289,7 @@ namespace YG
                 GUILayout.BeginVertical("box");
 
                 scr.fontNumber = EditorGUILayout.IntField("Font Number", scr.fontNumber);
-                scr.uniqueFont = (Font)EditorGUILayout.ObjectField("Unique Font", scr.uniqueFont, typeof(Font), false);
+                scr.uniqueFont = (TMP_FontAsset)EditorGUILayout.ObjectField("Unique Font", scr.uniqueFont, typeof(TMP_FontAsset), false);
 
                 if (GUILayout.Button("Replace the font with the standard one"))
                 {
@@ -302,7 +302,7 @@ namespace YG
                     }
                     else
                     {
-                        Debug.LogError("The standard font is not specified! Specify it in the InfoYG plugin settings.  (ru) Не указан стандартный шрифт! Укажите его в настройках плагина InfoYG", scr.gameObject);
+                        Debug.LogError("The standard font is not specified! Specify it in the InfoYG plugin settings.  (ru) пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ InfoYG", scr.gameObject);
                     }
                 }
 

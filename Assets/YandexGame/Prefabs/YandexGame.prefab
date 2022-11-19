@@ -64,7 +64,10 @@ MonoBehaviour:
   CloseVideoAd:
     m_PersistentCalls:
       m_Calls: []
-  CheaterVideoAd:
+  RewardVideoAd:
+    m_PersistentCalls:
+      m_Calls: []
+  ErrorVideoAd:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -86,6 +89,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   PromptDo:
+    m_PersistentCalls:
+      m_Calls: []
+  ReviewDo:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &3157483472541429372

@@ -13,8 +13,8 @@ public class RewardSystem : MonoBehaviour
 	private ulong _lastOpen;
 	private string _previousText;
 
-	private readonly int[] _gemGifts = { 5, 10, 15 };
-	private readonly int[] _coinGifts = { 100, 500, 1000 };
+	private readonly int[] _gemGifts = { 5, 10, 15, 20, 30, 40, 50};
+	private readonly int[] _coinGifts = { 100, 500, 1000, 5000, 10000 };
 
 	private void Start()
 	{
@@ -24,8 +24,8 @@ public class RewardSystem : MonoBehaviour
 		_rewardButton.interactable = IsReady();
 	}
 
-	private void OnEnable() => YandexGame.CloseVideoEvent += Rewarded;
-	private void OnDisable() => YandexGame.CloseVideoEvent -= Rewarded;
+	private void OnEnable() => YandexGame.RewardVideoEvent += Rewarded;
+	private void OnDisable() => YandexGame.RewardVideoEvent -= Rewarded;
 
 	// Update is called once per frame
 	private void Update()
