@@ -18,7 +18,6 @@ public class RewardSystem : MonoBehaviour
 
 	private void Start()
 	{
-		YandexGame.CloseVideoEvent += Rewarded;
 		_previousText = buttonText.text;
 		_rewardButton = GetComponent<Button>();
 		if (PlayerPrefs.HasKey("lastOpen")) _lastOpen = ulong.Parse(PlayerPrefs.GetString("lastOpen"));

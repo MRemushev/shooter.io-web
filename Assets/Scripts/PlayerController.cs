@@ -25,7 +25,6 @@ public class PlayerController : MainCharacter
 
 	private void Start()
 	{
-		if (YandexGame.playerName != "unauthorized") characterName = YandexGame.playerName;
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
 		var spawnPosition = enemySpawner.RandomPosition();
