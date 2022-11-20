@@ -46,28 +46,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   infoYG: {fileID: 11400000, guid: 162644796a8b0d044bce3d6fda0641e3, type: 2}
-  resolvedAuthorization:
+  ResolvedAuthorization:
     m_PersistentCalls:
       m_Calls: []
-  rejectedAuthorization:
+  RejectedAuthorization:
     m_PersistentCalls:
       m_Calls: []
-  openFullscreenAd:
+  OpenFullscreenAd:
     m_PersistentCalls:
       m_Calls: []
-  closeFullscreenAd:
+  CloseFullscreenAd:
     m_PersistentCalls:
       m_Calls: []
-  openVideoAd:
+  OpenVideoAd:
     m_PersistentCalls:
       m_Calls: []
-  closeVideoAd:
+  CloseVideoAd:
     m_PersistentCalls:
       m_Calls: []
-  rewardVideoAd:
+  RewardVideoAd:
     m_PersistentCalls:
       m_Calls: []
-  errorVideoAd:
+  ErrorVideoAd:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -82,16 +82,16 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-  purchaseSuccess:
+  PurchaseSuccess:
     m_PersistentCalls:
       m_Calls: []
-  purchaseFailed:
+  PurchaseFailed:
     m_PersistentCalls:
       m_Calls: []
-  promptDo:
+  PromptDo:
     m_PersistentCalls:
       m_Calls: []
-  reviewDo:
+  ReviewDo:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &3157483472541429372

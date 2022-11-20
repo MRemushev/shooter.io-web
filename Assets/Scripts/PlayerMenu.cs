@@ -40,7 +40,6 @@ public class PlayerMenu : MonoBehaviour
 
 	private void Awake()
 	{
-		PlayerPrefs.SetInt("Coins", 999999999);
 		if (!PlayerPrefs.HasKey("PlayerName")) PlayerPrefs.SetString("PlayerName", "Player");
 		if (bestCountText) bestCountText.text = PlayerPrefs.GetInt("HighScore").ToString();
 		if (coinsText) ChangeCoinText();
