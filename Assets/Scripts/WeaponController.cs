@@ -36,14 +36,14 @@ public class WeaponController : MonoBehaviour
 		mainCharacter.GetComponent<Animator>().SetBool(IsRifle, isRifle);
 	}
 
-	public void Shoot(bool soundStatus = true)
+	public void Shoot()
 	{
 		IsShot = false;
 		if (Time.time < _nextFire) return;
 		_nextFire = Time.time + 1f / fireRate;
 		IsShot = true;
 		shootFX.Play();
-		if (!soundStatus) return;
+		if (!audioSource) return;
 		audioSource.pitch = Random.Range(0.7f, 1.1f);
 		audioSource.Play();
 	}

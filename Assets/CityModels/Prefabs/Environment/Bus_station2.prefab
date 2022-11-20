@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4760466447541800}
   - component: {fileID: 33417773938943492}
   - component: {fileID: 23905258952539778}
-  - component: {fileID: 64914758495466190}
   m_Layer: 0
   m_Name: Bus_station2
   m_TagString: Untagged
@@ -84,17 +83,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &64914758495466190
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1880887720539128}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 179ec1ff7dfa0584ab34a0d01dfa4dde, type: 3}
