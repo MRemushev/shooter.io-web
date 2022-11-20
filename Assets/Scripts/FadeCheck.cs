@@ -1,133 +1,103 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FadeCheck : MonoBehaviour
 {
-	[SerializeField]
-	private LayerMask LayerMask;
-	[SerializeField]
-	private Transform Target;
-	[SerializeField]
-	private Camera Camera;
-	[SerializeField]
-	[Range(0, 1f)]
-	private float FadedAlpha = 0.33f;
-	[SerializeField]
-	private bool RetainShadows = true;
-	[SerializeField]
-	private Vector3 TargetPositionOffset = Vector3.up;
-	[SerializeField]
-	private float FadeSpeed = 1;
+	[SerializeField] private LayerMask layerMask;
+	[SerializeField] private Transform mainCamera;
+	[SerializeField] private Transform target;
+	[SerializeField] [Range(0, 1f)] private float fadedAlpha = 0.15f;
+	[SerializeField] private bool retainShadows;
+	[SerializeField] private Vector3 targetPositionOffset = Vector3.up;
+	[SerializeField] private float fadeSpeed = 1;
 
 	[Header("Read Only Data")]
 	[SerializeField]
-	private List<FadeObject> ObjectsBlockingView = new List<FadeObject>();
-	private Dictionary<FadeObject, Coroutine> RunningCoroutines = new Dictionary<FadeObject, Coroutine>();
+	private List<FadeObject> objectsBlockingView = new List<FadeObject>();
+	private readonly Dictionary<FadeObject, Coroutine> _runningCoroutines = new Dictionary<FadeObject, Coroutine>();
 
-	private RaycastHit[] Hits = new RaycastHit[10];
+	private readonly RaycastHit[] _hits = new RaycastHit[10];
+	private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
+	private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
+	private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
+	private static readonly int Surface = Shader.PropertyToID("_Surface");
+	
+	private void OnEnable() => StartCoroutine(CheckForObjects());
 
-	private void OnEnable()
-	{
-		StartCoroutine(CheckForObjects());
-	}
+	private void Start() => mainCamera = mainCamera.GetComponent<Transform>();
 
 	private IEnumerator CheckForObjects()
 	{
 		while (true)
 		{
-			int hits = Physics.RaycastNonAlloc(
-				Camera.transform.position,
-				(Target.transform.position + TargetPositionOffset - Camera.transform.position).normalized,
-				Hits,
-				Vector3.Distance(Camera.transform.position, Target.transform.position + TargetPositionOffset),
-				LayerMask
+			var cameraPosition = mainCamera.position;
+			var targetPosition = target.position;
+			var hits = Physics.RaycastNonAlloc(
+				cameraPosition,
+				(targetPosition + targetPositionOffset - cameraPosition).normalized, _hits,
+				Vector3.Distance(cameraPosition, targetPosition + targetPositionOffset), layerMask
 			);
 
 			if (hits > 0)
 			{
-				for (int i = 0; i < hits; i++)
+				for (var i = 0; i < hits; i++)
 				{
-					FadeObject fadingObject = GetFadingObjectFromHit(Hits[i]);
-
-					if (fadingObject != null && !ObjectsBlockingView.Contains(fadingObject))
+					var fadingObject = GetFadingObjectFromHit(_hits[i]);
+					if (!fadingObject || objectsBlockingView.Contains(fadingObject)) continue;
+					if (_runningCoroutines.ContainsKey(fadingObject))
 					{
-						if (RunningCoroutines.ContainsKey(fadingObject))
-						{
-							if (RunningCoroutines[fadingObject] != null)
-							{
-								StopCoroutine(RunningCoroutines[fadingObject]);
-							}
-
-							RunningCoroutines.Remove(fadingObject);
-						}
-
-						RunningCoroutines.Add(fadingObject, StartCoroutine(FadeObjectOut(fadingObject)));
-						ObjectsBlockingView.Add(fadingObject);
+						if (_runningCoroutines[fadingObject] != null) StopCoroutine(_runningCoroutines[fadingObject]);
+						_runningCoroutines.Remove(fadingObject);
 					}
+					_runningCoroutines.Add(fadingObject, StartCoroutine(FadeObjectOut(fadingObject)));
+					objectsBlockingView.Add(fadingObject);
 				}
 			}
 
 			FadeObjectsNoLongerBeingHit();
-
 			ClearHits();
-
 			yield return null;
 		}
 	}
 
 	private void FadeObjectsNoLongerBeingHit()
 	{
-		List<FadeObject> objectsToRemove = new List<FadeObject>(ObjectsBlockingView.Count);
+		var objectsToRemove = new List<FadeObject>(objectsBlockingView.Count);
 
-		foreach (FadeObject fadingObject in ObjectsBlockingView)
+		foreach (var fadingObject in from fadingObject in objectsBlockingView
+		         let objectIsBeingHit =
+			         _hits.Select(GetFadingObjectFromHit).Any(hitFadingObject =>
+				         hitFadingObject && fadingObject == hitFadingObject)
+		         where !objectIsBeingHit
+		         select fadingObject)
 		{
-			bool objectIsBeingHit = false;
-			for (int i = 0; i < Hits.Length; i++)
+			if (_runningCoroutines.ContainsKey(fadingObject))
 			{
-				FadeObject hitFadingObject = GetFadingObjectFromHit(Hits[i]);
-				if (hitFadingObject != null && fadingObject == hitFadingObject)
-				{
-					objectIsBeingHit = true;
-					break;
-				}
+				if (_runningCoroutines[fadingObject] != null) StopCoroutine(_runningCoroutines[fadingObject]);
+				_runningCoroutines.Remove(fadingObject);
 			}
-
-			if (!objectIsBeingHit)
-			{
-				if (RunningCoroutines.ContainsKey(fadingObject))
-				{
-					if (RunningCoroutines[fadingObject] != null)
-					{
-						StopCoroutine(RunningCoroutines[fadingObject]);
-					}
-					RunningCoroutines.Remove(fadingObject);
-				}
-
-				RunningCoroutines.Add(fadingObject, StartCoroutine(FadeObjectIn(fadingObject)));
-				objectsToRemove.Add(fadingObject);
-			}
+			_runningCoroutines.Add(fadingObject, StartCoroutine(FadeObjectIn(fadingObject)));
+			objectsToRemove.Add(fadingObject);
 		}
 
-		foreach (FadeObject removeObject in objectsToRemove)
-		{
-			ObjectsBlockingView.Remove(removeObject);
-		}
+		foreach (var removeObject in objectsToRemove) objectsBlockingView.Remove(removeObject);
 	}
 
-	private IEnumerator FadeObjectOut(FadeObject FadingObject)
+	private IEnumerator FadeObjectOut(FadeObject fadingObject)
 	{
-		foreach (Material material in FadingObject.Materials)
+		foreach (var material in fadingObject.materials)
 		{
-			material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-			material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-			material.SetInt("_ZWrite", 0);
-			material.SetInt("_Surface", 1);
+			material.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+			material.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+			material.SetInt(ZWrite, 0);
+			material.SetInt(Surface, 1);
 
 			material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
 
 			material.SetShaderPassEnabled("DepthOnly", false);
-			material.SetShaderPassEnabled("SHADOWCASTER", RetainShadows);
+			material.SetShaderPassEnabled("SHADOWCASTER", retainShadows);
 
 			material.SetOverrideTag("RenderType", "Transparent");
 
@@ -137,61 +107,53 @@ public class FadeCheck : MonoBehaviour
 
 		float time = 0;
 
-		while (FadingObject.Materials[0].color.a > FadedAlpha)
+		while (fadingObject.materials[0].color.a > fadedAlpha)
 		{
-			foreach (Material material in FadingObject.Materials)
+			foreach (var material in fadingObject.materials.Where(material => material.HasProperty("_Color")))
 			{
-				if (material.HasProperty("_Color"))
-				{
-					material.color = new Color(
-						material.color.r,
-						material.color.g,
-						material.color.b,
-						Mathf.Lerp(FadingObject.InitialAlpha, FadedAlpha, time * FadeSpeed)
-					);
-				}
+				material.color = new Color(
+					material.color.r,
+					material.color.g,
+					material.color.b,
+					Mathf.Lerp(fadingObject.initialAlpha, fadedAlpha, time * fadeSpeed)
+				);
 			}
 
 			time += Time.deltaTime;
 			yield return null;
 		}
 
-		if (RunningCoroutines.ContainsKey(FadingObject))
-		{
-			StopCoroutine(RunningCoroutines[FadingObject]);
-			RunningCoroutines.Remove(FadingObject);
-		}
+		if (!_runningCoroutines.ContainsKey(fadingObject)) yield break;
+		StopCoroutine(_runningCoroutines[fadingObject]);
+		_runningCoroutines.Remove(fadingObject);
 	}
 
-	private IEnumerator FadeObjectIn(FadeObject FadingObject)
+	private IEnumerator FadeObjectIn(FadeObject fadingObject)
 	{
 		float time = 0;
 
-		while (FadingObject.Materials[0].color.a < FadingObject.InitialAlpha)
+		while (fadingObject.materials[0].color.a < fadingObject.initialAlpha)
 		{
-			foreach (Material material in FadingObject.Materials)
+			foreach (var material in fadingObject.materials.Where(material => material.HasProperty("_Color")))
 			{
-				if (material.HasProperty("_Color"))
-				{
-					material.color = new Color(
-						material.color.r,
-						material.color.g,
-						material.color.b,
-						Mathf.Lerp(FadedAlpha, FadingObject.InitialAlpha, time * FadeSpeed)
-					);
-				}
+				material.color = new Color(
+					material.color.r,
+					material.color.g,
+					material.color.b,
+					Mathf.Lerp(fadedAlpha, fadingObject.initialAlpha, time * fadeSpeed)
+				);
 			}
 
 			time += Time.deltaTime;
 			yield return null;
 		}
 
-		foreach (Material material in FadingObject.Materials)
+		foreach (var material in fadingObject.materials)
 		{
-			material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-			material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-			material.SetInt("_ZWrite", 1);
-			material.SetInt("_Surface", 0);
+			material.SetInt(SrcBlend, (int)UnityEngine.Rendering.BlendMode.One);
+			material.SetInt(DstBlend, (int)UnityEngine.Rendering.BlendMode.Zero);
+			material.SetInt(ZWrite, 1);
+			material.SetInt(Surface, 0);
 
 			material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
 
@@ -204,21 +166,16 @@ public class FadeCheck : MonoBehaviour
 			material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
 		}
 
-		if (RunningCoroutines.ContainsKey(FadingObject))
-		{
-			StopCoroutine(RunningCoroutines[FadingObject]);
-			RunningCoroutines.Remove(FadingObject);
-		}
+		if (!_runningCoroutines.ContainsKey(fadingObject)) yield break;
+		StopCoroutine(_runningCoroutines[fadingObject]);
+		_runningCoroutines.Remove(fadingObject);
 	}
 
-	private void ClearHits()
+	private void ClearHits() => System.Array.Clear(_hits, 0, _hits.Length);
+	
+
+	private FadeObject GetFadingObjectFromHit(RaycastHit hit)
 	{
-		System.Array.Clear(Hits, 0, Hits.Length);
+		return hit.collider ? hit.collider.GetComponent<FadeObject>() : null;
 	}
-
-	private FadeObject GetFadingObjectFromHit(RaycastHit Hit)
-	{
-		return Hit.collider != null ? Hit.collider.GetComponent<FadeObject>() : null;
-	}
-
 }

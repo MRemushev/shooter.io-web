@@ -18,7 +18,7 @@ public class PlayerController : MainCharacter
 	[SerializeField] private TextMeshProUGUI weaponStatsText;
 	[SerializeField] private float movementSpeed;
 
-	private bool isImmortality;
+	private bool _isImmortality;
 	private int _killPromotion = 2;
 	private CameraController _cameraOffset;
 	private Vector3 _movementVector;
@@ -27,16 +27,16 @@ public class PlayerController : MainCharacter
 	{
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
-		var spawnPosition = enemySpawner.RandomPosition();
-		spawnPosition.y = cachedTransform.position.y;
-		cachedTransform.position = spawnPosition;
+		var spawnPosition = EnemySpawner.RandomPosition();
+		spawnPosition.y = CachedTransform.position.y;
+		CachedTransform.position = spawnPosition;
 		_cameraOffset.GetComponent<Transform>().position = spawnPosition;
-		previousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
+		PreviousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
 		Renaissance();
-		shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
-		laserBeam.SetPosition(1, new Vector3(0, 2.2f, characterWeapon.FireRange * 3));
+		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
+		laserBeam.SetPosition(1, new Vector3(0, 2.2f, CharacterWeapon.FireRange * 3));
 		weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
-		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
+		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange * 10);
 		ChangeWeaponStatsText();
 	}
 
@@ -44,22 +44,22 @@ public class PlayerController : MainCharacter
 	{
 		// Movement player
 		_movementVector = new Vector3(walkJoystick.Horizontal, 0, walkJoystick.Vertical).normalized;
-		relativeVector = cachedTransform.InverseTransformDirection(_movementVector);
+		relativeVector = CachedTransform.InverseTransformDirection(_movementVector);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
-		isStop = rigidbody.velocity == Vector3.zero;
+		IsStop = rigidbody.velocity == Vector3.zero;
 	}
 
 	protected override void FixedRun()
 	{
 		rigidbody.velocity = _movementVector * movementSpeed;
 		// If the player does not shoot, then we perform a turn according to the player's movement
-		if (_movementVector != Vector3.zero && !isFire) cachedTransform.rotation = Quaternion.LookRotation(_movementVector);
+		if (_movementVector != Vector3.zero && !isFire) CachedTransform.rotation = Quaternion.LookRotation(_movementVector);
 	}
 
 	private void OnTriggerStay(Collider col) // Shooting area stay
 	{
-		if (Vector3.Distance(cachedTransform.position, col.transform.position) > characterWeapon.FireRange) return;
+		if (Vector3.Distance(CachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
 		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) AutoShooting(col);
 		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) AutoShooting(col);
 		else FireReset();
@@ -79,29 +79,29 @@ public class PlayerController : MainCharacter
 		// If the player touched an object with the tag "Food", then we call the function of adding a team
 		if (col.gameObject.CompareTag("Food"))
 		{
-			AddCharacter(cachedTransform.position, 1, col);
+			AddCharacter(CachedTransform.position, 1, col);
 			ChangeStats();
 		}
 		else if (col.gameObject.CompareTag("FoodBox"))
 		{
-			AddCharacter(cachedTransform.position, 5, col);
+			AddCharacter(CachedTransform.position, 5, col);
 			ChangeStats();
 		}
 	}
 
 	private void ChangeHpText() =>
-		hpText.text = "HP " + Mathf.Max(0, Mathf.Round(CharacterCount * previousHealth + health));
+		hpText.text = "HP " + Mathf.Max(0, Mathf.Round(CharacterCount * PreviousHealth + Health));
 
 	private void ChangeWeaponStatsText() =>
-		weaponStatsText.text = characterWeapon.gameObject.name + " - " + characterWeapon.DamagePerSecond;
+		weaponStatsText.text = CharacterWeapon.gameObject.name + " - " + CharacterWeapon.DamagePerSecond;
 
 	public void ChangeStats()
 	{
 		countTeamText.text = CharacterCount.ToString();
-		var score = (int)((CharacterCount + 1) * characterWeapon.DamagePerSecond);
+		var score = (int)((CharacterCount + 1) * CharacterWeapon.DamagePerSecond);
 		if (PlayerPrefs.GetInt("HighScore") < score) PlayerPrefs.SetInt("HighScore", score);
 		ChangeHpText();
-		rankManager.ChangeRating();
+		RankManager.ChangeRating();
 	}
 
 	private void AutoShooting(Component col)
@@ -110,9 +110,9 @@ public class PlayerController : MainCharacter
 		laserBeam.enabled = true;
 		// We turn in the direction of the shot
 		fireTarget = col.transform;
-		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, Quaternion.LookRotation(fireTarget.position - cachedTransform.position), 10 * Time.deltaTime);
-		characterWeapon.Shoot(); // Starting the shooting effect
-		if (!characterWeapon.IsShot) return;
+		CachedTransform.rotation = Quaternion.Lerp(CachedTransform.rotation, Quaternion.LookRotation(fireTarget.position - CachedTransform.position), 10 * Time.deltaTime);
+		CharacterWeapon.Shoot(); // Starting the shooting effect
+		if (!CharacterWeapon.IsShot) return;
 		var isEnemy = col.GetComponent<EnemyController>();
 		if (isEnemy) isEnemy.TakeDamage(TotalDamage);
 		else col.GetComponent<TeamController>().targetScript.GetComponent<EnemyController>().TakeDamage(TotalDamage);
@@ -121,14 +121,14 @@ public class PlayerController : MainCharacter
 	// Damage acceptance function
 	public void TakeDamage(EnemyController enemyController, float damage)
 	{
-		if (damage < 1 || isImmortality) return; // Check that the damage is not less than one
-		health -= damage;
+		if (damage < 1 || _isImmortality) return; // Check that the damage is not less than one
+		Health -= damage;
 		ChangeHpText();
 		// Check if the player has teammates
 		if (CharacterCount == 0)
 		{
 			bloodFX.Play();
-			if (health > 1) return; // Check how much health the player has
+			if (Health > 1) return; // Check how much health the player has
 			var gameManager = Find<GameManager>();
 			gameManager.UpdatePriceChance();
 			deadScreen.SetActive(true); // Calling the screen of death
@@ -137,16 +137,16 @@ public class PlayerController : MainCharacter
 		else
 		{
 			characterList[Random.Range(0, CharacterCount)].bloodFX.Play();
-			if (health > 1) return;
-			while (health < 1)
+			if (Health > 1) return;
+			while (Health < 1)
 			{
 				if (CharacterCount > 0)
 				{
 					var deadCharacter = Random.Range(0, CharacterCount);
 					characterList[deadCharacter].DeathPlay();
 					countTeamText.text = CharacterCount.ToString();
-					health += previousHealth;
-					rankManager.ChangeRating();
+					Health += PreviousHealth;
+					RankManager.ChangeRating();
 					enemyController.FireReset();
 				}
 				else
@@ -162,19 +162,19 @@ public class PlayerController : MainCharacter
 	public void AddKill()
 	{
 		FireReset();
-		scoreKills += 1;
-		killsCountText.text = scoreKills.ToString();
+		ScoreKills += 1;
+		killsCountText.text = ScoreKills.ToString();
 		_killPromotion -= 1;
 		if (_killPromotion != 0) return;
 		var weaponLevel = PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2;
 		weapons.ChangeWeapon(weaponLevel); // Updating weapons to the main man
 		weaponLevelText.text = (weaponLevel + 1).ToString();
 		// Update fire area
-		shootingArea.size = new Vector3(characterWeapon.FireRange * 6, 1, characterWeapon.FireRange * 6);
-		laserBeam.SetPosition(1, new Vector3(0, 2.1f, characterWeapon.FireRange * 3));
-		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
+		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
+		laserBeam.SetPosition(1, new Vector3(0, 2.1f, CharacterWeapon.FireRange * 3));
+		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange * 10);
 		ChangeWeaponStatsText();
-		rankManager.ChangeRating();
+		RankManager.ChangeRating();
 		foreach (var people in characterList) people.LevelUp();
 		_killPromotion = 2;
 	}
@@ -182,10 +182,10 @@ public class PlayerController : MainCharacter
 	public void Renaissance()
 	{
 		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2);
-		health = previousHealth;
-		_cameraOffset.ChangeOffset(characterWeapon.FireRange * 10);
+		Health = PreviousHealth;
+		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange * 10);
 		if (PlayerPrefs.HasKey("PlayerPeople"))
-			AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
+			AddCharacter(CachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
 		ChangeHpText();
 		FireReset();
 		StartCoroutine(Immortality());
@@ -193,8 +193,8 @@ public class PlayerController : MainCharacter
 
 	private IEnumerator Immortality()
 	{
-		isImmortality = true;
+		_isImmortality = true;
 		yield return new WaitForSeconds(4f);
-		isImmortality = false;
+		_isImmortality = false;
 	}
 }

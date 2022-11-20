@@ -2,7 +2,6 @@ using System.Collections;
 using NTC.Global.Cache;
 using NTC.Global.Pool;
 using UnityEngine;
-using static NTC.Global.Pool.NightPool;
 using Random = UnityEngine.Random;
 
 
@@ -21,10 +20,9 @@ public class TeamController : MonoCache, IPoolItem
 	[HideInInspector] public MainCharacter targetScript;
 
 	private WeaponController _thisWeapon;
-	private int _teamIndex;
 	private Transform _targetTransform;
 	private Vector3 _relativeVector;
-	public bool IsDead { get; private set; }
+	private bool IsDead { get; set; }
 
 	private static readonly int
 		Horizontal = Animator.StringToHash("Horizontal"), Vertical = Animator.StringToHash("Vertical"),
@@ -42,7 +40,6 @@ public class TeamController : MonoCache, IPoolItem
 		weapons.ChangeWeapon(targetScript.weapons.WeaponLevel);
 		_thisWeapon.fireRate *= Random.Range(0.1f, 0.9f);
 		targetScript.characterList.Add(this);
-		_teamIndex = targetObject.characterList.Count;
 		var isPlayer = targetObject.GetCached<PlayerController>();
 		if (isPlayer) isPlayer.ChangeStats();
 	}

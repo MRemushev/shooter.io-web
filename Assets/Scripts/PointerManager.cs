@@ -6,14 +6,14 @@ public class PointerManager : MonoBehaviour
 
 	[SerializeField] private PointerIcon pointerPrefab;
 	[SerializeField] private Transform targetTransform;
-	public readonly Dictionary<Transform, PointerIcon> dictionary = new Dictionary<Transform, PointerIcon>();
+	public readonly Dictionary<Transform, PointerIcon> Dictionary = new Dictionary<Transform, PointerIcon>();
 	private Camera _mainCamera;
 
-	public static PointerManager instance;
+	public static PointerManager Instance;
 	private void Awake()
 	{
 		_mainCamera = FindObjectOfType<Camera>();
-		if (!instance) instance = this;
+		if (!Instance) Instance = this;
 		else Destroy(this);
 	}
 
@@ -21,20 +21,20 @@ public class PointerManager : MonoBehaviour
 	{
 		var newPointer = Instantiate(pointerPrefab, transform);
 		newPointer.transform.SetAsFirstSibling();
-		dictionary.Add(enemyPointer, newPointer);
+		Dictionary.Add(enemyPointer, newPointer);
 	}
 
 	public void RemoveFromList(Transform enemyPointer)
 	{
-		Destroy(dictionary[enemyPointer].gameObject);
-		dictionary.Remove(enemyPointer);
+		Destroy(Dictionary[enemyPointer].gameObject);
+		Dictionary.Remove(enemyPointer);
 	}
 
 	private void LateUpdate()
 	{
 		var planes = GeometryUtility.CalculateFrustumPlanes(_mainCamera);
 
-		foreach (var (enemyPointer, pointerIcon) in dictionary)
+		foreach (var (enemyPointer, pointerIcon) in Dictionary)
 		{
 			var playerPosition = targetTransform.position;
 			var toEnemy = enemyPointer.position - playerPosition;

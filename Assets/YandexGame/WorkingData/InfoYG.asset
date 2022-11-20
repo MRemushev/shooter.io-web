@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efa747916aa66674d96ea40ca8a480b2, type: 3}
   m_Name: InfoYG
   m_EditorClassIdentifier: 
-  scopes: 0
+  scopes: 1
   playerPhotoSize: 0
-  leaderboardEnable: 0
   fullscreenAdChallenge: 0
-  fullscreenAdInterval: 60
-  durationOfAdSimulation: 0.5
+  leaderboardEnable: 1
+  sitelock: 0
   LocalizationEnable: 1
   callingLanguageCheck: 0
   translateMethod: 0
@@ -54,8 +53,7 @@ MonoBehaviour:
     de: 0
     hi: 0
   fonts:
-    defaultFont:
-    - {fileID: 11400000, guid: 54e49a5c5e79c2c418923c5b528312c1, type: 2}
+    defaultFont: []
     ru: []
     en: []
     tr: []
@@ -111,7 +109,8 @@ MonoBehaviour:
     it: 
     de: 
     hi: 
-  debug: 0
-  staticRBTInGame: 0
-  sitelock: 0
   SDKStartDelay: 0
+  fullscreenAdInterval: 60
+  durationOfAdSimulation: 0.5
+  staticRBTInGame: 0
+  debug: 1

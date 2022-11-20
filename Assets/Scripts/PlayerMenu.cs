@@ -19,9 +19,11 @@ public class PlayerMenu : MonoBehaviour
 	[SerializeField] private Image priceSkinIcon;
 	[SerializeField] private Sprite[] priceSkinIcons;
 	[Header("People shop")]
+	[SerializeField] private Button peopleButton;
 	[SerializeField] private TextMeshProUGUI peopleTitleText;
 	[SerializeField] private TextMeshProUGUI peoplePriceText;
 	[Header("Health shop")]
+	[SerializeField] private Button healthButton;
 	[SerializeField] private TextMeshProUGUI healthTitleText;
 	[SerializeField] private TextMeshProUGUI healthPriceText;
 	[Header("Weapon shop")]
@@ -38,11 +40,9 @@ public class PlayerMenu : MonoBehaviour
 
 	private void Awake()
 	{
+		PlayerPrefs.SetInt("Coins", 999999999);
 		if (!PlayerPrefs.HasKey("PlayerName")) PlayerPrefs.SetString("PlayerName", "Player");
 		if (bestCountText) bestCountText.text = PlayerPrefs.GetInt("HighScore").ToString();
-		if (peopleTitleText && peoplePriceText) UpdatePricePeople();
-		if (healthTitleText && healthPriceText) UpdatePriceHealth();
-		if (healthTitleText && healthPriceText) UpdatePriceWeapon();
 		if (coinsText) ChangeCoinText();
 		if (gemsText) ChangeGemText();
 		_stockCheck = new bool[skinsInfo.Length];
@@ -54,20 +54,23 @@ public class PlayerMenu : MonoBehaviour
 		_countGems = PlayerPrefs.GetInt("Gems");
 		skinObject.material.mainTexture = skinArray.textureList[_skinIndex];
 		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel"));
+		UpdatePricePeople();
+		UpdatePriceHealth();
+		UpdatePriceWeapon();
 	}
 
 	public void ChangeCoinText() => coinsText.text = PlayerPrefs.GetInt("Coins").ToString();
 	public void ChangeGemText() => gemsText.text = PlayerPrefs.GetInt("Gems").ToString();
 
-	public void ChangeName(string newName)
-	{
-		if (newName != "" && newName.Length <= 8)
-		{
-			battleButton.GetComponent<Button>().interactable = true;
-			PlayerPrefs.SetString("PlayerName", newName);
-		}
-		else battleButton.GetComponent<Button>().interactable = false;
-	}
+	// public void ChangeName(string newName)
+	// {
+	// 	if (newName != "" && newName.Length <= 8)
+	// 	{
+	// 		battleButton.GetComponent<Button>().interactable = true;
+	// 		PlayerPrefs.SetString("PlayerName", newName);
+	// 	}
+	// 	else battleButton.GetComponent<Button>().interactable = false;
+	// }
 
 	private void CheckSkin()
 	{
@@ -148,10 +151,12 @@ public class PlayerMenu : MonoBehaviour
 	}
 
 	// Buy people functions
-	public void UpdatePricePeople()
+	private void UpdatePricePeople()
 	{
+		print("People");
 		var countPeople = PlayerPrefs.GetInt("PlayerPeople") + 1;
-		peopleTitleText.text = "Человечки - " + PlayerPrefs.GetInt("PlayerPeople");
+		if (countPeople > 50) peopleButton.interactable = false;
+		peopleTitleText.text = "People - " + PlayerPrefs.GetInt("PlayerPeople");
 		peoplePriceText.text = (countPeople * 100 * countPeople).ToString();
 	}
 
@@ -165,10 +170,12 @@ public class PlayerMenu : MonoBehaviour
 		UpdatePricePeople();
 	}
 
-	public void UpdatePriceHealth()
+	private void UpdatePriceHealth()
 	{
+		print("Health");
 		var countHealth = PlayerPrefs.GetInt("PlayerHealth") + 1;
-		healthTitleText.text = "Здоровье - " + (100 + PlayerPrefs.GetInt("PlayerHealth") * 10);
+		if (countHealth > 25) healthButton.interactable = false;
+		healthTitleText.text = "Health - " + (100 + PlayerPrefs.GetInt("PlayerHealth") * 10);
 		healthPriceText.text = (countHealth * 500 * countHealth).ToString();
 	}
 

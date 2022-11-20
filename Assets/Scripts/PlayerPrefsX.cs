@@ -61,8 +61,8 @@ public static class PlayerPrefsX
 
 	public static long GetLong(string key)
 	{
-		int lowBits = PlayerPrefs.GetInt(key + "_lowBits");
-		int highBits = PlayerPrefs.GetInt(key + "_highBits");
+		var lowBits = PlayerPrefs.GetInt(key + "_lowBits");
+		var highBits = PlayerPrefs.GetInt(key + "_highBits");
 
 		// unsigned, to prevent loss of sign bit.
 		ulong ret = (uint)highBits;
@@ -92,22 +92,12 @@ public static class PlayerPrefsX
 	static Vector2 GetVector2(string key)
 	{
 		var floatArray = GetFloatArray(key);
-		if (floatArray.Length < 2)
-		{
-			return Vector2.zero;
-		}
-
-		return new Vector2(floatArray[0], floatArray[1]);
+		return floatArray.Length < 2 ? Vector2.zero : new Vector2(floatArray[0], floatArray[1]);
 	}
 
 	public static Vector2 GetVector2(string key, Vector2 defaultValue)
 	{
-		if (PlayerPrefs.HasKey(key))
-		{
-			return GetVector2(key);
-		}
-
-		return defaultValue;
+		return PlayerPrefs.HasKey(key) ? GetVector2(key) : defaultValue;
 	}
 
 	public static bool SetVector3(string key, Vector3 vector)
@@ -123,12 +113,7 @@ public static class PlayerPrefsX
 
 	public static Vector3 GetVector3(string key, Vector3 defaultValue)
 	{
-		if (PlayerPrefs.HasKey(key))
-		{
-			return GetVector3(key);
-		}
-
-		return defaultValue;
+		return PlayerPrefs.HasKey(key) ? GetVector3(key) : defaultValue;
 	}
 
 	public static bool SetQuaternion(string key, Quaternion vector)
@@ -144,12 +129,7 @@ public static class PlayerPrefsX
 
 	public static Quaternion GetQuaternion(string key, Quaternion defaultValue)
 	{
-		if (PlayerPrefs.HasKey(key))
-		{
-			return GetQuaternion(key);
-		}
-
-		return defaultValue;
+		return PlayerPrefs.HasKey(key) ? GetQuaternion(key) : defaultValue;
 	}
 
 	public static bool SetColor(string key, Color color)
@@ -160,12 +140,7 @@ public static class PlayerPrefsX
 	public static Color GetColor(string key)
 	{
 		var floatArray = GetFloatArray(key);
-		if (floatArray.Length < 4)
-		{
-			return new Color(0.0f, 0.0f, 0.0f, 0.0f);
-		}
-
-		return new Color(floatArray[0], floatArray[1], floatArray[2], floatArray[3]);
+		return floatArray.Length < 4 ? new Color(0.0f, 0.0f, 0.0f, 0.0f) : new Color(floatArray[0], floatArray[1], floatArray[2], floatArray[3]);
 	}
 
 	public static Color GetColor(string key, Color defaultValue)
@@ -454,7 +429,7 @@ public static class PlayerPrefsX
 		}
 
 		var floatArray = new float[defaultSize];
-		for (int i = 0; i < defaultSize; i++)
+		for (var i = 0; i < defaultSize; i++)
 		{
 			floatArray[i] = defaultValue;
 		}
@@ -477,7 +452,7 @@ public static class PlayerPrefsX
 		}
 
 		var vector2Array = new Vector2[defaultSize];
-		for (int i = 0; i < defaultSize; i++)
+		for (var i = 0; i < defaultSize; i++)
 		{
 			vector2Array[i] = defaultValue;
 		}
@@ -501,7 +476,7 @@ public static class PlayerPrefsX
 		}
 
 		var vector3Array = new Vector3[defaultSize];
-		for (int i = 0; i < defaultSize; i++)
+		for (var i = 0; i < defaultSize; i++)
 		{
 			vector3Array[i] = defaultValue;
 		}
@@ -524,7 +499,7 @@ public static class PlayerPrefsX
 		}
 
 		var quaternionArray = new Quaternion[defaultSize];
-		for (int i = 0; i < defaultSize; i++)
+		for (var i = 0; i < defaultSize; i++)
 		{
 			quaternionArray[i] = defaultValue;
 		}
@@ -547,7 +522,7 @@ public static class PlayerPrefsX
 		}
 
 		var colorArray = new Color[defaultSize];
-		for (int i = 0; i < defaultSize; i++)
+		for (var i = 0; i < defaultSize; i++)
 		{
 			colorArray[i] = defaultValue;
 		}

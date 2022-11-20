@@ -10,11 +10,11 @@ public class Spawner : MonoBehaviour
 	[SerializeField] private Vector3 worldSize;
 	[SerializeField] private bool isPoolable;
 
-	private Transform _cachedTransform;
+	private Vector3 _cachedPosition;
 
 	private void Awake()
 	{
-		_cachedTransform = GetComponent<Transform>();
+		_cachedPosition = GetComponent<Transform>().position;
 		for (var index = 0; index < prefabCount; index++) SpawnObject();
 	}
 
@@ -26,12 +26,9 @@ public class Spawner : MonoBehaviour
 
 	public Vector3 RandomPosition()
 	{
-		var position = transform.position;
-		var randomDirection = new Vector3(Random.value * worldSize.x, position.y, Random.value * worldSize.z);
-		randomDirection += position;
-		if (NavMesh.SamplePosition(randomDirection, out var hit, worldSize.x, NavMesh.AllAreas))
-			return hit.position;
-		return Vector3.zero;
+		var randomDirection = new Vector3(Random.value * worldSize.x, _cachedPosition.y, Random.value * worldSize.z);
+		randomDirection += _cachedPosition;
+		return NavMesh.SamplePosition(randomDirection, out var hit, worldSize.x, NavMesh.AllAreas) ? hit.position : Vector3.zero;
 	}
 
 	private void OnDrawGizmosSelected()

@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
 	}
 
 	public void AsyncChangeScene(int index) => SceneManager.LoadSceneAsync(index);
-	public void ChangeScene(int index) => SceneManager.LoadScene(index);
+	private static void ChangeScene(int index) => SceneManager.LoadScene(index);
 
 	public void SetPause(bool status) => Time.timeScale = status ? 0 : 1;
 

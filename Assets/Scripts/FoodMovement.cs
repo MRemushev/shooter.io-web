@@ -17,8 +17,8 @@ public class FoodMovement : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		if (_direction == transform.rotation) return;
-		transform.rotation = Quaternion.Lerp(transform.rotation, _direction, 0.1f);
+		if (_direction == _cachedTransform.rotation) return;
+		_cachedTransform.rotation = Quaternion.Lerp(_cachedTransform.rotation, _direction, 0.1f);
 	}
 
 	private void OnCollisionEnter() => _direction.y -= 180; // If the object has encountered a collision, then turn around

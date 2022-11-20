@@ -25,33 +25,33 @@ public class MainCharacter : MonoCache
 
 	private Spawner _foodSpawner;
 	private Spawner _foodBoxSpawner;
-	protected WeaponController characterWeapon;
-	protected Transform cachedTransform;
-	protected RankManager rankManager;
-	protected int scoreKills;
-	protected float health;
-	protected Spawner enemySpawner;
-	protected int previousHealth;
-	protected bool isStop;
+	protected WeaponController CharacterWeapon;
+	protected Transform CachedTransform;
+	protected RankManager RankManager;
+	protected int ScoreKills;
+	protected float Health;
+	protected Spawner EnemySpawner;
+	protected int PreviousHealth;
+	protected bool IsStop;
 	protected static readonly int
 		Horizontal = Animator.StringToHash("Horizontal"), Vertical = Animator.StringToHash("Vertical");
 
 	private Material MainSkin => skinObject.material;
-	public float TotalDamage => (characterList.Count + 1) * characterWeapon.Damage;
-	public bool IsStopped => isStop;
-	public int CountKills => scoreKills;
+	public float TotalDamage => (characterList.Count + 1) * CharacterWeapon.Damage;
+	public bool IsStopped => IsStop;
+	public int CountKills => ScoreKills;
 	public int CharacterCount => characterList.Count;
-	public int CharacterScore => (int)(characterWeapon.DamagePerSecond * (CharacterCount + 1));
+	public int CharacterScore => (int)(CharacterWeapon.DamagePerSecond * (CharacterCount + 1));
 
 	private void Awake()
 	{
-		cachedTransform = GetComponent<Transform>();
+		CachedTransform = GetComponent<Transform>();
 		var spawners = FindObjectOfType<Spawner>().GetComponents<Spawner>();
 		_foodSpawner = spawners[0];
-		enemySpawner = spawners[1];
+		EnemySpawner = spawners[1];
 		_foodBoxSpawner = spawners[2];
-		rankManager = FindObjectOfType<RankManager>();
-		rankManager.charactersData.Add(this);
+		RankManager = FindObjectOfType<RankManager>();
+		RankManager.charactersData.Add(this);
 	}
 
 	// The function of adding a teammate
@@ -74,6 +74,6 @@ public class MainCharacter : MonoCache
 
 	public void ChangeWeapon(WeaponController weapon)
 	{
-		if (weapon != null) characterWeapon = weapon;
+		if (weapon != null) CharacterWeapon = weapon;
 	}
 }

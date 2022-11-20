@@ -506,7 +506,7 @@ MonoBehaviour:
   characterName: 
   isFire: 0
   relativeVector: {x: 0, y: 0, z: 0}
-  _agent: {fileID: -7587998884339747194}
+  agent: {fileID: -7587998884339747194}
   point: {fileID: 1805535686173028506}
   capsuleCollider: {fileID: -5066909527430264166}
 --- !u!1 &6325057766401063984
