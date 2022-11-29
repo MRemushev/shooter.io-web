@@ -63,7 +63,7 @@ public class MainCharacter : MonoCache
 			else characterPosition = position + Random.insideUnitSphere * (count / 2f);
 			characterPosition.y = position.y;
 			var teamController = Spawn(characterTeam, characterPosition).GetComponent<TeamController>();
-			teamController.SetTarget(this, MainSkin, transform);
+			teamController.SetTarget(this, MainSkin);
 		}
 		if (col == null) return;
 		Despawn(col.gameObject);

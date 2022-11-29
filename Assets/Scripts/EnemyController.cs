@@ -79,10 +79,12 @@ public class EnemyController : MainCharacter
 
 	private void EnemyShooting(Component col)
 	{
+		if (!attackTarget) attackTarget = col.transform;
 		agent.isStopped = true;
-		attackTarget = col.transform;
-		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation,
-			Quaternion.LookRotation(attackTarget.position - cachedTransform.position), 10 * Time.deltaTime);
+		var mainPosition = cachedTransform.position;
+		var lookTarget = Quaternion.LookRotation(attackTarget.position - mainPosition);
+		lookTarget.eulerAngles = new Vector3(mainPosition.y, lookTarget.eulerAngles.y, mainPosition.y);
+		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, lookTarget, 10 * Time.deltaTime);
 		CharacterWeapon.Shoot(); // Starting the shooting effect
 		if (!CharacterWeapon.IsShot) return;
 		if (col.CompareTag("Team"))

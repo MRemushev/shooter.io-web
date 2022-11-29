@@ -20,7 +20,6 @@ public class TeamController : MonoCache, IPoolItem
 	[HideInInspector] public MainCharacter targetScript;
 
 	private WeaponController _thisWeapon;
-	private Transform _targetTransform;
 	private Vector3 _relativeVector;
 	private bool IsDead { get; set; }
 
@@ -32,15 +31,14 @@ public class TeamController : MonoCache, IPoolItem
 
 	public void OnSpawn() => takeFX.Play();
 
-	public void SetTarget(MainCharacter targetObject, Material targetSkin, Transform targetTransform)
+	public void SetTarget(MainCharacter targetComponent, Material targetSkin)
 	{
-		targetScript = targetObject;
+		targetScript = targetComponent;
 		skinObject.material = targetSkin;
-		_targetTransform = targetTransform;
 		weapons.ChangeWeapon(targetScript.weapons.WeaponLevel);
 		_thisWeapon.fireRate *= Random.Range(0.1f, 0.9f);
 		targetScript.characterList.Add(this);
-		var isPlayer = targetObject.GetCached<PlayerController>();
+		var isPlayer = targetScript.GetCached<PlayerController>();
 		if (isPlayer) isPlayer.ChangeStats();
 	}
 
@@ -48,7 +46,6 @@ public class TeamController : MonoCache, IPoolItem
 	{
 		IsDead = false;
 		targetScript = null;
-		_targetTransform = null;
 		capsuleCollider.enabled = true;
 	}
 
@@ -58,21 +55,15 @@ public class TeamController : MonoCache, IPoolItem
 		rigidbody.isKinematic = targetScript.IsStopped;
 		animator.SetFloat(Horizontal, targetScript.relativeVector.x);
 		animator.SetFloat(Vertical, targetScript.relativeVector.z);
-		if (targetScript.attackTarget)
-		{
-			_thisWeapon.Shoot();
-			cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation,
-				Quaternion.LookRotation(targetScript.attackTarget.position - cachedTransform.position),
-				10 * Time.deltaTime);
-		}
-		else cachedTransform.rotation = _targetTransform.rotation;
+		cachedTransform.rotation = targetScript.cachedTransform.rotation;
+		if (targetScript.attackTarget) _thisWeapon.Shoot();
 	}
 
 	protected override void FixedRun()
 	{
 		if (IsDead) return;
 		if (!rigidbody.isKinematic)
-			rigidbody.position = Vector3.Lerp(cachedTransform.position, _targetTransform.position, speedMove);
+			rigidbody.position = Vector3.Lerp(cachedTransform.position, targetScript.cachedTransform.position, speedMove);
 	}
 
 	private void OnCollisionEnter(Collision col)

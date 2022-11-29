@@ -8128,6 +8128,11 @@ PrefabInstance:
       propertyPath: skinsInfo.Array.data[65].price
       value: 100000
       objectReference: {fileID: 0}
+    - target: {fileID: 7155605915668638710, guid: ddb0ad4cea71e7a44a67a3c4c8636f48,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 813f01be7c1d68e46bf06a313a7053c1, type: 2}
     - target: {fileID: 7155605915680111318, guid: ddb0ad4cea71e7a44a67a3c4c8636f48,
         type: 3}
       propertyPath: m_RootOrder
