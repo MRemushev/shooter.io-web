@@ -9,30 +9,32 @@ public class CameraController : MonoBehaviour
 	[SerializeField] private float speed;
 	[SerializeField] private float forceOffset;
 	[SerializeField] private Vector3 offset;
+	[SerializeField] private Vector2 limitOffset;
 
-	private Transform _cachedTransform;
+	[HideInInspector] public Transform cachedTransform;
 	private Vector3 _previousOffset;
 
 	private void Awake()
 	{
-		_cachedTransform = GetComponent<Transform>();
-		_previousOffset = new Vector3(_cachedTransform.eulerAngles.x, offset.y, offset.z);
+		cachedTransform = GetComponent<Transform>();
+		_previousOffset = new Vector3(cachedTransform.eulerAngles.x, offset.y, offset.z);
 	}
 
 	private void FixedUpdate() =>
-		_cachedTransform.position = Vector3.Lerp(_cachedTransform.position, mainPlayer.position + offset, speed);
+		cachedTransform.position = Vector3.Lerp(cachedTransform.position, mainPlayer.position + offset, speed);
 
 	public void ChangeOffset(float newOffset)
 	{
-		if (newOffset >= 60)
+		if (newOffset > limitOffset.y) return;
+		if (newOffset >= limitOffset.x)
 		{
 			offset = new Vector3(0, _previousOffset.y + newOffset * forceOffset, _previousOffset.z - newOffset * forceOffset);
-			_cachedTransform.eulerAngles = new Vector3(_previousOffset.x + newOffset * forceOffset / 1.25f, 0, 0);
+			cachedTransform.eulerAngles = new Vector3(_previousOffset.x + newOffset * forceOffset / 1.25f, 0, 0);
 		}
 		else
 		{
-			offset = new Vector3(0, _previousOffset.y + 60 * forceOffset, _previousOffset.z - 60 * forceOffset);
-			_cachedTransform.eulerAngles = new Vector3(_previousOffset.x + 60 * forceOffset / 1.25f, 0, 0);
+			offset = new Vector3(0, _previousOffset.y + limitOffset.x * forceOffset, _previousOffset.z - limitOffset.x * forceOffset);
+			cachedTransform.eulerAngles = new Vector3(_previousOffset.x + limitOffset.x * forceOffset / 1.25f, 0, 0);
 		}
 	}
 }

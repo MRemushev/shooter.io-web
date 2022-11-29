@@ -17,16 +17,15 @@ public class MainCharacter : MonoCache
 	[Space]
 	public WeaponSwitch weapons;
 	public List<TeamController> characterList;
-	public Transform fireTarget;
+	public Transform attackTarget;
 	public string characterName;
-	public bool isFire;
 	[HideInInspector] public Vector3 relativeVector;
+	[HideInInspector] public Transform cachedTransform;
 	[Space]
 
 	private Spawner _foodSpawner;
 	private Spawner _foodBoxSpawner;
 	protected WeaponController CharacterWeapon;
-	protected Transform CachedTransform;
 	protected RankManager RankManager;
 	protected int ScoreKills;
 	protected float Health;
@@ -45,7 +44,7 @@ public class MainCharacter : MonoCache
 
 	private void Awake()
 	{
-		CachedTransform = GetComponent<Transform>();
+		cachedTransform = GetComponent<Transform>();
 		var spawners = FindObjectOfType<Spawner>().GetComponents<Spawner>();
 		_foodSpawner = spawners[0];
 		EnemySpawner = spawners[1];

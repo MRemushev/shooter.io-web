@@ -6,22 +6,22 @@ public class FoodMovement : MonoBehaviour
 {
 	private float _updateTime = 5;
 	private Quaternion _direction;
-	private Transform _cachedTransform;
+	[HideInInspector] public Transform cachedTransform;
 
 	private void Awake()
 	{
-		_cachedTransform = GetComponent<Transform>();
+		cachedTransform = GetComponent<Transform>();
 		_updateTime /= Random.Range(0.75f, 1.25f); // Setting the rotation interval
 		StartCoroutine(Rotate());
 	}
 
 	private void FixedUpdate()
 	{
-		if (_direction == _cachedTransform.rotation) return;
-		_cachedTransform.rotation = Quaternion.Lerp(_cachedTransform.rotation, _direction, 0.1f);
+		if (_direction != cachedTransform.rotation) 
+			cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, _direction, 0.1f);
 	}
 
-	private void OnCollisionEnter() => _direction.y -= 180; // If the object has encountered a collision, then turn around
+	private void OnCollisionStay() => _direction = Quaternion.Inverse(_direction); // If the object has encountered a collision, then turn around
 
 	private IEnumerator Rotate()
 	{

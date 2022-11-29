@@ -1,5 +1,4 @@
 using UnityEngine;
-using YG;
 using TMPro;
 using Random = UnityEngine.Random;
 using System.Collections;
@@ -28,15 +27,15 @@ public class PlayerController : MainCharacter
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
 		var spawnPosition = EnemySpawner.RandomPosition();
-		spawnPosition.y = CachedTransform.position.y;
-		CachedTransform.position = spawnPosition;
-		_cameraOffset.GetComponent<Transform>().position = spawnPosition;
+		spawnPosition.y = cachedTransform.position.y;
+		cachedTransform.position = spawnPosition;
+		_cameraOffset.cachedTransform.position = spawnPosition;
 		PreviousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
 		Renaissance();
 		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
 		laserBeam.SetPosition(1, new Vector3(0, 2.2f, CharacterWeapon.FireRange * 3));
 		weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
-		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange * 10);
+		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange);
 		ChangeWeaponStatsText();
 	}
 
@@ -44,7 +43,7 @@ public class PlayerController : MainCharacter
 	{
 		// Movement player
 		_movementVector = new Vector3(walkJoystick.Horizontal, 0, walkJoystick.Vertical).normalized;
-		relativeVector = CachedTransform.InverseTransformDirection(_movementVector);
+		relativeVector = cachedTransform.InverseTransformDirection(_movementVector);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
 		IsStop = rigidbody.velocity == Vector3.zero;
@@ -54,12 +53,12 @@ public class PlayerController : MainCharacter
 	{
 		rigidbody.velocity = _movementVector * movementSpeed;
 		// If the player does not shoot, then we perform a turn according to the player's movement
-		if (_movementVector != Vector3.zero && !isFire) CachedTransform.rotation = Quaternion.LookRotation(_movementVector);
+		if (_movementVector != Vector3.zero && !attackTarget) cachedTransform.rotation = Quaternion.LookRotation(_movementVector);
 	}
 
 	private void OnTriggerStay(Collider col) // Shooting area stay
 	{
-		if (Vector3.Distance(CachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
+		if (Vector3.Distance(cachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
 		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) AutoShooting(col);
 		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) AutoShooting(col);
 		else FireReset();
@@ -69,8 +68,7 @@ public class PlayerController : MainCharacter
 
 	public void FireReset()
 	{
-		isFire = false;
-		fireTarget = null;
+		attackTarget = null;
 		laserBeam.enabled = false;
 	}
 
@@ -79,12 +77,12 @@ public class PlayerController : MainCharacter
 		// If the player touched an object with the tag "Food", then we call the function of adding a team
 		if (col.gameObject.CompareTag("Food"))
 		{
-			AddCharacter(CachedTransform.position, 1, col);
+			AddCharacter(cachedTransform.position, 1, col);
 			ChangeStats();
 		}
 		else if (col.gameObject.CompareTag("FoodBox"))
 		{
-			AddCharacter(CachedTransform.position, 5, col);
+			AddCharacter(cachedTransform.position, 5, col);
 			ChangeStats();
 		}
 	}
@@ -106,11 +104,10 @@ public class PlayerController : MainCharacter
 
 	private void AutoShooting(Component col)
 	{
-		isFire = true;
-		laserBeam.enabled = true;
 		// We turn in the direction of the shot
-		fireTarget = col.transform;
-		CachedTransform.rotation = Quaternion.Lerp(CachedTransform.rotation, Quaternion.LookRotation(fireTarget.position - CachedTransform.position), 10 * Time.deltaTime);
+		attackTarget = col.transform;
+		laserBeam.enabled = true;
+		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, Quaternion.LookRotation(attackTarget.position - cachedTransform.position), 10 * Time.deltaTime);
 		CharacterWeapon.Shoot(); // Starting the shooting effect
 		if (!CharacterWeapon.IsShot) return;
 		var isEnemy = col.GetComponent<EnemyController>();
@@ -172,7 +169,7 @@ public class PlayerController : MainCharacter
 		// Update fire area
 		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
 		laserBeam.SetPosition(1, new Vector3(0, 2.1f, CharacterWeapon.FireRange * 3));
-		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange * 10);
+		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange);
 		ChangeWeaponStatsText();
 		RankManager.ChangeRating();
 		foreach (var people in characterList) people.LevelUp();
@@ -183,9 +180,9 @@ public class PlayerController : MainCharacter
 	{
 		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2);
 		Health = PreviousHealth;
-		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange * 10);
+		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange);
 		if (PlayerPrefs.HasKey("PlayerPeople"))
-			AddCharacter(CachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
+			AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
 		ChangeHpText();
 		FireReset();
 		StartCoroutine(Immortality());

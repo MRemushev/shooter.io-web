@@ -2,8 +2,6 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 using NTC.Global.Pool;
-using System.Collections;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyController : MainCharacter
@@ -15,7 +13,6 @@ public class EnemyController : MainCharacter
 
 	private FoodMovement[] _foods;
 	private PointerIcon _levelText;
-	private GameObject _playerPrefab;
 	private PlayerController _playerScript;
 	private float _previousHeath;
 	public bool IsDead { get; private set; }
@@ -26,14 +23,12 @@ public class EnemyController : MainCharacter
 	{
 		skinObject.material.mainTexture = skinArray.textureList[Random.Range(0, skinArray.textureList.Length)];
 		characterName = NameRandomizer.GetRandomName();
-		_playerPrefab = GameObject.Find("Player");
-		_playerScript = _playerPrefab.GetComponent<PlayerController>();
-		if (_playerScript.CharacterCount < PlayerPrefs.GetInt("PlayerPeople"))
-			AddCharacter(CachedTransform.position, Random.Range(0, PlayerPrefs.GetInt("PlayerPeople")));
-		else AddCharacter(CachedTransform.position, Random.Range(0, _playerScript.CharacterCount));
-		if (_playerScript.CountKills / 2 < PlayerPrefs.GetInt("WeaponLevel"))
-			ScoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel"));
-		else ScoreKills = Random.Range(0, _playerScript.CountKills / 2);
+		_playerScript = FindObjectOfType<PlayerController>();
+		AddCharacter(cachedTransform.position,
+			_playerScript.CharacterCount < PlayerPrefs.GetInt("PlayerPeople")
+				? Random.Range(0, PlayerPrefs.GetInt("PlayerPeople") / 2)
+				: Random.Range(0, _playerScript.CharacterCount));
+		ScoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel") + _playerScript.CountKills / 2);
 		weapons.ChangeWeapon(ScoreKills);
 		PointerManager.Instance.AddToList(point);
 		_levelText = PointerManager.Instance.Dictionary[point].GetComponent<PointerIcon>();
@@ -59,8 +54,9 @@ public class EnemyController : MainCharacter
 	private void OnCollisionEnter(Collision col)
 	{
 		// Picking up food and looking for a new target
-		if (col.gameObject.CompareTag("Food")) AddCharacter(CachedTransform.position, 1, col);
-		else if (col.gameObject.CompareTag("FoodBox")) AddCharacter(CachedTransform.position, 5, col);
+		if (IsDead || TotalDamage > _playerScript.TotalDamage * 1.25f) return;
+		if (col.gameObject.CompareTag("Food")) AddCharacter(cachedTransform.position, 1, col);
+		else if (col.gameObject.CompareTag("FoodBox")) AddCharacter(cachedTransform.position, 5, col);
 		else return;
 		RankManager.ChangeRating();
 	}
@@ -68,7 +64,7 @@ public class EnemyController : MainCharacter
 	private void OnTriggerStay(Collider col)
 	{
 		if (IsDead) return;
-		if (Vector3.Distance(CachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
+		if (Vector3.Distance(cachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
 		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Player")) EnemyShooting(col);
@@ -83,11 +79,10 @@ public class EnemyController : MainCharacter
 
 	private void EnemyShooting(Component col)
 	{
-		isFire = true;
 		agent.isStopped = true;
-		fireTarget = col.transform;
-		CachedTransform.rotation = Quaternion.Lerp(CachedTransform.rotation,
-			Quaternion.LookRotation(fireTarget.position - CachedTransform.position), 10 * Time.deltaTime);
+		attackTarget = col.transform;
+		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation,
+			Quaternion.LookRotation(attackTarget.position - cachedTransform.position), 10 * Time.deltaTime);
 		CharacterWeapon.Shoot(); // Starting the shooting effect
 		if (!CharacterWeapon.IsShot) return;
 		if (col.CompareTag("Team"))
@@ -162,40 +157,34 @@ public class EnemyController : MainCharacter
 		animator.SetBool(DeadAnim, true);
 		PointerManager.Instance.RemoveFromList(point);
 		RankManager.charactersData.Remove(this);
-		StartCoroutine(DeadTimer());
 		if (enemyController) enemyController.AddKill();
 		else _playerScript.AddKill();
+		EnemySpawner.SpawnObject();
+		Destroy(gameObject, 5f);
 	}
 
 	public void FireReset()
 	{
-		isFire = false;
 		agent.isStopped = false;
-		fireTarget = null;
+		attackTarget = null;
 	}
 
-	private IEnumerator DeadTimer()
-	{
-		yield return new WaitForSeconds(5f);
-		EnemySpawner.SpawnObject();
-		Destroy(gameObject);
-	}
 
 	private void FindClosestFood()
 	{
-		if (TotalDamage > _playerScript.TotalDamage * 1.25f) agent.destination = EnemySpawner.RandomPosition();
+		if (TotalDamage > _playerScript.TotalDamage * 1.25f) agent.destination = _playerScript.cachedTransform.position;
 		else
 		{
 			var closestDistance = Mathf.Infinity;
 			Transform closestPeople = null;
 			foreach (var person in _foods)
 			{
-				var currentDistance = Vector3.Distance(CachedTransform.position, person.transform.position);
+				var currentDistance = Vector3.Distance(cachedTransform.position, person.cachedTransform.position);
 				if (currentDistance > closestDistance) continue;
 				closestDistance = currentDistance;
-				closestPeople = person.transform;
+				closestPeople = person.cachedTransform;
 			}
-			agent.destination = closestPeople ? closestPeople.position : _playerPrefab.transform.position;
+			agent.destination = closestPeople ? closestPeople.position : _playerScript.cachedTransform.position;
 		}
 	}
 }

@@ -58,10 +58,13 @@ public class TeamController : MonoCache, IPoolItem
 		rigidbody.isKinematic = targetScript.IsStopped;
 		animator.SetFloat(Horizontal, targetScript.relativeVector.x);
 		animator.SetFloat(Vertical, targetScript.relativeVector.z);
-		if (targetScript.isFire) _thisWeapon.Shoot();
-		if (targetScript.fireTarget)
+		if (targetScript.attackTarget)
+		{
+			_thisWeapon.Shoot();
 			cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation,
-				Quaternion.LookRotation(targetScript.fireTarget.position - cachedTransform.position), 10 * Time.deltaTime);
+				Quaternion.LookRotation(targetScript.attackTarget.position - cachedTransform.position),
+				10 * Time.deltaTime);
+		}
 		else cachedTransform.rotation = _targetTransform.rotation;
 	}
 
