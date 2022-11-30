@@ -71,8 +71,5 @@ public class MainCharacter : MonoCache
 		else _foodSpawner.SpawnObject();
 	}
 
-	public void ChangeWeapon(WeaponController weapon)
-	{
-		if (weapon != null) CharacterWeapon = weapon;
-	}
+	public void ChangeWeapon(WeaponController weapon) => CharacterWeapon = weapon;
 }
