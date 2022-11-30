@@ -152,7 +152,6 @@ public class PlayerMenu : MonoBehaviour
 	// Buy people functions
 	private void UpdatePricePeople()
 	{
-		print("People");
 		var countPeople = PlayerPrefs.GetInt("PlayerPeople") + 1;
 		if (countPeople > 50) peopleButton.interactable = false;
 		peopleTitleText.text = "People - " + PlayerPrefs.GetInt("PlayerPeople");
@@ -171,7 +170,6 @@ public class PlayerMenu : MonoBehaviour
 
 	private void UpdatePriceHealth()
 	{
-		print("Health");
 		var countHealth = PlayerPrefs.GetInt("PlayerHealth") + 1;
 		if (countHealth > 25) healthButton.interactable = false;
 		healthTitleText.text = "Health - " + (100 + PlayerPrefs.GetInt("PlayerHealth") * 10);
