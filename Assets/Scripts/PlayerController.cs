@@ -24,6 +24,7 @@ public class PlayerController : MainCharacter
 
 	private void Start()
 	{
+		if (YandexGame.EnvironmentData.isDesktop) walkJoystick.gameObject.SetActive(false);
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
 		var spawnPosition = EnemySpawner.RandomPosition();
@@ -42,18 +43,15 @@ public class PlayerController : MainCharacter
 	protected override void Run()
 	{
 		// Movement player
-		_movementVector = new Vector3(walkJoystick.Horizontal, 0, walkJoystick.Vertical).normalized;
+		_movementVector = walkJoystick.isActiveAndEnabled
+			? new Vector3(walkJoystick.Horizontal, 0, walkJoystick.Vertical).normalized
+			: new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
 		relativeVector = cachedTransform.InverseTransformDirection(_movementVector);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
-		IsStop = rigidbody.velocity == Vector3.zero;
-	}
-
-	protected override void FixedRun()
-	{
 		rigidbody.velocity = _movementVector * movementSpeed;
-		// If the player does not shoot, then we perform a turn according to the player's movement
 		if (_movementVector != Vector3.zero && !attackTarget) cachedTransform.rotation = Quaternion.LookRotation(_movementVector);
+		IsStop = rigidbody.velocity == Vector3.zero;
 	}
 
 	private void OnTriggerStay(Collider col) // Shooting area stay
