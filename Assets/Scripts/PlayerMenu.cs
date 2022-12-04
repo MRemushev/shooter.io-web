@@ -20,15 +20,15 @@ public class PlayerMenu : MonoBehaviour
 	[SerializeField] private Sprite[] priceSkinIcons;
 	[Header("People shop")]
 	[SerializeField] private Button peopleButton;
-	[SerializeField] private TextMeshProUGUI peopleTitleText;
+	[SerializeField] private TextMeshProUGUI peopleLevelText;
 	[SerializeField] private TextMeshProUGUI peoplePriceText;
 	[Header("Health shop")]
 	[SerializeField] private Button healthButton;
-	[SerializeField] private TextMeshProUGUI healthTitleText;
+	[SerializeField] private TextMeshProUGUI healthLevelText;
 	[SerializeField] private TextMeshProUGUI healthPriceText;
 	[Header("Weapon shop")]
 	[SerializeField] private Button weaponButton;
-	[SerializeField] private TextMeshProUGUI weaponTitleText;
+	[SerializeField] private TextMeshProUGUI weaponLevelText;
 	[SerializeField] private TextMeshProUGUI weaponPriceText;
 
 	public Skin[] skinsInfo;
@@ -153,8 +153,14 @@ public class PlayerMenu : MonoBehaviour
 	private void UpdatePricePeople()
 	{
 		var countPeople = PlayerPrefs.GetInt("PlayerPeople") + 1;
-		if (countPeople > 50) peopleButton.interactable = false;
-		peopleTitleText.text = "People - " + PlayerPrefs.GetInt("PlayerPeople");
+		if (countPeople > 50)
+		{
+			peopleButton.interactable = false;
+			peopleLevelText.text = PlayerPrefs.GetInt("PlayerPeople").ToString();
+			peoplePriceText.text = "Max";
+			return;
+		}
+		peopleLevelText.text = PlayerPrefs.GetInt("PlayerPeople") +" > "+ countPeople;
 		peoplePriceText.text = (countPeople * 100 * countPeople).ToString();
 	}
 
@@ -171,8 +177,14 @@ public class PlayerMenu : MonoBehaviour
 	private void UpdatePriceHealth()
 	{
 		var countHealth = PlayerPrefs.GetInt("PlayerHealth") + 1;
-		if (countHealth > 25) healthButton.interactable = false;
-		healthTitleText.text = "Health - " + (100 + PlayerPrefs.GetInt("PlayerHealth") * 10);
+		if (countHealth > 25)
+		{
+			healthButton.interactable = false;
+			healthLevelText.text = (100 + PlayerPrefs.GetInt("PlayerHealth") * 10).ToString();
+			healthPriceText.text = "Max";
+			return;
+		}
+		healthLevelText.text = (100 + PlayerPrefs.GetInt("PlayerHealth") * 10) +" > "+ (100 + countHealth * 10);
 		healthPriceText.text = (countHealth * 500 * countHealth).ToString();
 	}
 
@@ -189,8 +201,14 @@ public class PlayerMenu : MonoBehaviour
 	private void UpdatePriceWeapon()
 	{
 		var indexWeapon = PlayerPrefs.GetInt("WeaponLevel") + 1;
-		if (indexWeapon > 9) weaponButton.interactable = false;
-		weaponTitleText.text = weapons.weaponsName[indexWeapon - 1];
+		if (indexWeapon > 9)
+		{
+			weaponButton.interactable = false;
+			weaponLevelText.text = weapons.weaponsName[indexWeapon - 1];
+			weaponPriceText.text = "Max";
+			return;
+		}
+		weaponLevelText.text = weapons.weaponsName[indexWeapon - 1] +" > "+ weapons.weaponsName[indexWeapon];
 		weaponPriceText.text = (indexWeapon * 1000 * indexWeapon).ToString();
 	}
 

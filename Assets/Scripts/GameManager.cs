@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
 
 	public void ShowReward()
 	{
-		var countKills = FindObjectOfType<PlayerController>().CountKills;
+		var countKills = FindObjectOfType<PlayerController>().ScoreKills;
 		var reward = 100 * countKills * countKills;
 		rewardText.text = "+" + reward;
 		resultScreen.SetActive(true);

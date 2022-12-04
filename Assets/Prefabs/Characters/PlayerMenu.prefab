@@ -1395,7 +1395,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a54e381d21da97147b62db3a77dd098a, type: 2}
+  - {fileID: 2100000, guid: 813f01be7c1d68e46bf06a313a7053c1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1553,12 +1553,14 @@ MonoBehaviour:
   priceSkinIcons:
   - {fileID: 21300000, guid: 190b414e9daa245c3ae30441b3ad71ca, type: 3}
   - {fileID: 21300000, guid: 8d06d663a124647ad9cace55e7d6e935, type: 3}
-  peopleTitleText: {fileID: 0}
+  peopleButton: {fileID: 0}
+  peopleLevelText: {fileID: 0}
   peoplePriceText: {fileID: 0}
-  healthTitleText: {fileID: 0}
+  healthButton: {fileID: 0}
+  healthLevelText: {fileID: 0}
   healthPriceText: {fileID: 0}
   weaponButton: {fileID: 0}
-  weaponTitleText: {fileID: 0}
+  weaponLevelText: {fileID: 0}
   weaponPriceText: {fileID: 0}
   skinsInfo:
   - price: 0

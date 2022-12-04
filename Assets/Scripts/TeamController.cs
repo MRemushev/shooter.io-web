@@ -52,7 +52,7 @@ public class TeamController : MonoCache, IPoolItem
 	protected override void Run()
 	{
 		if (IsDead) return;
-		rigidbody.isKinematic = targetScript.IsStopped;
+		rigidbody.isKinematic = targetScript.IsStop;
 		animator.SetFloat(Horizontal, targetScript.relativeVector.x);
 		animator.SetFloat(Vertical, targetScript.relativeVector.z);
 		cachedTransform.rotation = targetScript.cachedTransform.rotation;

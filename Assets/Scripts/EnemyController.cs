@@ -15,12 +15,13 @@ public class EnemyController : MainCharacter
 	private PointerIcon _levelText;
 	private PlayerController _playerScript;
 	private float _previousHeath;
-	public bool IsDead { get; private set; }
+	private bool _isDead;
 
 	private static readonly int DeadAnim = Animator.StringToHash("IsDead");
 
-	protected override void OnEnabled()
+	private void Start()
 	{
+		_foods = Finds<FoodMovement>();
 		skinObject.material.mainTexture = skinArray.textureList[Random.Range(0, skinArray.textureList.Length)];
 		characterName = NameRandomizer.GetRandomName();
 		_playerScript = FindObjectOfType<PlayerController>();
@@ -28,20 +29,18 @@ public class EnemyController : MainCharacter
 			_playerScript.CharacterCount < PlayerPrefs.GetInt("PlayerPeople")
 				? Random.Range(0, PlayerPrefs.GetInt("PlayerPeople") / 2)
 				: Random.Range(0, _playerScript.CharacterCount));
-		ScoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel") + _playerScript.CountKills / 2);
+		ScoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel") + _playerScript.ScoreKills / 2);
 		weapons.ChangeWeapon(ScoreKills);
 		PointerManager.Instance.AddToList(point);
 		_levelText = PointerManager.Instance.Dictionary[point].GetComponent<PointerIcon>();
 		_levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
 		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
-		Health = PreviousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.CountKills * 10;
+		Health = PreviousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.ScoreKills * 10;
 	}
-
-	private void Start() => _foods = Finds<FoodMovement>();
 
 	protected override void Run()
 	{
-		if (IsDead) return;
+		if (_isDead) return;
 		// Movement enemy
 		relativeVector = Vector3.ClampMagnitude(transform.InverseTransformDirection(agent.velocity), 1);
 		animator.SetFloat(Horizontal, relativeVector.x);
@@ -54,7 +53,7 @@ public class EnemyController : MainCharacter
 	private void OnCollisionEnter(Collision col)
 	{
 		// Picking up food and looking for a new target
-		if (IsDead || TotalDamage > _playerScript.TotalDamage * 1.25f) return;
+		if (_isDead || TotalDamage > _playerScript.TotalDamage * 1.25f) return;
 		if (col.gameObject.CompareTag("Food")) AddCharacter(cachedTransform.position, 1, col);
 		else if (col.gameObject.CompareTag("FoodBox")) AddCharacter(cachedTransform.position, 5, col);
 		else return;
@@ -63,7 +62,7 @@ public class EnemyController : MainCharacter
 
 	private void OnTriggerStay(Collider col)
 	{
-		if (IsDead) return;
+		if (_isDead) return;
 		if (Vector3.Distance(cachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
 		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
@@ -73,7 +72,7 @@ public class EnemyController : MainCharacter
 
 	private void OnTriggerExit(Collider other)
 	{
-		if (IsDead) return;
+		if (_isDead) return;
 		FireReset();
 	}
 
@@ -100,7 +99,7 @@ public class EnemyController : MainCharacter
 
 	public void TakeDamage(float damage, EnemyController enemyController = null)
 	{
-		if (IsDead) return;
+		if (_isDead) return;
 		Health -= damage;
 		if (CharacterCount == 0)
 		{
@@ -151,7 +150,7 @@ public class EnemyController : MainCharacter
 
 	private void DeathPlay(EnemyController enemyController = null)
 	{
-		IsDead = true;
+		_isDead = true;
 		agent.enabled = false;
 		capsuleCollider.enabled = false;
 		shootingArea.enabled = false;

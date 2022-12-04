@@ -18,34 +18,32 @@ public class MainCharacter : MonoCache
 	public WeaponSwitch weapons;
 	public List<TeamController> characterList;
 	public Transform attackTarget;
-	public string characterName;
-	[HideInInspector] public Vector3 relativeVector;
-	[HideInInspector] public Transform cachedTransform;
 	[Space]
 
 	private Spawner _foodSpawner;
 	private Spawner _foodBoxSpawner;
 	protected WeaponController CharacterWeapon;
 	protected RankManager RankManager;
-	protected int ScoreKills;
 	protected float Health;
 	protected Spawner EnemySpawner;
 	protected int PreviousHealth;
-	protected bool IsStop;
 	protected static readonly int
 		Horizontal = Animator.StringToHash("Horizontal"), Vertical = Animator.StringToHash("Vertical");
-
+	
+	public Transform cachedTransform { get; private set; }
+	public Vector3 relativeVector { get; protected set; }
+	public string characterName { get; protected set; }
+	public int ScoreKills { get; protected set; }
+	public bool IsStop { get; protected set; }
 	private Material MainSkin => skinObject.material;
 	public float TotalDamage => (characterList.Count + 1) * CharacterWeapon.Damage;
-	public bool IsStopped => IsStop;
-	public int CountKills => ScoreKills;
 	public int CharacterCount => characterList.Count;
 	public int CharacterScore => (int)(CharacterWeapon.DamagePerSecond * (CharacterCount + 1));
 
 	private void Awake()
 	{
 		cachedTransform = GetComponent<Transform>();
-		var spawners = FindObjectsOfType<Spawner>();
+		var spawners = FindObjectOfType<Spawner>().GetComponents<Spawner>();
 		_foodSpawner = spawners[0];
 		EnemySpawner = spawners[1];
 		_foodBoxSpawner = spawners[2];

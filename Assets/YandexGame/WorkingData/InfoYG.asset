@@ -28,7 +28,7 @@ MonoBehaviour:
   languages:
     ru: 1
     en: 1
-    tr: 1
+    tr: 0
     az: 0
     be: 0
     he: 0
@@ -83,7 +83,7 @@ MonoBehaviour:
     de: []
     hi: []
   fontsSizeCorrect:
-    ru: 00000000
+    ru: 
     en: 
     tr: 
     az: 

@@ -21,7 +21,7 @@ public class FoodMovement : MonoBehaviour
 			cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, _direction, 0.1f);
 	}
 
-	private void OnCollisionStay() => _direction = Quaternion.Inverse(_direction); // If the object has encountered a collision, then turn around
+	private void OnCollisionEnter() => _direction = Quaternion.Euler(0, _direction.y - 180, 0); // If the object has encountered a collision, then turn around
 
 	private IEnumerator Rotate()
 	{

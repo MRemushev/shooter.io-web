@@ -24,6 +24,7 @@ public class PlayerController : MainCharacter
 
 	private void Start()
 	{
+		characterName = "Player";
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
 		var spawnPosition = EnemySpawner.RandomPosition();
@@ -165,7 +166,7 @@ public class PlayerController : MainCharacter
 		killsCountText.text = ScoreKills.ToString();
 		_killPromotion -= 1;
 		if (_killPromotion != 0) return;
-		var weaponLevel = PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2;
+		var weaponLevel = PlayerPrefs.GetInt("WeaponLevel") + ScoreKills / 2;
 		weapons.ChangeWeapon(weaponLevel); // Updating weapons to the main man
 		weaponLevelText.text = (weaponLevel + 1).ToString();
 		// Update fire area
@@ -180,7 +181,7 @@ public class PlayerController : MainCharacter
 
 	public void Renaissance()
 	{
-		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + CountKills / 2);
+		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel") + ScoreKills / 2);
 		Health = PreviousHealth;
 		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange);
 		if (PlayerPrefs.HasKey("PlayerPeople"))
