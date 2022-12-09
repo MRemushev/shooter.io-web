@@ -1569,196 +1569,196 @@ MonoBehaviour:
   - price: 0
     gemPrice: 0
     inStock: 1
-  - price: 500
-    gemPrice: 0
-    inStock: 0
-  - price: 600
-    gemPrice: 0
-    inStock: 0
-  - price: 700
-    gemPrice: 0
-    inStock: 0
-  - price: 800
-    gemPrice: 0
-    inStock: 0
-  - price: 900
-    gemPrice: 0
-    inStock: 0
-  - price: 1000
-    gemPrice: 0
-    inStock: 0
-  - price: 1100
-    gemPrice: 0
-    inStock: 0
-  - price: 1200
-    gemPrice: 0
-    inStock: 0
-  - price: 1300
-    gemPrice: 0
-    inStock: 0
-  - price: 1400
-    gemPrice: 0
-    inStock: 0
-  - price: 1500
-    gemPrice: 0
-    inStock: 0
-  - price: 1600
-    gemPrice: 0
-    inStock: 0
-  - price: 1700
-    gemPrice: 0
-    inStock: 0
-  - price: 1800
-    gemPrice: 0
-    inStock: 0
-  - price: 1900
-    gemPrice: 0
-    inStock: 0
-  - price: 2000
-    gemPrice: 0
-    inStock: 0
-  - price: 2100
-    gemPrice: 0
-    inStock: 0
-  - price: 2200
-    gemPrice: 0
-    inStock: 0
-  - price: 2300
-    gemPrice: 0
-    inStock: 0
-  - price: 2400
-    gemPrice: 0
-    inStock: 0
-  - price: 2500
-    gemPrice: 0
-    inStock: 0
-  - price: 2600
-    gemPrice: 0
-    inStock: 0
-  - price: 2700
-    gemPrice: 0
-    inStock: 0
-  - price: 2800
-    gemPrice: 0
-    inStock: 0
-  - price: 2900
-    gemPrice: 0
-    inStock: 0
-  - price: 3000
-    gemPrice: 0
-    inStock: 0
-  - price: 3100
-    gemPrice: 0
-    inStock: 0
-  - price: 3200
-    gemPrice: 0
-    inStock: 0
-  - price: 3300
-    gemPrice: 0
-    inStock: 0
-  - price: 3400
-    gemPrice: 0
-    inStock: 0
-  - price: 3500
-    gemPrice: 0
-    inStock: 0
-  - price: 3600
-    gemPrice: 0
-    inStock: 0
-  - price: 3700
-    gemPrice: 0
-    inStock: 0
-  - price: 3800
-    gemPrice: 0
-    inStock: 0
-  - price: 3900
-    gemPrice: 0
-    inStock: 0
-  - price: 4000
-    gemPrice: 0
-    inStock: 0
-  - price: 4100
-    gemPrice: 0
-    inStock: 0
-  - price: 4200
-    gemPrice: 0
-    inStock: 0
-  - price: 4300
-    gemPrice: 0
-    inStock: 0
-  - price: 4400
-    gemPrice: 0
-    inStock: 0
-  - price: 4500
-    gemPrice: 0
-    inStock: 0
-  - price: 4600
-    gemPrice: 0
-    inStock: 0
-  - price: 4700
-    gemPrice: 0
-    inStock: 0
-  - price: 4800
-    gemPrice: 0
-    inStock: 0
-  - price: 4900
-    gemPrice: 0
-    inStock: 0
   - price: 5000
-    gemPrice: 0
-    inStock: 0
-  - price: 5250
-    gemPrice: 0
-    inStock: 0
-  - price: 5500
-    gemPrice: 0
-    inStock: 0
-  - price: 5750
     gemPrice: 0
     inStock: 0
   - price: 6000
     gemPrice: 0
     inStock: 0
-  - price: 6250
-    gemPrice: 0
-    inStock: 0
-  - price: 6500
-    gemPrice: 0
-    inStock: 0
-  - price: 6750
-    gemPrice: 0
-    inStock: 0
   - price: 7000
-    gemPrice: 0
-    inStock: 0
-  - price: 7250
-    gemPrice: 0
-    inStock: 0
-  - price: 7500
-    gemPrice: 0
-    inStock: 0
-  - price: 7750
     gemPrice: 0
     inStock: 0
   - price: 8000
     gemPrice: 0
     inStock: 0
-  - price: 8250
-    gemPrice: 0
-    inStock: 0
-  - price: 8500
-    gemPrice: 0
-    inStock: 0
-  - price: 8750
-    gemPrice: 0
-    inStock: 0
   - price: 9000
     gemPrice: 0
     inStock: 0
-  - price: 9500
+  - price: 10000
     gemPrice: 0
     inStock: 0
-  - price: 10000
+  - price: 11000
+    gemPrice: 0
+    inStock: 0
+  - price: 12000
+    gemPrice: 0
+    inStock: 0
+  - price: 13000
+    gemPrice: 0
+    inStock: 0
+  - price: 14000
+    gemPrice: 0
+    inStock: 0
+  - price: 15000
+    gemPrice: 0
+    inStock: 0
+  - price: 16000
+    gemPrice: 0
+    inStock: 0
+  - price: 17000
+    gemPrice: 0
+    inStock: 0
+  - price: 18000
+    gemPrice: 0
+    inStock: 0
+  - price: 19000
+    gemPrice: 0
+    inStock: 0
+  - price: 20000
+    gemPrice: 0
+    inStock: 0
+  - price: 21000
+    gemPrice: 0
+    inStock: 0
+  - price: 22000
+    gemPrice: 0
+    inStock: 0
+  - price: 23000
+    gemPrice: 0
+    inStock: 0
+  - price: 24000
+    gemPrice: 0
+    inStock: 0
+  - price: 25000
+    gemPrice: 0
+    inStock: 0
+  - price: 26000
+    gemPrice: 0
+    inStock: 0
+  - price: 27000
+    gemPrice: 0
+    inStock: 0
+  - price: 28000
+    gemPrice: 0
+    inStock: 0
+  - price: 29000
+    gemPrice: 0
+    inStock: 0
+  - price: 30000
+    gemPrice: 0
+    inStock: 0
+  - price: 31000
+    gemPrice: 0
+    inStock: 0
+  - price: 32000
+    gemPrice: 0
+    inStock: 0
+  - price: 33000
+    gemPrice: 0
+    inStock: 0
+  - price: 34000
+    gemPrice: 0
+    inStock: 0
+  - price: 35000
+    gemPrice: 0
+    inStock: 0
+  - price: 36000
+    gemPrice: 0
+    inStock: 0
+  - price: 37000
+    gemPrice: 0
+    inStock: 0
+  - price: 38000
+    gemPrice: 0
+    inStock: 0
+  - price: 39000
+    gemPrice: 0
+    inStock: 0
+  - price: 40000
+    gemPrice: 0
+    inStock: 0
+  - price: 41000
+    gemPrice: 0
+    inStock: 0
+  - price: 42000
+    gemPrice: 0
+    inStock: 0
+  - price: 43000
+    gemPrice: 0
+    inStock: 0
+  - price: 44000
+    gemPrice: 0
+    inStock: 0
+  - price: 45000
+    gemPrice: 0
+    inStock: 0
+  - price: 46000
+    gemPrice: 0
+    inStock: 0
+  - price: 47000
+    gemPrice: 0
+    inStock: 0
+  - price: 48000
+    gemPrice: 0
+    inStock: 0
+  - price: 49000
+    gemPrice: 0
+    inStock: 0
+  - price: 50000
+    gemPrice: 0
+    inStock: 0
+  - price: 52500
+    gemPrice: 0
+    inStock: 0
+  - price: 55000
+    gemPrice: 0
+    inStock: 0
+  - price: 57500
+    gemPrice: 0
+    inStock: 0
+  - price: 60000
+    gemPrice: 0
+    inStock: 0
+  - price: 62500
+    gemPrice: 0
+    inStock: 0
+  - price: 65000
+    gemPrice: 0
+    inStock: 0
+  - price: 67500
+    gemPrice: 0
+    inStock: 0
+  - price: 70000
+    gemPrice: 0
+    inStock: 0
+  - price: 72500
+    gemPrice: 0
+    inStock: 0
+  - price: 75000
+    gemPrice: 0
+    inStock: 0
+  - price: 77500
+    gemPrice: 0
+    inStock: 0
+  - price: 80000
+    gemPrice: 0
+    inStock: 0
+  - price: 82500
+    gemPrice: 0
+    inStock: 0
+  - price: 85000
+    gemPrice: 0
+    inStock: 0
+  - price: 87500
+    gemPrice: 0
+    inStock: 0
+  - price: 90000
+    gemPrice: 0
+    inStock: 0
+  - price: 95000
+    gemPrice: 0
+    inStock: 0
+  - price: 100000
     gemPrice: 0
     inStock: 0
   - price: 25

@@ -26,9 +26,9 @@ public class EnemyController : MainCharacter
 		characterName = NameRandomizer.GetRandomName();
 		_playerScript = FindObjectOfType<PlayerController>();
 		AddCharacter(cachedTransform.position,
-			_playerScript.CharacterCount < PlayerPrefs.GetInt("PlayerPeople")
+			CharacterCount < PlayerPrefs.GetInt("PlayerPeople")
 				? Random.Range(0, PlayerPrefs.GetInt("PlayerPeople") / 2)
-				: Random.Range(0, _playerScript.CharacterCount));
+				: Random.Range(0, CharacterCount));
 		ScoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel") + _playerScript.ScoreKills / 2);
 		weapons.ChangeWeapon(ScoreKills);
 		PointerManager.Instance.AddToList(point);
@@ -45,6 +45,7 @@ public class EnemyController : MainCharacter
 		relativeVector = Vector3.ClampMagnitude(transform.InverseTransformDirection(agent.velocity), 1);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
+		agent.isStopped = attackTarget;
 		IsStop = relativeVector.magnitude < 0.1f;
 		// If the agent is stuck, then we try to find a new target
 		if (IsStop && !agent.isStopped) FindClosestFood();
@@ -67,19 +68,14 @@ public class EnemyController : MainCharacter
 		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Player")) EnemyShooting(col);
-		else FireReset();
+		else attackTarget = null;
 	}
-
-	private void OnTriggerExit(Collider other)
-	{
-		if (_isDead) return;
-		FireReset();
-	}
+	
+	private void OnTriggerExit(Collider other) => attackTarget = null;
 
 	private void EnemyShooting(Component col)
 	{
 		if (!attackTarget) attackTarget = col.transform;
-		agent.isStopped = true;
 		var lookTarget = Quaternion.LookRotation(attackTarget.position - cachedTransform.position);
 		lookTarget.eulerAngles = new Vector3(0, lookTarget.eulerAngles.y, 0);
 		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, lookTarget, 10 * Time.deltaTime);
@@ -123,8 +119,6 @@ public class EnemyController : MainCharacter
 					characterList[deadCharacter].DeathPlay();
 					Health += PreviousHealth;
 					RankManager.ChangeRating();
-					if (enemyController) enemyController.FireReset();
-					else _playerScript.FireReset();
 				}
 				else
 				{
@@ -137,7 +131,7 @@ public class EnemyController : MainCharacter
 
 	private void AddKill()
 	{
-		FireReset();
+		attackTarget = null;
 		ScoreKills += 1;
 		// Updating weapons to the main man
 		weapons.ChangeWeapon(ScoreKills);
@@ -150,6 +144,7 @@ public class EnemyController : MainCharacter
 
 	private void DeathPlay(EnemyController enemyController = null)
 	{
+		attackTarget = null;
 		_isDead = true;
 		agent.enabled = false;
 		capsuleCollider.enabled = false;
@@ -162,14 +157,7 @@ public class EnemyController : MainCharacter
 		EnemySpawner.SpawnObject();
 		Destroy(gameObject, 5f);
 	}
-
-	public void FireReset()
-	{
-		agent.isStopped = false;
-		attackTarget = null;
-	}
-
-
+	
 	private void FindClosestFood()
 	{
 		if (TotalDamage > _playerScript.TotalDamage * 1.25f) agent.destination = _playerScript.cachedTransform.position;

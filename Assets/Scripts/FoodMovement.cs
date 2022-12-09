@@ -2,10 +2,12 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(Rigidbody))]
 public class FoodMovement : MonoBehaviour
 {
 	private float _updateTime = 5;
 	private Quaternion _direction;
+	
 	[HideInInspector] public Transform cachedTransform;
 
 	private void Awake()
@@ -20,9 +22,7 @@ public class FoodMovement : MonoBehaviour
 		if (_direction != cachedTransform.rotation) 
 			cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, _direction, 0.1f);
 	}
-
-	private void OnCollisionEnter() => _direction = Quaternion.Euler(0, _direction.y - 180, 0); // If the object has encountered a collision, then turn around
-
+	
 	private IEnumerator Rotate()
 	{
 		while (true)

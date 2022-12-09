@@ -16,7 +16,7 @@ public class PlayerController : MainCharacter
 	[SerializeField] private TextMeshProUGUI hpText;
 	[SerializeField] private TextMeshProUGUI weaponStatsText;
 	[SerializeField] private float movementSpeed;
-
+	
 	private bool _isImmortality;
 	private int _killPromotion = 2;
 	private CameraController _cameraOffset;
@@ -47,6 +47,7 @@ public class PlayerController : MainCharacter
 		relativeVector = cachedTransform.InverseTransformDirection(_movementVector);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
+		laserBeam.enabled = attackTarget;
 		IsStop = rigidbody.velocity == Vector3.zero;
 	}
 
@@ -62,16 +63,10 @@ public class PlayerController : MainCharacter
 		if (Vector3.Distance(cachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
 		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) AutoShooting(col);
 		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) AutoShooting(col);
-		else FireReset();
+		else attackTarget = null;
 	}
 
-	private void OnTriggerExit(Collider col) => FireReset();
-
-	public void FireReset()
-	{
-		attackTarget = null;
-		laserBeam.enabled = false;
-	}
+	private void OnTriggerExit(Collider other) => attackTarget = null;
 
 	private void OnCollisionEnter(Collision col)
 	{
@@ -107,7 +102,6 @@ public class PlayerController : MainCharacter
 	{
 		// We turn in the direction of the shot
 		if (!attackTarget) attackTarget = col.transform;
-		laserBeam.enabled = true;
 		var lookTarget = Quaternion.LookRotation(attackTarget.position - cachedTransform.position);
 		lookTarget.eulerAngles = new Vector3(0, lookTarget.eulerAngles.y, 0);
 		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, lookTarget, 10 * Time.deltaTime);
@@ -147,7 +141,6 @@ public class PlayerController : MainCharacter
 					countTeamText.text = CharacterCount.ToString();
 					Health += PreviousHealth;
 					RankManager.ChangeRating();
-					enemyController.FireReset();
 				}
 				else
 				{
@@ -161,7 +154,7 @@ public class PlayerController : MainCharacter
 
 	public void AddKill()
 	{
-		FireReset();
+		attackTarget = null;
 		ScoreKills += 1;
 		killsCountText.text = ScoreKills.ToString();
 		_killPromotion -= 1;
@@ -187,7 +180,6 @@ public class PlayerController : MainCharacter
 		if (PlayerPrefs.HasKey("PlayerPeople"))
 			AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
 		ChangeHpText();
-		FireReset();
 		StartCoroutine(Immortality());
 	}
 

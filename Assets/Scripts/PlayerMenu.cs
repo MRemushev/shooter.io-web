@@ -22,14 +22,17 @@ public class PlayerMenu : MonoBehaviour
 	[SerializeField] private Button peopleButton;
 	[SerializeField] private TextMeshProUGUI peopleLevelText;
 	[SerializeField] private TextMeshProUGUI peoplePriceText;
+	[SerializeField] [Tooltip("Set 0 to unlimited")] private int peopleMaxLevel;
 	[Header("Health shop")]
 	[SerializeField] private Button healthButton;
 	[SerializeField] private TextMeshProUGUI healthLevelText;
 	[SerializeField] private TextMeshProUGUI healthPriceText;
+	[SerializeField] [Tooltip("Set 0 to unlimited")] private int healthMaxLevel;
 	[Header("Weapon shop")]
 	[SerializeField] private Button weaponButton;
 	[SerializeField] private TextMeshProUGUI weaponLevelText;
 	[SerializeField] private TextMeshProUGUI weaponPriceText;
+	[SerializeField] [Tooltip("Set 0 to unlimited")] private int weaponMaxLevel;
 
 	public Skin[] skinsInfo;
 
@@ -40,10 +43,8 @@ public class PlayerMenu : MonoBehaviour
 
 	private void Awake()
 	{
-		if (!PlayerPrefs.HasKey("PlayerName")) PlayerPrefs.SetString("PlayerName", "Player");
-		if (bestCountText) bestCountText.text = PlayerPrefs.GetInt("HighScore").ToString();
-		if (coinsText) ChangeCoinText();
-		if (gemsText) ChangeGemText();
+		PlayerPrefs.DeleteAll();
+		PlayerPrefs.SetInt("Coins", 999999999);
 		_stockCheck = new bool[skinsInfo.Length];
 		if (PlayerPrefs.HasKey("StockArray")) _stockCheck = PlayerPrefsX.GetBoolArray("StockArray");
 		else _stockCheck[0] = true; _stockCheck[1] = true;
@@ -53,6 +54,9 @@ public class PlayerMenu : MonoBehaviour
 		_countGems = PlayerPrefs.GetInt("Gems");
 		skinObject.material.mainTexture = skinArray.textureList[_skinIndex];
 		weapons.ChangeWeapon(PlayerPrefs.GetInt("WeaponLevel"));
+		bestCountText.text = PlayerPrefs.GetInt("HighScore").ToString();
+		ChangeCoinText();
+		ChangeGemText();
 		UpdatePricePeople();
 		UpdatePriceHealth();
 		UpdatePriceWeapon();
@@ -60,16 +64,6 @@ public class PlayerMenu : MonoBehaviour
 
 	public void ChangeCoinText() => coinsText.text = PlayerPrefs.GetInt("Coins").ToString();
 	public void ChangeGemText() => gemsText.text = PlayerPrefs.GetInt("Gems").ToString();
-
-	// public void ChangeName(string newName)
-	// {
-	// 	if (newName != "" && newName.Length <= 8)
-	// 	{
-	// 		battleButton.GetComponent<Button>().interactable = true;
-	// 		PlayerPrefs.SetString("PlayerName", newName);
-	// 	}
-	// 	else battleButton.GetComponent<Button>().interactable = false;
-	// }
 
 	private void CheckSkin()
 	{
@@ -153,7 +147,7 @@ public class PlayerMenu : MonoBehaviour
 	private void UpdatePricePeople()
 	{
 		var countPeople = PlayerPrefs.GetInt("PlayerPeople") + 1;
-		if (countPeople > 50)
+		if (peopleMaxLevel == 0 || countPeople > peopleMaxLevel)
 		{
 			peopleButton.interactable = false;
 			peopleLevelText.text = PlayerPrefs.GetInt("PlayerPeople").ToString();
@@ -177,14 +171,14 @@ public class PlayerMenu : MonoBehaviour
 	private void UpdatePriceHealth()
 	{
 		var countHealth = PlayerPrefs.GetInt("PlayerHealth") + 1;
-		if (countHealth > 25)
+		if (healthMaxLevel == 0 || countHealth > healthMaxLevel)
 		{
 			healthButton.interactable = false;
 			healthLevelText.text = (100 + PlayerPrefs.GetInt("PlayerHealth") * 10).ToString();
 			healthPriceText.text = "Max";
 			return;
 		}
-		healthLevelText.text = (100 + PlayerPrefs.GetInt("PlayerHealth") * 10) +" > "+ (100 + countHealth * 10);
+		healthLevelText.text = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 +" > "+ (100 + countHealth * 10);
 		healthPriceText.text = (countHealth * 500 * countHealth).ToString();
 	}
 
@@ -200,16 +194,16 @@ public class PlayerMenu : MonoBehaviour
 
 	private void UpdatePriceWeapon()
 	{
-		var indexWeapon = PlayerPrefs.GetInt("WeaponLevel") + 1;
-		if (indexWeapon > 9)
+		var weaponLevel = weapons.WeaponLevel + 1;
+		if (weaponMaxLevel != 0 && weaponLevel >= weaponMaxLevel || weaponLevel > weapons.transform.childCount - 1)
 		{
 			weaponButton.interactable = false;
-			weaponLevelText.text = weapons.weaponsName[indexWeapon - 1];
+			weaponLevelText.text = weapons.weaponsName[weaponLevel - 1];
 			weaponPriceText.text = "Max";
 			return;
 		}
-		weaponLevelText.text = weapons.weaponsName[indexWeapon - 1] +" > "+ weapons.weaponsName[indexWeapon];
-		weaponPriceText.text = (indexWeapon * 1000 * indexWeapon).ToString();
+		weaponLevelText.text = weapons.weaponsName[weaponLevel - 1] +" > "+ weapons.weaponsName[weaponLevel];
+		weaponPriceText.text = (weaponLevel * 1000 * weaponLevel).ToString();
 	}
 
 	public void BuyWeapon()

@@ -14,10 +14,8 @@ public class MainCharacter : MonoCache
 	[SerializeField] protected TextureList skinArray;
 	[SerializeField] protected ParticleSystem bloodFX;
 	[SerializeField] private GameObject characterTeam;
-	[Space]
 	public WeaponSwitch weapons;
 	public List<TeamController> characterList;
-	public Transform attackTarget;
 	[Space]
 
 	private Spawner _foodSpawner;
@@ -33,11 +31,12 @@ public class MainCharacter : MonoCache
 	public Transform cachedTransform { get; private set; }
 	public Vector3 relativeVector { get; protected set; }
 	public string characterName { get; protected set; }
+	public Transform attackTarget { get; protected set; }
 	public int ScoreKills { get; protected set; }
 	public bool IsStop { get; protected set; }
 	private Material MainSkin => skinObject.material;
 	public float TotalDamage => (characterList.Count + 1) * CharacterWeapon.Damage;
-	public int CharacterCount => characterList.Count;
+	protected int CharacterCount => characterList.Count;
 	public int CharacterScore => (int)(CharacterWeapon.DamagePerSecond * (CharacterCount + 1));
 
 	private void Awake()
