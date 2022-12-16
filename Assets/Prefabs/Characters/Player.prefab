@@ -579,7 +579,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &6616973649713722198
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -596,7 +596,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!54 &9145745613313520012
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -604,10 +604,21 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6616973649723195542}
-  serializedVersion: 2
+  serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -620,9 +631,18 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6616973649723195542}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 80783139b7c80144ead881feb8a5fd11, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
+  serializedVersion: 2
   m_Radius: 1
   m_Height: 4
   m_Direction: 1
@@ -717,6 +737,7 @@ LineRenderer:
       atime6: 0
       atime7: 0
       m_Mode: 0
+      m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
@@ -751,10 +772,6 @@ MonoBehaviour:
     type: 3}
   weapons: {fileID: 9018768019106096510}
   characterList: []
-  attackTarget: {fileID: 0}
-  characterName: Player
-  relativeVector: {x: 0, y: 0, z: 0}
-  cachedTransform: {fileID: 0}
   rigidbody: {fileID: 9145745613313520012}
   laserBeam: {fileID: 5457763901905975138}
   walkJoystick: {fileID: 0}
@@ -779,13 +796,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2
   mainCamera: {fileID: 0}
-  target: {fileID: 0}
+  target: {fileID: 6616973649722776758}
   fadedAlpha: 0.15
   retainShadows: 0
-  targetPositionOffset: {x: 0, y: 1, z: 0}
-  fadeSpeed: 1
+  targetPositionOffset: {x: 0, y: 0, z: -5}
+  fadeSpeed: 5
   objectsBlockingView: []
 --- !u!65 &5457763901905975136
 BoxCollider:
@@ -795,9 +812,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6616973649723195542}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 1, y: 0, z: 1}
   m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &6616973649723195544
@@ -2372,7 +2397,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 2
+    serializedVersion: 3
     m_TransformParent: {fileID: 6616973649722776804}
     m_Modifications:
     - target: {fileID: 297441688395009547, guid: 68b9337fbb778b84d8ac5f39ff208593,
@@ -2591,7 +2616,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6616973649723195542}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68b9337fbb778b84d8ac5f39ff208593, type: 3}
 --- !u!4 &3469004291934472841 stripped
 Transform:
@@ -2616,7 +2643,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 2
+    serializedVersion: 3
     m_TransformParent: {fileID: 6616973649722776758}
     m_Modifications:
     - target: {fileID: 2460906955843296329, guid: 5591b9e41b9a5044782f27ec87a58a86,
@@ -2680,7 +2707,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5591b9e41b9a5044782f27ec87a58a86, type: 3}
 --- !u!198 &2072706633448755852 stripped
 ParticleSystem:

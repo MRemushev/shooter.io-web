@@ -1,4 +1,5 @@
-﻿using UnityEngine.AI;
+﻿using System.Collections;
+using UnityEngine.AI;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using NTC.Global.Pool;
@@ -25,20 +26,20 @@ public class EnemyController : MainCharacter
 		skinObject.material.mainTexture = skinArray.textureList[Random.Range(0, skinArray.textureList.Length)];
 		characterName = NameRandomizer.GetRandomName();
 		_playerScript = FindObjectOfType<PlayerController>();
-		AddCharacter(cachedTransform.position,
+		StartCoroutine(AddCharacter(cachedTransform.position,
 			CharacterCount < PlayerPrefs.GetInt("PlayerPeople")
 				? Random.Range(0, PlayerPrefs.GetInt("PlayerPeople") / 2)
-				: Random.Range(0, CharacterCount));
+				: Random.Range(0, CharacterCount)));
 		ScoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel") + _playerScript.ScoreKills / 2);
 		weapons.ChangeWeapon(ScoreKills);
 		PointerManager.Instance.AddToList(point);
 		_levelText = PointerManager.Instance.Dictionary[point].GetComponent<PointerIcon>();
 		_levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
 		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
-		Health = PreviousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10 + _playerScript.ScoreKills * 10;
+		Health = PreviousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 5 + _playerScript.ScoreKills * 10;
 	}
 
-	protected override void Run()
+	protected override void FixedRun()
 	{
 		if (_isDead) return;
 		// Movement enemy
@@ -48,15 +49,15 @@ public class EnemyController : MainCharacter
 		agent.isStopped = attackTarget;
 		IsStop = relativeVector.magnitude < 0.1f;
 		// If the agent is stuck, then we try to find a new target
-		if (IsStop && !agent.isStopped) FindClosestFood();
+		if (IsStop && !agent.isStopped) StartCoroutine(FindClosestFood());
 	}
 
 	private void OnCollisionEnter(Collision col)
 	{
 		// Picking up food and looking for a new target
 		if (_isDead || TotalDamage > _playerScript.TotalDamage * 1.25f) return;
-		if (col.gameObject.CompareTag("Food")) AddCharacter(cachedTransform.position, 1, col);
-		else if (col.gameObject.CompareTag("FoodBox")) AddCharacter(cachedTransform.position, 5, col);
+		if (col.gameObject.CompareTag("Food")) StartCoroutine(AddCharacter(cachedTransform.position, 1, col));
+		else if (col.gameObject.CompareTag("FoodBox")) StartCoroutine(AddCharacter(cachedTransform.position, 5, col));
 		else return;
 		RankManager.ChangeRating();
 	}
@@ -85,22 +86,24 @@ public class EnemyController : MainCharacter
 		{
 			var teamController = col.GetComponent<TeamController>();
 			var enemyController = teamController.targetScript.Get<EnemyController>();
-			if (enemyController) enemyController.TakeDamage(TotalDamage, this);
-			else _playerScript.TakeDamage(this, TotalDamage);
+			StartCoroutine(enemyController
+				? enemyController.TakeDamage(TotalDamage, this)
+				: _playerScript.TakeDamage(this, TotalDamage));
 		}
-		if (col.CompareTag("Enemy"))
-			col.GetComponent<EnemyController>().TakeDamage(TotalDamage, this);
-		else _playerScript.TakeDamage(this, TotalDamage);
+
+		StartCoroutine(col.CompareTag("Enemy")
+			? col.GetComponent<EnemyController>().TakeDamage(TotalDamage, this)
+			: _playerScript.TakeDamage(this, TotalDamage));
 	}
 
-	public void TakeDamage(float damage, EnemyController enemyController = null)
+	public IEnumerator TakeDamage(float damage, EnemyController enemyController = null)
 	{
-		if (_isDead) return;
+		if (_isDead) yield break;
 		Health -= damage;
 		if (CharacterCount == 0)
 		{
 			bloodFX.Play();
-			if (Health > 1) return;
+			if (Health > 1) yield break;
 			foreach (var character in characterList)
 			{
 				NightPool.Despawn(character);
@@ -125,6 +128,8 @@ public class EnemyController : MainCharacter
 					DeathPlay(enemyController);
 					break;
 				}
+				
+				yield return null;
 			}
 		}
 	}
@@ -158,21 +163,23 @@ public class EnemyController : MainCharacter
 		Destroy(gameObject, 5f);
 	}
 	
-	private void FindClosestFood()
+	private IEnumerator FindClosestFood()
 	{
-		if (TotalDamage > _playerScript.TotalDamage * 1.25f) agent.destination = _playerScript.cachedTransform.position;
-		else
+		if (TotalDamage > _playerScript.TotalDamage * 1.25f)
 		{
-			var closestDistance = Mathf.Infinity;
-			Transform closestPeople = null;
-			foreach (var person in _foods)
-			{
-				var currentDistance = Vector3.Distance(cachedTransform.position, person.cachedTransform.position);
-				if (currentDistance > closestDistance) continue;
-				closestDistance = currentDistance;
-				closestPeople = person.cachedTransform;
-			}
-			agent.destination = closestPeople ? closestPeople.position : _playerScript.cachedTransform.position;
+			agent.destination = _playerScript.cachedTransform.position;
+			yield break;
 		}
+		var closestDistance = Mathf.Infinity;
+		Transform closestPeople = null;
+		foreach (var person in _foods)
+		{
+			var currentDistance = Vector3.Distance(cachedTransform.position, person.cachedTransform.position);
+			if (currentDistance > closestDistance) continue;
+			closestDistance = currentDistance;
+			closestPeople = person.cachedTransform;
+			yield return null;
+		}
+		agent.destination = closestPeople ? closestPeople.position : _playerScript.cachedTransform.position;
 	}
 }

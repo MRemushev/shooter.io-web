@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using Random = UnityEngine.Random;
 using System.Collections;
+using YG;
 
 public class PlayerController : MainCharacter
 {
@@ -25,6 +26,7 @@ public class PlayerController : MainCharacter
 	private void Start()
 	{
 		characterName = "Player";
+		if (YandexGame.EnvironmentData.isDesktop) walkJoystick.gameObject.SetActive(false);
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
 		var spawnPosition = EnemySpawner.RandomPosition();
@@ -40,22 +42,19 @@ public class PlayerController : MainCharacter
 		ChangeWeaponStatsText();
 	}
 
-	protected override void Run()
+	protected override void Run() => _movementVector = walkJoystick.isActiveAndEnabled
+		? new Vector3(walkJoystick.Horizontal, 0, walkJoystick.Vertical).normalized
+		: new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;	
+	
+	protected override void FixedRun()
 	{
-		// Movement player
-		_movementVector = new Vector3(walkJoystick.Horizontal, 0, walkJoystick.Vertical).normalized;
+		rigidbody.velocity = _movementVector * movementSpeed;
+		if (!attackTarget) rigidbody.MoveRotation(Quaternion.LookRotation(_movementVector));
 		relativeVector = cachedTransform.InverseTransformDirection(_movementVector);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
 		laserBeam.enabled = attackTarget;
 		IsStop = rigidbody.velocity == Vector3.zero;
-	}
-
-	protected override void FixedRun()
-	{
-		rigidbody.velocity = _movementVector * movementSpeed;
-		// If the player does not shoot, then we perform a turn according to the player's movement
-		if (_movementVector != Vector3.zero && !attackTarget) cachedTransform.rotation = Quaternion.LookRotation(_movementVector);
 	}
 
 	private void OnTriggerStay(Collider col) // Shooting area stay
@@ -73,12 +72,12 @@ public class PlayerController : MainCharacter
 		// If the player touched an object with the tag "Food", then we call the function of adding a team
 		if (col.gameObject.CompareTag("Food"))
 		{
-			AddCharacter(cachedTransform.position, 1, col);
+			StartCoroutine(AddCharacter(cachedTransform.position, 1, col));
 			ChangeStats();
 		}
 		else if (col.gameObject.CompareTag("FoodBox"))
 		{
-			AddCharacter(cachedTransform.position, 5, col);
+			StartCoroutine(AddCharacter(cachedTransform.position, 5, col));
 			ChangeStats();
 		}
 	}
@@ -113,16 +112,16 @@ public class PlayerController : MainCharacter
 	}
 
 	// Damage acceptance function
-	public void TakeDamage(EnemyController enemyController, float damage)
+	public IEnumerator TakeDamage(EnemyController enemyController, float damage)
 	{
-		if (damage < 1 || _isImmortality) return; // Check that the damage is not less than one
+		if (damage < 1 || _isImmortality) yield break; // Check that the damage is not less than one
 		Health -= damage;
 		ChangeHpText();
 		// Check if the player has teammates
 		if (CharacterCount == 0)
 		{
 			bloodFX.Play();
-			if (Health > 1) return; // Check how much health the player has
+			if (Health > 1) yield break; // Check how much health the player has
 			var gameManager = Find<GameManager>();
 			gameManager.UpdatePriceChance();
 			deadScreen.SetActive(true); // Calling the screen of death
@@ -131,7 +130,7 @@ public class PlayerController : MainCharacter
 		else
 		{
 			characterList[Random.Range(0, CharacterCount)].bloodFX.Play();
-			if (Health > 1) return;
+			if (Health > 1) yield break;
 			while (Health < 1)
 			{
 				if (CharacterCount > 0)
@@ -148,6 +147,7 @@ public class PlayerController : MainCharacter
 					Find<GameManager>().SetPause(true);
 					break;
 				}
+				yield return null;
 			}
 		}
 	}
@@ -178,7 +178,7 @@ public class PlayerController : MainCharacter
 		Health = PreviousHealth;
 		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange);
 		if (PlayerPrefs.HasKey("PlayerPeople"))
-			AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople"));
+			StartCoroutine(AddCharacter(cachedTransform.position, PlayerPrefs.GetInt("PlayerPeople")));
 		ChangeHpText();
 		StartCoroutine(Immortality());
 	}

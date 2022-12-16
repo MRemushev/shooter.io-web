@@ -5,7 +5,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 
-public class TeamController : MonoCache, IPoolItem
+public class TeamController : MonoCache
 {
 	[SerializeField] private new Rigidbody rigidbody;
 	[SerializeField] private Animator animator;
@@ -29,7 +29,7 @@ public class TeamController : MonoCache, IPoolItem
 
 	private void Awake() => cachedTransform = transform;
 
-	public void OnSpawn() => takeFX.Play();
+	protected override void OnEnabled() => takeFX.Play();
 
 	public void SetTarget(MainCharacter targetComponent, Material targetSkin)
 	{
@@ -42,34 +42,27 @@ public class TeamController : MonoCache, IPoolItem
 		if (isPlayer) isPlayer.ChangeStats();
 	}
 
-	public void OnDespawn()
+	protected override void OnDisabled()
 	{
 		IsDead = false;
 		targetScript = null;
 		capsuleCollider.enabled = true;
 	}
 
-	protected override void Run()
-	{
-		if (IsDead) return;
-		rigidbody.isKinematic = targetScript.IsStop;
-		animator.SetFloat(Horizontal, targetScript.relativeVector.x);
-		animator.SetFloat(Vertical, targetScript.relativeVector.z);
-		cachedTransform.rotation = targetScript.cachedTransform.rotation;
-		if (targetScript.attackTarget) _thisWeapon.Shoot();
-	}
-
 	protected override void FixedRun()
 	{
 		if (IsDead) return;
-		if (!rigidbody.isKinematic)
-			rigidbody.position = Vector3.Lerp(cachedTransform.position, targetScript.cachedTransform.position, speedMove);
+		rigidbody.isKinematic = targetScript.IsStop;
+		if (!targetScript.IsStop) rigidbody.Move(Vector3.Lerp(cachedTransform.position, targetScript.cachedTransform.position, speedMove), targetScript.cachedTransform.rotation);
+		animator.SetFloat(Horizontal, targetScript.relativeVector.x);
+		animator.SetFloat(Vertical, targetScript.relativeVector.z);
+		if (targetScript.attackTarget) _thisWeapon.Shoot();
 	}
 
 	private void OnCollisionEnter(Collision col)
 	{
-		if (col.gameObject.CompareTag("Food")) targetScript.AddCharacter(cachedTransform.position, 1, col);
-		if (col.gameObject.CompareTag("FoodBox")) targetScript.AddCharacter(cachedTransform.position, 5, col);
+		if (col.gameObject.CompareTag("Food")) StartCoroutine(targetScript.AddCharacter(cachedTransform.position, 1, col));
+		if (col.gameObject.CompareTag("FoodBox")) StartCoroutine(targetScript.AddCharacter(cachedTransform.position, 5, col));
 	}
 
 	public void LevelUp()
