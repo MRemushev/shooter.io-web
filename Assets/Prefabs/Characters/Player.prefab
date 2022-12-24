@@ -801,7 +801,7 @@ MonoBehaviour:
   target: {fileID: 6616973649722776758}
   fadedAlpha: 0.15
   retainShadows: 0
-  targetPositionOffset: {x: 0, y: 0, z: -5}
+  targetPositionOffset: {x: 0, y: 0, z: -4}
   fadeSpeed: 5
   objectsBlockingView: []
 --- !u!65 &5457763901905975136

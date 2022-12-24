@@ -6,8 +6,8 @@ using YG;
 
 public class GameManager : MonoBehaviour
 {
-	[Header("Menu components")]
-	[SerializeField] private Toggle volumeToggle;
+	[Header("Game settings")] [SerializeField] private int frameRate = 60;
+	[Header("Menu components")] [SerializeField] private Toggle volumeToggle;
 	[Space]
 	[Header("Game components")]
 	[Header("Dead screen")]
@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
 
 	private void Awake()
 	{
+		Application.targetFrameRate = frameRate;
 		PlayerPrefs.SetInt("CountBuyChance", 0);
 		if (!PlayerPrefs.HasKey("VolumeStatus")) PlayerPrefsX.SetBool("VolumeStatus", false);
 		if (!volumeToggle) return;

@@ -53,7 +53,9 @@ public class TeamController : MonoCache
 	{
 		if (IsDead) return;
 		rigidbody.isKinematic = targetScript.IsStop;
-		if (!targetScript.IsStop) rigidbody.Move(Vector3.Lerp(cachedTransform.position, targetScript.cachedTransform.position, speedMove), targetScript.cachedTransform.rotation);
+		rigidbody.MoveRotation(targetScript.cachedTransform.rotation);
+		if (!targetScript.IsStop) 
+			rigidbody.MovePosition(Vector3.Lerp(cachedTransform.position, targetScript.cachedTransform.position, speedMove));
 		animator.SetFloat(Horizontal, targetScript.relativeVector.x);
 		animator.SetFloat(Vertical, targetScript.relativeVector.z);
 		if (targetScript.attackTarget) _thisWeapon.Shoot();

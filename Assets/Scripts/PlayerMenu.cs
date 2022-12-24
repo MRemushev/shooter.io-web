@@ -43,8 +43,6 @@ public class PlayerMenu : MonoBehaviour
 
 	private void Awake()
 	{
-		PlayerPrefs.DeleteAll();
-		PlayerPrefs.SetInt("Coins", 999999999);
 		_stockCheck = new bool[skinsInfo.Length];
 		if (PlayerPrefs.HasKey("StockArray")) _stockCheck = PlayerPrefsX.GetBoolArray("StockArray");
 		else _stockCheck[0] = true; _stockCheck[1] = true;
@@ -147,7 +145,7 @@ public class PlayerMenu : MonoBehaviour
 	private void UpdatePricePeople()
 	{
 		var countPeople = PlayerPrefs.GetInt("PlayerPeople") + 1;
-		if (peopleMaxLevel == 0 || countPeople > peopleMaxLevel)
+		if (peopleMaxLevel != 0 && countPeople > peopleMaxLevel)
 		{
 			peopleButton.interactable = false;
 			peopleLevelText.text = PlayerPrefs.GetInt("PlayerPeople").ToString();
@@ -171,7 +169,7 @@ public class PlayerMenu : MonoBehaviour
 	private void UpdatePriceHealth()
 	{
 		var countHealth = PlayerPrefs.GetInt("PlayerHealth") + 1;
-		if (healthMaxLevel == 0 || countHealth > healthMaxLevel)
+		if (healthMaxLevel != 0 && countHealth > healthMaxLevel)
 		{
 			healthButton.interactable = false;
 			healthLevelText.text = (100 + PlayerPrefs.GetInt("PlayerHealth") * 10).ToString();

@@ -17,6 +17,7 @@ public class EnemyController : MainCharacter
 	private PlayerController _playerScript;
 	private float _previousHeath;
 	private bool _isDead;
+	private bool _isFound = true;
 
 	private static readonly int DeadAnim = Animator.StringToHash("IsDead");
 
@@ -49,7 +50,7 @@ public class EnemyController : MainCharacter
 		agent.isStopped = attackTarget;
 		IsStop = relativeVector.magnitude < 0.1f;
 		// If the agent is stuck, then we try to find a new target
-		if (IsStop && !agent.isStopped) StartCoroutine(FindClosestFood());
+		if (_isFound && IsStop && !agent.isStopped) StartCoroutine(FindClosestFood());
 	}
 
 	private void OnCollisionEnter(Collision col)
@@ -90,7 +91,7 @@ public class EnemyController : MainCharacter
 				? enemyController.TakeDamage(TotalDamage, this)
 				: _playerScript.TakeDamage(this, TotalDamage));
 		}
-
+		
 		StartCoroutine(col.CompareTag("Enemy")
 			? col.GetComponent<EnemyController>().TakeDamage(TotalDamage, this)
 			: _playerScript.TakeDamage(this, TotalDamage));
@@ -165,10 +166,11 @@ public class EnemyController : MainCharacter
 	
 	private IEnumerator FindClosestFood()
 	{
-		if (TotalDamage > _playerScript.TotalDamage * 1.25f)
+		_isFound = false;
+		while (TotalDamage > _playerScript.TotalDamage * 1.25f)
 		{
 			agent.destination = _playerScript.cachedTransform.position;
-			yield break;
+			yield return new WaitForSeconds(1);
 		}
 		var closestDistance = Mathf.Infinity;
 		Transform closestPeople = null;
@@ -181,5 +183,6 @@ public class EnemyController : MainCharacter
 			yield return null;
 		}
 		agent.destination = closestPeople ? closestPeople.position : _playerScript.cachedTransform.position;
+		_isFound = true;
 	}
 }

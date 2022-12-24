@@ -43,13 +43,14 @@ public class PlayerController : MainCharacter
 	}
 
 	protected override void Run() => _movementVector = walkJoystick.isActiveAndEnabled
-		? new Vector3(walkJoystick.Horizontal, 0, walkJoystick.Vertical).normalized
-		: new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;	
+			? new Vector3(walkJoystick.Horizontal, 0, walkJoystick.Vertical).normalized
+			: new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
 	
+
 	protected override void FixedRun()
 	{
 		rigidbody.velocity = _movementVector * movementSpeed;
-		if (!attackTarget) rigidbody.MoveRotation(Quaternion.LookRotation(_movementVector));
+		if (_movementVector != Vector3.zero && !attackTarget) rigidbody.MoveRotation(Quaternion.LookRotation(_movementVector));
 		relativeVector = cachedTransform.InverseTransformDirection(_movementVector);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
@@ -107,8 +108,9 @@ public class PlayerController : MainCharacter
 		CharacterWeapon.Shoot(); // Starting the shooting effect
 		if (!CharacterWeapon.IsShot) return;
 		var isEnemy = col.GetComponent<EnemyController>();
-		if (isEnemy) isEnemy.TakeDamage(TotalDamage);
-		else col.GetComponent<TeamController>().targetScript.GetComponent<EnemyController>().TakeDamage(TotalDamage);
+		StartCoroutine(isEnemy
+			? isEnemy.TakeDamage(TotalDamage)
+			: col.GetComponent<TeamController>().targetScript.GetComponent<EnemyController>().TakeDamage(TotalDamage));
 	}
 
 	// Damage acceptance function

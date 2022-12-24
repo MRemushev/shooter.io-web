@@ -12,17 +12,24 @@ public class RankManager : MonoBehaviour
 
 	public void ChangeRating()
 	{
-		charactersData = charactersData.OrderByDescending(x => x.CharacterScore).ToList();
-		for (var i = 0; i < ratingTexts.Length; i++)
+		try
 		{
-			try {
-				ratingTexts[i].text = charactersData[i].characterName + " " + charactersData[i].CharacterScore;
-			} catch {
-				return;
+			charactersData = charactersData.OrderByDescending(x => x.CharacterScore).ToList();
+			for (var i = 0; i < ratingTexts.Length; i++)
+			{
+				try {
+					ratingTexts[i].text = charactersData[i].characterName + " " + charactersData[i].CharacterScore;
+				} catch {
+					return;
+				}
 			}
+			var playerStats = charactersData.Find(x => x.Get<PlayerController>());
+			playerRating.text = charactersData.LastIndexOf(playerStats) + 1 + " " + playerStats.characterName + " " +
+			                    playerStats.CharacterScore;
 		}
-		var playerStats = charactersData.Find(x => x.Get<PlayerController>());
-		playerRating.text = charactersData.LastIndexOf(playerStats) + 1 + " " + playerStats.characterName + " " +
-							playerStats.CharacterScore;
+		catch
+		{
+			// ignored
+		}
 	}
 }

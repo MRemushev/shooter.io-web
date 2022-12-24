@@ -140,6 +140,7 @@ Material:
     m_Floats:
     - _Addnoise: 1
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _Blend: 0
     - _BlendMode: 0
     - _BlendModePreserveSpecular: 1

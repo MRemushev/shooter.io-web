@@ -5,7 +5,7 @@ OcclusionCullingSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_OcclusionBakeSettings:
-    smallestOccluder: 20
+    smallestOccluder: 10
     smallestHole: 0.25
     backfaceThreshold: 100
   m_SceneGUID: faccfc3b38e1a5d489c6ae63ecf37e6c
@@ -99,8 +99,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 337c2a5a3d1660b4781e2f8ce8cb0dfd,
-    type: 2}
+  m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -5353,7 +5352,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 1
+  near clip plane: 2
   far clip plane: 100
   field of view: 60
   orthographic: 0
@@ -5380,15 +5379,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 132622161}
-  m_LocalRotation: {x: 0.30070576, y: 0, z: 0, w: 0.953717}
-  m_LocalPosition: {x: 67.75, y: -5, z: -2.9999995}
+  m_LocalRotation: {x: 0.3420201, y: 0, z: 0, w: 0.9396927}
+  m_LocalPosition: {x: 67.75, y: -4, z: -2.9999995}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 803612648}
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 35, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 40, y: 0, z: 0}
 --- !u!114 &132622165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5404,8 +5403,8 @@ MonoBehaviour:
   mainPlayer: {fileID: 5457763901905975132}
   speed: 0.15
   forceOffset: 1
-  offset: {x: 0, y: 8, z: -10}
-  maxOffset: 0
+  offset: {x: 0, y: 12, z: -14}
+  maxOffset: 8
   cachedTransform: {fileID: 0}
 --- !u!114 &132622166
 MonoBehaviour:
@@ -29785,10 +29784,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: City_Hall_1
       objectReference: {fileID: 0}
-    - target: {fileID: 1546419654610962, guid: 221e54ded32735d4d817901fa7e91bcd, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
     - target: {fileID: 4825916673583886, guid: 221e54ded32735d4d817901fa7e91bcd, type: 3}
       propertyPath: m_RootOrder
       value: 28
@@ -29831,11 +29826,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4825916673583886, guid: 221e54ded32735d4d817901fa7e91bcd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 64401153728194214, guid: 221e54ded32735d4d817901fa7e91bcd,
-        type: 3}
-      propertyPath: m_Convex
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -42153,6 +42143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2cbe5ad879480c4d8863f93cbfd36b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  frameRate: 60
   volumeToggle: {fileID: 1241227792}
   deadScreen: {fileID: 1010931130}
   priceChance: {fileID: 421556795}
