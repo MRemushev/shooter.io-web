@@ -67,24 +67,19 @@ public class TeamController : MonoCache
 		if (col.gameObject.CompareTag("FoodBox")) StartCoroutine(targetScript.AddCharacter(cachedTransform.position, 5, col));
 	}
 
-	public void LevelUp()
+	public void LevelUp(int level)
 	{
-		weapons.ChangeWeapon(targetScript.weapons.WeaponLevel);
+		weapons.ChangeWeapon(level);
 		_thisWeapon.fireRate *= Random.Range(0.1f, 0.9f);
 	}
 
-	public void DeathPlay()
+	public IEnumerator DeathPlay()
 	{
 		targetScript.characterList.Remove(this);
 		IsDead = true;
 		rigidbody.isKinematic = true;
 		capsuleCollider.enabled = false;
 		animator.SetBool(DeadAnim, true);
-		StartCoroutine(DeadTimer());
-	}
-
-	private IEnumerator DeadTimer()
-	{
 		yield return new WaitForSeconds(5f);
 		NightPool.Despawn(gameObject);
 	}

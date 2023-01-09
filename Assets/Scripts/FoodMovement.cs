@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(Rigidbody))]
 public class FoodMovement : MonoBehaviour
 {
-	private float _updateTime = 5;
+	private float _updateTime = 1;
 	private Quaternion _direction;
 	
 	[HideInInspector] public Transform cachedTransform;
@@ -13,7 +13,7 @@ public class FoodMovement : MonoBehaviour
 	private void Awake()
 	{
 		cachedTransform = GetComponent<Transform>();
-		_updateTime /= Random.Range(0.75f, 1.25f); // Setting the rotation interval
+		_updateTime /= Random.Range(0.25f, 1); // Setting the rotation interval
 		StartCoroutine(Rotate());
 	}
 

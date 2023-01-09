@@ -8,8 +8,9 @@ public class PlayerController : MainCharacter
 {
 	[Header("Player components")]
 	[SerializeField] private new Rigidbody rigidbody;
-	[SerializeField] private LineRenderer laserBeam;
 	[SerializeField] private Joystick walkJoystick;
+	[SerializeField] private LineRenderer laserBeam;
+	[SerializeField] private Transform rangeScale;
 	[SerializeField] private GameObject deadScreen;
 	[SerializeField] private TextMeshProUGUI countTeamText;
 	[SerializeField] private TextMeshProUGUI killsCountText;
@@ -26,19 +27,15 @@ public class PlayerController : MainCharacter
 	private void Start()
 	{
 		characterName = "Player";
-		if (YandexGame.EnvironmentData.isDesktop) walkJoystick.gameObject.SetActive(false);
+		walkJoystick.gameObject.SetActive(YandexGame.EnvironmentData.isMobile);
 		skinObject.material.mainTexture = skinArray.textureList[PlayerPrefs.GetInt("PlayerSkin")];
 		_cameraOffset = Find<CameraController>();
 		var spawnPosition = EnemySpawner.RandomPosition();
 		spawnPosition.y = cachedTransform.position.y;
 		cachedTransform.position = spawnPosition;
-		_cameraOffset.cachedTransform.position = spawnPosition;
 		PreviousHealth = 100 + PlayerPrefs.GetInt("PlayerHealth") * 10;
 		Renaissance();
-		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
-		laserBeam.SetPosition(1, new Vector3(0, 2.2f, CharacterWeapon.FireRange * 3));
-		weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
-		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange);
+		ChangeRange();
 		ChangeWeaponStatsText();
 	}
 
@@ -49,13 +46,13 @@ public class PlayerController : MainCharacter
 
 	protected override void FixedRun()
 	{
-		rigidbody.velocity = _movementVector * movementSpeed;
-		if (_movementVector != Vector3.zero && !attackTarget) rigidbody.MoveRotation(Quaternion.LookRotation(_movementVector));
 		relativeVector = cachedTransform.InverseTransformDirection(_movementVector);
 		animator.SetFloat(Horizontal, relativeVector.x);
 		animator.SetFloat(Vertical, relativeVector.z);
-		laserBeam.enabled = attackTarget;
 		IsStop = rigidbody.velocity == Vector3.zero;
+		laserBeam.enabled = attackTarget;
+		rigidbody.velocity = _movementVector * movementSpeed;
+		if (_movementVector != Vector3.zero && !attackTarget) rigidbody.MoveRotation(Quaternion.LookRotation(_movementVector));
 	}
 
 	private void OnTriggerStay(Collider col) // Shooting area stay
@@ -86,8 +83,11 @@ public class PlayerController : MainCharacter
 	private void ChangeHpText() =>
 		hpText.text = "HP " + Mathf.Max(0, Mathf.Round(CharacterCount * PreviousHealth + Health));
 
-	private void ChangeWeaponStatsText() =>
+	private void ChangeWeaponStatsText()
+	{
 		weaponStatsText.text = CharacterWeapon.gameObject.name + " - " + CharacterWeapon.DamagePerSecond;
+		weaponLevelText.text = (weapons.WeaponLevel + 1).ToString();
+	}
 
 	public void ChangeStats()
 	{
@@ -101,6 +101,12 @@ public class PlayerController : MainCharacter
 	private void AutoShooting(Component col)
 	{
 		// We turn in the direction of the shot
+		if (!attackTarget && Vector3.Distance(cachedTransform.position, col.transform.position) > CharacterWeapon.FireRange)
+		{
+			attackTarget = null;
+			return;
+		}
+		attackTarget = col.transform;
 		if (!attackTarget) attackTarget = col.transform;
 		var lookTarget = Quaternion.LookRotation(attackTarget.position - cachedTransform.position);
 		lookTarget.eulerAngles = new Vector3(0, lookTarget.eulerAngles.y, 0);
@@ -114,7 +120,7 @@ public class PlayerController : MainCharacter
 	}
 
 	// Damage acceptance function
-	public IEnumerator TakeDamage(EnemyController enemyController, float damage)
+	public IEnumerator TakeDamage(float damage)
 	{
 		if (damage < 1 || _isImmortality) yield break; // Check that the damage is not less than one
 		Health -= damage;
@@ -138,7 +144,7 @@ public class PlayerController : MainCharacter
 				if (CharacterCount > 0)
 				{
 					var deadCharacter = Random.Range(0, CharacterCount);
-					characterList[deadCharacter].DeathPlay();
+					StartCoroutine(characterList[deadCharacter].DeathPlay());
 					countTeamText.text = CharacterCount.ToString();
 					Health += PreviousHealth;
 					RankManager.ChangeRating();
@@ -154,23 +160,31 @@ public class PlayerController : MainCharacter
 		}
 	}
 
-	public void AddKill()
+	private void ChangeRange()
+	{
+		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 5, 1, CharacterWeapon.FireRange * 5);
+		rangeScale.localScale = new Vector3(CharacterWeapon.FireRange / 2, 1, CharacterWeapon.FireRange / 2);
+		laserBeam.SetPosition(1, new Vector3(0, 2.1f, CharacterWeapon.FireRange * 2));
+		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange);
+	}
+
+	public IEnumerator AddKill()
 	{
 		attackTarget = null;
 		ScoreKills += 1;
 		killsCountText.text = ScoreKills.ToString();
 		_killPromotion -= 1;
-		if (_killPromotion != 0) return;
+		if (_killPromotion != 0) yield break;
 		var weaponLevel = PlayerPrefs.GetInt("WeaponLevel") + ScoreKills / 2;
 		weapons.ChangeWeapon(weaponLevel); // Updating weapons to the main man
-		weaponLevelText.text = (weaponLevel + 1).ToString();
-		// Update fire area
-		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
-		laserBeam.SetPosition(1, new Vector3(0, 2.1f, CharacterWeapon.FireRange * 3));
-		_cameraOffset.ChangeOffset(CharacterWeapon.FireRange);
+		ChangeRange();
 		ChangeWeaponStatsText();
 		RankManager.ChangeRating();
-		foreach (var people in characterList) people.LevelUp();
+		foreach (var people in characterList)
+		{
+			people.LevelUp(weapons.WeaponLevel);
+			yield return null;
+		}
 		_killPromotion = 2;
 	}
 

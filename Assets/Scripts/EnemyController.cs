@@ -29,7 +29,7 @@ public class EnemyController : MainCharacter
 		_playerScript = FindObjectOfType<PlayerController>();
 		StartCoroutine(AddCharacter(cachedTransform.position,
 			CharacterCount < PlayerPrefs.GetInt("PlayerPeople")
-				? Random.Range(0, PlayerPrefs.GetInt("PlayerPeople") / 2)
+				? Random.Range(0, PlayerPrefs.GetInt("PlayerPeople"))
 				: Random.Range(0, CharacterCount)));
 		ScoreKills = Random.Range(0, PlayerPrefs.GetInt("WeaponLevel") + _playerScript.ScoreKills / 2);
 		weapons.ChangeWeapon(ScoreKills);
@@ -65,19 +65,23 @@ public class EnemyController : MainCharacter
 
 	private void OnTriggerStay(Collider col)
 	{
-		if (_isDead) return;
-		if (Vector3.Distance(cachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
+		if (_isDead || Vector3.Distance(cachedTransform.position, col.transform.position) > CharacterWeapon.FireRange) return;
 		if (col.CompareTag("Team") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Enemy") && col.GetComponent<CapsuleCollider>().enabled) EnemyShooting(col);
 		else if (col.CompareTag("Player")) EnemyShooting(col);
 		else attackTarget = null;
 	}
-	
+
 	private void OnTriggerExit(Collider other) => attackTarget = null;
 
 	private void EnemyShooting(Component col)
 	{
-		if (!attackTarget) attackTarget = col.transform;
+		if (!attackTarget && Vector3.Distance(cachedTransform.position, col.transform.position) > CharacterWeapon.FireRange)
+		{
+			attackTarget = null;
+			return;
+		}
+		attackTarget = col.transform;
 		var lookTarget = Quaternion.LookRotation(attackTarget.position - cachedTransform.position);
 		lookTarget.eulerAngles = new Vector3(0, lookTarget.eulerAngles.y, 0);
 		cachedTransform.rotation = Quaternion.Lerp(cachedTransform.rotation, lookTarget, 10 * Time.deltaTime);
@@ -89,12 +93,11 @@ public class EnemyController : MainCharacter
 			var enemyController = teamController.targetScript.Get<EnemyController>();
 			StartCoroutine(enemyController
 				? enemyController.TakeDamage(TotalDamage, this)
-				: _playerScript.TakeDamage(this, TotalDamage));
+				: _playerScript.TakeDamage(TotalDamage));
 		}
-		
 		StartCoroutine(col.CompareTag("Enemy")
 			? col.GetComponent<EnemyController>().TakeDamage(TotalDamage, this)
-			: _playerScript.TakeDamage(this, TotalDamage));
+			: _playerScript.TakeDamage(TotalDamage));
 	}
 
 	public IEnumerator TakeDamage(float damage, EnemyController enemyController = null)
@@ -120,7 +123,7 @@ public class EnemyController : MainCharacter
 				if (CharacterCount > 0)
 				{
 					var deadCharacter = Random.Range(0, CharacterCount);
-					characterList[deadCharacter].DeathPlay();
+					StartCoroutine(characterList[deadCharacter].DeathPlay());
 					Health += PreviousHealth;
 					RankManager.ChangeRating();
 				}
@@ -129,13 +132,12 @@ public class EnemyController : MainCharacter
 					DeathPlay(enemyController);
 					break;
 				}
-				
 				yield return null;
 			}
 		}
 	}
 
-	private void AddKill()
+	private IEnumerator AddKill()
 	{
 		attackTarget = null;
 		ScoreKills += 1;
@@ -144,28 +146,32 @@ public class EnemyController : MainCharacter
 		shootingArea.size = new Vector3(CharacterWeapon.FireRange * 6, 1, CharacterWeapon.FireRange * 6);
 		// Updating weapons to all the player's teammates
 		_levelText.countText.text = (weapons.WeaponLevel + 1).ToString();
-		foreach (var people in characterList) people.LevelUp();
+		foreach (var people in characterList)
+		{
+			people.LevelUp(weapons.WeaponLevel);
+			yield return null;
+		}
 		RankManager.ChangeRating();
 	}
 
 	private void DeathPlay(EnemyController enemyController = null)
 	{
-		attackTarget = null;
 		_isDead = true;
-		agent.enabled = false;
+		attackTarget = null;
+		agent.isStopped = true;
 		capsuleCollider.enabled = false;
 		shootingArea.enabled = false;
 		animator.SetBool(DeadAnim, true);
 		PointerManager.Instance.RemoveFromList(point);
 		RankManager.charactersData.Remove(this);
-		if (enemyController) enemyController.AddKill();
-		else _playerScript.AddKill();
 		EnemySpawner.SpawnObject();
+		StartCoroutine(enemyController ? enemyController.AddKill() : _playerScript.AddKill());
 		Destroy(gameObject, 5f);
 	}
 	
 	private IEnumerator FindClosestFood()
 	{
+		if (_isDead) yield break;
 		_isFound = false;
 		while (TotalDamage > _playerScript.TotalDamage * 1.25f)
 		{

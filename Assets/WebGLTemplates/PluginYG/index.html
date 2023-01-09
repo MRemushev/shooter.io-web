@@ -7,7 +7,6 @@
     <title>{{{ PRODUCT_NAME }}}</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-
     <!-- Yandex Games SDK -->
     <script src="https://yandex.ru/games/sdk/v2"></script>
     <!-- Yandex.Metrika counter -->
@@ -26,7 +25,6 @@
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/91681772" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
-    
     #if BANNER_DYNAMIC_1
     <style>
         #RTB1 {
@@ -285,11 +283,10 @@
         //config.devicePixelRatio = 1;
     }
 
-    //#if BACKGROUND_FILENAME
-    //canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
-    //#endif
-
-    canvas.style.background = "url('background.png') center / cover";
+#if BACKGROUND_FILENAME
+    canvas.style.background = "url('" + buildUrl + "/{{{ BACKGROUND_FILENAME.replace(/'/g, '%27') }}}') center / cover";
+#endif
+    
     loadingCover.style.display = "";
 
     let player;
@@ -449,7 +446,7 @@
         try {
             ysdk.getPayments().then(_payments => {
                 console.log('Purchases are available');
-                payments = _payments;
+                payments = _payments;                
             }).catch(e => {
                 console.log('Purchases are not available', e.message);
             })
@@ -475,7 +472,7 @@
             console.error('CRASH Buy Payments: ', e.message);
         }
     }
-
+    
     function GetPayments() {
         try {
             if (payments != null) {
@@ -487,7 +484,7 @@
                         let imageURI = [products.length];
                         let priceValue = [products.length];
                         let purchased = [products.length];
-
+    
                         for (i = 0; i < products.length; i++) {
                             productID[i] = products[i].id;
                             title[i] = products[i].title;
@@ -496,7 +493,7 @@
                             priceValue[i] = products[i].priceValue;
                             purchased[i] = 0;
                         }
-
+    
                         payments.getPurchases().then(purchases => {
                             for (i1 = 0; i1 < products.length; i1++) {
                                 for (i2 = 0; i2 < purchases.length; i2++) {
@@ -562,9 +559,7 @@
         try {
             player.setData({
                 saves: [jsonData],
-            }, flush).then(() => {
-                console.log('Cloud saves are installed');
-            });
+            }, flush);
         } catch (e) {
             console.error('CRASH Save Cloud: ', e.message);
         }
@@ -576,7 +571,7 @@
                 if (data.saves) {
                     myGameInstance.SendMessage('YandexGame', 'SetLoadSaves', JSON.stringify(data.saves));
                 } else {
-                    ResetProgress();
+                    myGameInstance.SendMessage('YandexGame', 'SetLoadSaves', "noData");
                 }
             }).catch(() => {
                 console.error('getData Error!');
@@ -587,10 +582,6 @@
                 LoadCloud();
             }, 1000);
         }
-    }
-
-    function ResetProgress() {
-        myGameInstance.SendMessage('YandexGame', 'ResetSaveCloud');
     }
 
     function InitLeaderboard() {

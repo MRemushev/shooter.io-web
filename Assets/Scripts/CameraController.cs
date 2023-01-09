@@ -7,10 +7,10 @@ public class CameraController : MonoCache
 	[SerializeField] private Transform mainPlayer;
 
 	[Space] [Header("Camera Settings")]
-	[SerializeField] private float speed;
-	[SerializeField] private float forceOffset;
 	[SerializeField] private Vector3 offset;
-	[SerializeField] private float maxOffset;
+	[SerializeField] private float speed = 0.15f;
+	[SerializeField] private float forceOffset = 1;
+	[SerializeField] private float maxOffset = 10;
 
 	[HideInInspector] public Transform cachedTransform;
 	

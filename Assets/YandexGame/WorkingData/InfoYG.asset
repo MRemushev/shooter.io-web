@@ -15,6 +15,9 @@ MonoBehaviour:
   scopes: 0
   playerPhotoSize: 0
   leaderboardEnable: 0
+  saveCloud: 0
+  flush: 0
+  saveCloudInterval: 5
   fullscreenAdChallenge: 0
   fullscreenAdInterval: 60
   durationOfAdSimulation: 0.5
@@ -83,7 +86,7 @@ MonoBehaviour:
     de: []
     hi: []
   fontsSizeCorrect:
-    ru: 
+    ru: 00000000
     en: 
     tr: 
     az: 

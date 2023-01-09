@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4825916673583886}
   - component: {fileID: 33946939977935166}
   - component: {fileID: 23214473236327240}
-  - component: {fileID: 64401153728194214}
   - component: {fileID: 696230405}
   - component: {fileID: 6083418333857608424}
+  - component: {fileID: 1065761469581863229}
   m_Layer: 1
   m_Name: City_Hall_1
   m_TagString: Untagged
@@ -94,28 +94,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &64401153728194214
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1546419654610962}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 066c7f1eaf91b1a4d9b8241b1aadb6a2, type: 3}
 --- !u!114 &696230405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,3 +126,24 @@ MonoBehaviour:
   m_Center: {x: 0, y: 8, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffff
+--- !u!65 &1065761469581863229
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1546419654610962}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 22, y: 17, z: 10}
+  m_Center: {x: 0, y: 8, z: 0}
